@@ -1,0 +1,54 @@
+################################
+# EU4 Province Editor Localisation
+################################
+
+################
+# General
+frame-title         : "EU4 GUI Province Editor"
+################
+# Status Bar
+st:
+    home            : "EU4 Province Editor"
+################
+# Menu Bar
+menu:
+    file            : "File"
+    data            : "Data"
+################
+# Menu and Buttons
+mb:
+    # Load options
+    load-s-title    : "Load Sheet"
+    load-s-desc     : "Load Spreadsheet"
+    load-g-title    : "Load Original"
+    load-g-desc     : "Load from original-like files"
+    # Save options
+    save-s-title    : "Save Sheet"
+    save-s-desc     : "Save data to Spreadsheet"
+    save-g-title    : "Save to Original"
+    save-g-desc     : "Save data to files readable by the game"
+    # Others
+    quit-title      : "Quit"
+    quit-desc       : "Exit program with out saving data"
+    # Selection
+    sel-new-title   : "New Selection"
+    sel-new-desc    : "Create new selection"
+    sel-sub-title   : "Sub Selection"
+    sel-sub-desc    : "Shrink current selection"
+    sel-app-title   : "Append Selection"
+    sel-app-desc    : "Append provinces to current selection"
+    # Deselection
+    desel-title     : "Deselect provinces"
+    desel-desc      : "Remove provinces from selection"
+    # Sort
+    sort-id-title   : "Sort by ID"
+    sort-id-desc    : "Sort provinces in specified scope by ID"
+    sort-col-title  : "Sort by Columns"
+    sort-col-desc   : "Sort provinces by specified attributes"
+    sort-loc-title  : "Sort by Location"
+    sort-loc-desc   : "Sort provinces by regions and areas"
+    # Manipulation
+    set-title       : "Column"
+    set-desc        : "Change values in single column in selection"
+    inpr-title      : "Inprov"
+    inpr-desc       : "Change values in single province"

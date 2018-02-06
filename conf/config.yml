@@ -1,0 +1,21 @@
+################################
+# EU4 Province Editor Configuration
+################################
+
+################
+# General
+test: "test"
+
+################################
+# APPEARANCE
+################################
+
+################
+# Standard sizes
+button-x    : 80
+button-y    : 27
+################
+# Main Frame Settings
+mf:
+    grw-col : [0]
+    grw-row : [0]
