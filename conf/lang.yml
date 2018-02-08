@@ -5,6 +5,7 @@
 ################
 # General
 frame-title         : "EU4 GUI Province Editor"
+loading             : "Please wait..."
 ################
 # Status Bar
 st:
@@ -12,37 +13,52 @@ st:
 ################
 # Menu Bar
 menu:
+    main            : "Main"
     file            : "File"
-    data            : "Data"
+    selc            : "Selection"
+    sort            : "Sort"
 ################
 # Menu and Buttons
 mb:
+    # Basic
+    browse          : "Browse..."
+    done            : "Done"
+    cancel          : "Cancel"
+    # Main
+    run-static-title: "Run Configuration"
+    run-static-desc : "Configure Editor before first use"
+    quit-title      : "Quit"
+    quit-desc       : "Exit program with out saving data"
     # Load options
     load-s-title    : "Load Sheet"
     load-s-desc     : "Load Spreadsheet"
     load-g-title    : "Load Original"
     load-g-desc     : "Load from original-like files"
+    # Load-update options
+    loadu-s-title   : "Update with Sheet"
+    loadu-s-desc    : "Update current data with selected spreadsheet"
+    loadu-g-title   : "Update with Original"
+    loadu-g-desc    : "Update current data with selected folder"
     # Save options
     save-s-title    : "Save Sheet"
     save-s-desc     : "Save data to Spreadsheet"
     save-g-title    : "Save to Original"
     save-g-desc     : "Save data to files readable by the game"
-    # Others
-    quit-title      : "Quit"
-    quit-desc       : "Exit program with out saving data"
     # Selection
     sel-new-title   : "New Selection"
     sel-new-desc    : "Create new selection"
     sel-sub-title   : "Sub Selection"
     sel-sub-desc    : "Shrink current selection"
-    sel-app-title   : "Append Selection"
+    sel-app-title   : "Append"
     sel-app-desc    : "Append provinces to current selection"
     # Deselection
-    desel-title     : "Deselect provinces"
-    desel-desc      : "Remove provinces from selection"
+    desel-t-title   : "Deselect Where"
+    desel-t-desc    : "Remove provinces where..."
+    desel-n-title   : "Deselect Where not"
+    desel-n-desc    : "Remove provinces where not..."
     # Sort
     sort-id-title   : "Sort by ID"
-    sort-id-desc    : "Sort provinces in specified scope by ID"
+    sort-id-desc    : "Sort provinces by ID"
     sort-col-title  : "Sort by Columns"
     sort-col-desc   : "Sort provinces by specified attributes"
     sort-loc-title  : "Sort by Location"
@@ -52,3 +68,44 @@ mb:
     set-desc        : "Change values in single column in selection"
     inpr-title      : "Inprov"
     inpr-desc       : "Change values in single province"
+################
+# Dialogs
+dlg:
+    # Standard Dialog Titles
+    error           : "Error"
+    warning         : "Warning"
+    info            : "Info"
+    # Filestream (Editing)
+    ld-sh-msg       : "Select CSV Spreadsheet"
+    ld-or-msg       : "Select provinces directory"
+    # Filestream (Init)
+    sel-area        : "Select area assignment file"
+    sel-regn        : "Select region assignment file"
+    sel-segn        : "Select super-region assignment file"
+    sel-locl        : "Select provinces localisation file"
+    # Progress
+    prg:
+        load        : "Loading"
+        save        : "Saving"
+        prcs        : "Processing"
+        load-desc   : "Loading original files from "
+################
+# Errors
+msg:
+    not-a-csv       : "Loaded file is not a valid CSV Spreadsheet"
+    filenotfound    : "File couldn't be found!"
+################
+# Initializer
+init:
+    title           : "Initialize Editor"
+    area            : "Area assignment"
+    region          : "Region assignment"
+    segion          : "Super-region assignment"
+    locl            : "Provinces localisation"
+################
+# File Formats (plural)
+formats:
+    "*"             : "All files"
+    csv             : "CSV Spreadsheets"
+    yml             : "YAML Configuration"
+    txt             : "Text Files"

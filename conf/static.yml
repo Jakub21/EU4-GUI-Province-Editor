@@ -1,0 +1,83 @@
+################################
+# EU4 Province Editor Configuration
+################################
+
+################################
+# APPEARANCE
+################################
+center_onscreen : yes
+################
+# Standard sizes
+cell-x        : 80
+cell-y        : 27
+################
+# Frame size modifier (frame size = sizer size + those)
+frame-x         : 0
+frame-y         : 50
+################
+# Main Frame Settings
+mf:
+    grw-col     : [0]
+    grw-row     : [0]
+
+
+################################
+# EDITOR
+################################
+encodings: [
+    utf-8
+    ansi
+    utf-8-sig
+]
+
+################################
+# DIALOGS
+################################
+# Types of attribute files
+formats: # (Wildcard generation)
+    area            : txt
+    region          : txt
+    segion          : txt
+    locl            : yml
+init:
+    size-x          : 180
+    size-y          : 15
+
+################################
+# OLD PARSER SETTINGS
+################################
+multival_sep        : "&"
+historyfile_keys    : {
+    capital         : capital,
+    cores           : add_core,
+    claims          : add_claim,
+    owner           : owner,
+    cntrl           : controller,
+    culture         : culture,
+    religion        : religion,
+    hre             : hre,
+    tax             : base_tax,
+    prod            : base_production,
+    manp            : base_manpower,
+    trade_goods     : trade_goods,
+    city            : is_city,
+    ntv_size        : native_size,
+    ntv_ferc        : native_ferocity,
+    ntv_hstl        : native_hostileness,
+    cost            : extra_cost,
+    fort            : fort_15th,
+    discovered      : discovered_by,
+    modifiers       : [add_permanent_province_modifier name],
+}
+column_order          : [
+    id name capital
+    area region segion
+    cores claims
+    owner cntrl
+    culture religion hre
+    tax prod manp
+    trade_goods
+    city cost fort
+    discovered modifiers
+    filename group
+]

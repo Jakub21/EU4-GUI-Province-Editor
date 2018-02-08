@@ -9,8 +9,9 @@ import yaml
 from os import getcwd
 
 ################################
+STAT = '/conf/static.yml'
 CONF = '/conf/config.yml'
-LCL =  '/conf/lang.yml'
+LANG = '/conf/lang.yml'
 
 ################################
 YML_ERR = 'Yaml Error occurred. Please check config and localisation files.'
@@ -33,9 +34,34 @@ def getfile(fname):
         exit()
 
 ################################
+def getstatic():
+    global static
+    static = getfile(STAT)
+    return static
+
+################################
 def getconf():
-    return getfile(CONF)
+    global conf
+    conf = getfile(CONF)
+    return conf
 
 ################################
 def getlcl():
-    return getfile(LCL)
+    global lang
+    lang = getfile(LANG)
+    return lang
+
+
+################################
+def getWildcard(formats, appendAll=True):
+    if type(formats) != list:
+        formats = [formats]
+    if appendAll == True:
+        formats.append('*')
+    wc = ''
+    wildcard = "Python source (*.py)|*.py|" \
+            "All files (*.*)|*.*"
+    for f in formats:
+        wc += lang['formats'][f] + ' (*.'+f+')|*.'+f+'| '
+    wc = wc[:-2]
+    return wc
