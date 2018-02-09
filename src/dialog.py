@@ -10,10 +10,13 @@ import pandas as pd
 from os import getcwd
 import src.elems as el
 from src.conf_parser import getWildcard
+import time
 
 ################################
 class frameDialog(wx.Frame):
     def __init__(self, _stt, _lang, _conf):
+        self.InitSessionBegin = int(round(time.time() * 1000))
+        self.sessionInitialized = False
         global lang
         lang = _lang
         global static
@@ -29,7 +32,7 @@ class frameDialog(wx.Frame):
     # Disables whole Frame and shows dialog with no buttons
     def statusBusyStart(self, event=None):
         self.Disable()
-        self.busyDlg = wx.BusyInfo(lang['loading'])
+        self.busyDlg = wx.BusyInfo(lang['startup_message'])
 
     def statusBusyEnd(self, event=None):
         self.Enable()
@@ -37,19 +40,29 @@ class frameDialog(wx.Frame):
 
     ################
     # Shows dialog with message (only OK as response)
-    def prompt(self, dtype, key, SelfMessage=False):
+    def prompt(self, dtype, key, data=''):
         flags = {
             'error'     : wx.OK|wx.ICON_ERROR,
             'warning'   : wx.OK|wx.ICON_EXCLAMATION,
             'info'      : wx.OK|wx.ICON_INFORMATION,
         }
-        if (dtype not in flags) and not(SelfMessage):
-            print('SCRIPT ERR', 'Unknows Dialog Type', sep='\n')
-            exit(0)
-        if SelfMessage:
-            msg = key
-        else:
+        if (dtype not in flags):
+            print('SCRIPT ERR', 'Unknown Dialog Type', sep='\n')
+            exit()
+        try:
             msg = lang['msg'][key]
+        except KeyError:
+            print('SCRIPT ERR', 'Unknown Dialog Message Key', sep='\n')
+            exit()
+        try:
+            if len(str(data)) > 0:
+                msg += '\n' + str(data)
+        except:
+            print('SCRIPT ERR',
+                'Unhandled error occured while tried to add Data Info to Prompt',
+                sep='\n'
+            )
+            raise
         dlg = wx.MessageDialog(None,
             message=msg,
             caption=lang['dlg'][dtype],
@@ -80,68 +93,46 @@ class InitDialog(wx.Dialog):
             self.GetSize()[0] + static['init']['size-x'],
             self.GetSize()[1] + static['init']['size-y'],
         )
+        if static['center_onscreen']:
+            self.Center()
         self.initPanel()
-
-    ################
-    #def apply(self, event):
-    #    return wx.ID_OK
-    #    self.Destroy()
-
-    ################
-    #def cancel(self, event):
-    #    return wx.ID_CANCEL
-    #    self.Destroy()
-
-    ################
-    def selectFile(self, mode):
-        d = FileDialog(lang['init'][mode], static['formats'][mode])
-        if d.ShowModal() == wx.ID_OK:
-            path = d.GetPaths()[0]
-        else:
-            pass
-        d.Destroy()
-
-
-    ################
-    # Probably there's a better way to do this
-    # Binding button to func. with argument is required
-    # TODO
-    def selectArea(self, event):
-        self.selectFile('area')
-    def selectRegion(self, event):
-        self.selectFile('region')
-    def selectSegion(self, event):
-        self.selectFile('segion')
-    def selectLocl(self, event):
-        self.selectFile('locl')
-    ################
-
     ################
     def initPanel(self):
         panel = wx.Panel(self)
         sizer = wx.GridBagSizer()
+        self.pathstr = {}
         ################
-        def addRow(key, row, action):
+        def selectFile(key):
+            d = FileDialog(lang['init'][key], static['formats'][key])
+            if d.ShowModal() == wx.ID_OK:
+                path = d.GetPaths()[0]
+                self.pathstr[key].Clear()
+                self.pathstr[key].AppendText(path)
+            else:
+                pass
+            d.Destroy()
+        ################
+        def addRow(key, row):
+            def _action(event):
+                selectFile(key)
             sizer.Add(wx.StaticText(panel, label=lang['init'][key]), flag=wx.EXPAND, pos=(row,0))
-            pathstr = el.TextCtrl(panel, id=row, conf['path'][key])
-            sizer.Add(pathstr, flag=wx.EXPAND, pos=(row+1,0))
+            self.pathstr[key] = el.TextCtrl(panel, conf['path'][key])
+            sizer.Add(self.pathstr[key], flag=wx.EXPAND, pos=(row+1,0))
             button = el.Button(panel, label=lang['mb']['browse'])
-            button.Bind(wx.EVT_BUTTON, action)
+            button.Bind(wx.EVT_BUTTON, _action)
             sizer.Add(button, pos=(row+1,1))
         ################
-        addRow('area',      1, self.selectArea)
-        addRow('region',    3, self.selectRegion)
-        addRow('segion',    5, self.selectSegion)
-        addRow('locl',      7, self.selectLocl)
+        addRow('area', 1)
+        addRow('regn', 3)
+        addRow('segn', 5)
+        addRow('locl', 7)
         ################
         bSizer = wx.GridBagSizer()
         ################
         done = el.Button(panel, id=wx.ID_OK, label=lang['mb']['done'])
-        #done.Bind(wx.EVT_BUTTON, self.apply)
         bSizer.Add(done, pos=(0,0))
         ################
         cncl = el.Button(panel, id=wx.ID_CANCEL, label=lang['mb']['cancel'])
-        #cncl.Bind(wx.EVT_BUTTON, self.cancel)
         cncl.SetFocus()
         bSizer.Add(cncl, pos=(0,1))
         ################

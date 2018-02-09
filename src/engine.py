@@ -21,22 +21,6 @@ class frameEngine(frameInit):
         super().__init__(static, lang, conf)
 
     ################################
-    def EngineRemComments(text):
-        ndata = ''
-        for line in text.split('\n'):
-            nline = ''
-            for c in line:
-                if c in '#\r\n':
-                    break
-                if c == '\t':
-                    c = ' '
-                if c in '{=}':
-                    c = ' ' + c + ' '
-                nline += c
-            ndata += nline + ' '
-        return ndata
-
-    ################################
     def EngineGetFile(path):
         for enc in static['encodings']:
             try:
@@ -44,8 +28,7 @@ class frameEngine(frameInit):
             except UnicodeDecodeError:
                 pass
             except FileNotFoundError:
-                print('Engine Error')
-                #prompt('error', 'filenotfound')
+                prompt('error', 'filenotfound')
         return rem_cmnt(text)
 
     ################################
@@ -166,13 +149,13 @@ class frameEngine(frameInit):
         try:
             filelist = listdir(histdir)
         except FileNotFoundError:
-            print('DirectoryNotFound')
+            #print('DirectoryNotFound')
             return DataFrame
         for filename in filelist:
             filedir = histdir + filename
             data = getscope(getfile(filedir).split())
             if type(data) == int:
-                print('WrongHistorySyntax')
+                #print('WrongHistorySyntax')
                 return DataFrame
             ################
             province = {}

@@ -8,6 +8,7 @@
 from src.conf_parser import getlcl, getstatic, getconf
 from src.menu import frameMenu
 import wx
+import time
 
 ################################
 class mainFrame(frameMenu):
@@ -28,6 +29,7 @@ class mainFrame(frameMenu):
             self.GetSize()[1] + static['frame-y']
         )
         self.statusBusyEnd()
+        self.InitSessionEnd = int(round(time.time() * 1000))
         self.Show()
 
     def initStatusBar(self):

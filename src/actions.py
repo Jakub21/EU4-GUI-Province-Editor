@@ -23,7 +23,7 @@ class frameActions(frameEngine):
 
     ################################
     def action(self, event):
-        print('DEFAULT-ACTION')
+        self.prompt('info', 'default')
 
     ################################
     def actionLoadSheet(self, event):

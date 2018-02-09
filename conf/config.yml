@@ -1,6 +1,6 @@
-was-configured  : yes
 path:
-    area        : D:/Games/Europa-Universalis-IV/mod/disk_mod/map/area.txt
-    region      : D:/Games/Europa-Universalis-IV/mod/disk_mod/map/region.txt
-    segion      : D:/Games/Europa-Universalis-IV/mod/disk_mod/map/superregion.txt
-    locl        : D:/Games/Europa-Universalis-IV/mod/disk_mod/localisation/prov_names_l_english.yml
+  area: ""
+  locl: ""
+  regn: ""
+  segn: ""
+was-configured: false

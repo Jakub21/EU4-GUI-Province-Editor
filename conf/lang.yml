@@ -5,7 +5,7 @@
 ################
 # General
 frame-title         : "EU4 GUI Province Editor"
-loading             : "Please wait..."
+startup_message     : "Starting Editor"
 ################
 # Status Bar
 st:
@@ -92,15 +92,21 @@ dlg:
 ################
 # Errors
 msg:
+    default         : "DEFAULT ACTION"
     not-a-csv       : "Loaded file is not a valid CSV Spreadsheet"
     filenotfound    : "File couldn't be found!"
+    no-conf         : "Editor can not start with out configuration"
+    invalid-conf    : "Editor configuration is invalid"
+    locl-not-yml    : "Localisation file is not a valid YAML file"
+    locl-not-found  : "Localisation file selected in Config can not be found"
+    inv-asnmt-file  : "Invalid Map Assignment file"
 ################
 # Initializer
 init:
     title           : "Initialize Editor"
     area            : "Area assignment"
-    region          : "Region assignment"
-    segion          : "Super-region assignment"
+    regn            : "Region assignment"
+    segn            : "Super-region assignment"
     locl            : "Provinces localisation"
 ################
 # File Formats (plural)

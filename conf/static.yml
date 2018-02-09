@@ -36,8 +36,8 @@ encodings: [
 # Types of attribute files
 formats: # (Wildcard generation)
     area            : txt
-    region          : txt
-    segion          : txt
+    regn            : txt
+    segn            : txt
     locl            : yml
 init:
     size-x          : 180
@@ -46,6 +46,12 @@ init:
 ################################
 # OLD PARSER SETTINGS
 ################################
+reg-names-suffixes  : {
+    area          : _area,
+    regn          : _region,
+    segn          : _superregion,
+}
+skip-at-regload     : "{=}colorareas"
 multival_sep        : "&"
 historyfile_keys    : {
     capital         : capital,

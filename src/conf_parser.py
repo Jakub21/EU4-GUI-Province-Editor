@@ -9,9 +9,10 @@ import yaml
 from os import getcwd
 
 ################################
-STAT = '/conf/static.yml'
-CONF = '/conf/config.yml'
-LANG = '/conf/lang.yml'
+class PATH:
+    STAT = '/conf/static.yml'
+    CONF = '/conf/config.yml'
+    LANG = '/conf/lang.yml'
 
 ################################
 YML_ERR = 'Yaml Error occurred. Please check config and localisation files.'
@@ -36,19 +37,19 @@ def getfile(fname):
 ################################
 def getstatic():
     global static
-    static = getfile(STAT)
+    static = getfile(PATH.STAT)
     return static
 
 ################################
 def getconf():
     global conf
-    conf = getfile(CONF)
+    conf = getfile(PATH.CONF)
     return conf
 
 ################################
 def getlcl():
     global lang
-    lang = getfile(LANG)
+    lang = getfile(PATH.LANG)
     return lang
 
 
