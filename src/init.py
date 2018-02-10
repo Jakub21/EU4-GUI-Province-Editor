@@ -24,7 +24,7 @@ class frameInit(frameDialog):
         self.sessionInitialized = True
 
     ################################
-    def RemoveComments(text):
+    def RemoveComments(self, text):
         ndata = ''
         for line in text.split('\n'):
             nline = ''
@@ -51,7 +51,7 @@ class frameInit(frameDialog):
                     pass
             if text == None:
                 prompt('error', 'filenotfound')
-            return RemoveComments(text)
+            return self.RemoveComments(text)
         ################
         def Analysis(text, memDepth):
             par_depth = 0
@@ -89,12 +89,55 @@ class frameInit(frameDialog):
                 name = 'none'
             return name
         ################
-        segions = Analysis(Get(conf['path']['segion']), 1)
-        regions = Analysis(Get(conf['path']['region']), 2)
-        areas = Analysis(Get(conf['path']['area']), 1)
-        for r in [segions, regions, areas]:
+        segn = Analysis(Get(conf['path']['segn']), 1)
+        regn = Analysis(Get(conf['path']['regn']), 2)
+        area = Analysis(Get(conf['path']['area']), 1)
+        for r in [segn, regn, area]:
             if r == {}:
                 self.prompt('error', 'inv-asnmt-file')
+                return
+
+        result = {}
+        usedAreas = []
+        usedRegns = []
+        usedSegns = []
+        for Area in area:
+            Regn = Find(Area, regn)
+            Segn = Find(Area, segn)
+            provs = area[Area]
+            ################
+            aName = Area
+            rName = Regn
+            sName = Segn
+            ################
+            if static['shorten-regn-names']:
+                aName = Shorten(aName, 'area')
+                rName = Shorten(rName, 'regn')
+                sName = Shorten(sName, 'segn')
+            ################
+            for province in provs:
+                result[province] = [aName, rName, sName]
+                if Area not in usedAreas:
+                    usedAreas.append(Area)
+                if Regn not in usedRegns:
+                    usedRegns.append(Regn)
+                if Segn not in usedSegns:
+                    usedSegns.append(Segn)
+        ################
+        self.unusedAreas = []
+        self.unusedRegns = []
+        self.unusedSegns = []
+        for key in area:
+            if key not in usedAreas:
+                self.unusedAreas.append(key)
+        for key in regn:
+            if key not in usedRegns:
+                self.unusedRegns.append(key)
+        for key in segn:
+            if key not in usedSegns:
+                self.unusedSegns.append(key)
+        ################
+        return result
 
 
     ################################
@@ -154,3 +197,4 @@ class frameInit(frameDialog):
 
 
         l = self.initLocalisation(conf['path']['locl'])
+        self.initAssignment()

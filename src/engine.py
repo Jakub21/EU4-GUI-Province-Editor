@@ -8,6 +8,8 @@
 import wx
 import pandas as pd
 from src.init import frameInit
+from os import listdir
+from src.dialog import ProgressDialog as Progress
 
 ################################
 class frameEngine(frameInit):
@@ -21,18 +23,18 @@ class frameEngine(frameInit):
         super().__init__(static, lang, conf)
 
     ################################
-    def EngineGetFile(path):
+    def EngineGetFile(self, path):
         for enc in static['encodings']:
             try:
-                text = open(fpath, encoding=enc).read()
+                text = open(path, encoding=enc).read()
             except UnicodeDecodeError:
                 pass
             except FileNotFoundError:
-                prompt('error', 'filenotfound')
-        return rem_cmnt(text)
+                self.prompt('error', 'filenotfound')
+        return self.RemoveComments(text)
 
     ################################
-    def EngineGetScope(text, rDepth=0):
+    def EngineGetScope(self, text, rDepth=0):
         # Config
         key_index   = 0
         eqs_index   = 1
@@ -55,10 +57,10 @@ class frameEngine(frameInit):
         result = {}
         subscope = []
         ################
-        if rcr_depth > 0:
+        if rDepth > 0:
             index = rcr_index
         ################
-        for word in data:
+        for word in text:
             last = False
             fromsub = False
             ################
@@ -92,7 +94,7 @@ class frameEngine(frameInit):
                 key = word
             elif index == eqs_index:
                 if word != eqs:
-                    return total_index
+                    raise TypeError
             elif index == val_index:
                 if not last:
                     value = word
@@ -102,7 +104,7 @@ class frameEngine(frameInit):
                 if value == cbr:
                     index = (index+1)%3
                     subscope = subscope[ssc_cuthead:]
-                    value = getscope(subscope, rcr_depth+1)
+                    value = self.EngineGetScope(subscope, rDepth+1)
                     fromsub = True
                 try:
                     result[key].append(value)
@@ -115,97 +117,22 @@ class frameEngine(frameInit):
         return result
 
     ################################
-    def EngineLoad():
-        def getvalue(keys, data):
-            if len(keys) == 1:
-                return data[keys[0]]
-            else:
-                q = []
-                for sub in data[keys[0]]:
-                    q += getvalue(keys[1:], sub)
-                if q == 'nan':
-                    q = ''
-                return q
-        ################
-        def getid(filename):
-            result = ''
-            for c in filename:
-                if c not in numbers:
-                    break
-                result += c
-            return result
-        ################
-        sep = '/'
-        ################
-        #regioning = get_regioning(attrdir, const['fnames'])
-        #localisation = get_locl(attrdir+const['fnames']['provloc'])
-        #if localisation == None:
-        #    print('LocalisationNotFound')
-        #    return DataFrame
-        ################
-        provkeys = const['province_attr_keys']
-        rows = []
-        ################
-        try:
-            filelist = listdir(histdir)
-        except FileNotFoundError:
-            #print('DirectoryNotFound')
-            return DataFrame
-        for filename in filelist:
-            filedir = histdir + filename
-            data = getscope(getfile(filedir).split())
-            if type(data) == int:
-                #print('WrongHistorySyntax')
-                return DataFrame
-            ################
-            province = {}
-            provid = getid(filename)
-            if provid == '':
-                continue
-            province[provkeys['id']] = int(provid)
-            province[provkeys['fn']] = filename
-            province[provkeys['gr']] = ''
-            ################################
-            #try:
-            #    province[provkeys['nm']] = localisation[const['locl_key_prefix']+provid]
-            #except KeyError: province[provkeys['nm']] = const['default_name']
-            #try:
-            #    province[provkeys['ar']] = regioning[provid][0]
-            #except KeyError: province[provkeys['ar']] = const['default_area']
-            #try:
-            #    province[provkeys['rg']] = regioning[provid][1]
-            #except KeyError: province[provkeys['rg']] = const['default_region']
-            #try:
-            #    province[provkeys['sg']] = regioning[provid][2]
-            #except KeyError: province[provkeys['sg']] = const['default_segion']
-            ################################
-            for datakey in const['historyfile_keys']:
-                provkey = const['historyfile_keys'][datakey]
-                if type(provkey) == list:   keys = provkey
-                else:                       keys = [provkey]
-                try:                        value = getvalue(keys, data)
-                except KeyError:            value = []
-                province[datakey] = value
-            ################
-            row = []
-            for key in const['column_order']:
-                value = province[key]
-                if type(value) == list:
-                    row.append(const['multival_sep'].join(value))
-                else:
-                    row.append(value)
-            rows.append(row)
-        ################
-        df = DataFrame(rows, columns=const['column_order'])
-        df.set_index(const['index_column'], inplace=True)
-        return df
-
-    ################################
-    def EngineParse(path):
-        total_provs = 5
-        repr_dir = '/'.join(path.split('/')[-2:])
-        q = prgDlg('load', 'load-desc', repr_dir, total_provs)
+    def EngineLoad(self, path):
+        total_provs = len(listdir(path))
+        d = Progress('load', 'load-desc', '', total_provs, parent=self)
+        i=0
         ################################
-
+        for filename in listdir(path):
+            if not d.Update(i, 'load-desc', filename):
+                d.Destroy()
+                return
+            t = self.EngineGetFile(path+'/'+filename)
+            try:
+                contents = self.EngineGetScope(t.split())
+            except TypeError:
+                d.Destroy()
+                self.prompt('warning', 'hist-syntax', data=filename)
+                return
+            i+=1
         ################################
-        q.Destroy()
+        d.Destroy()

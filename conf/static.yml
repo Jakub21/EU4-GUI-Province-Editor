@@ -25,9 +25,9 @@ mf:
 # EDITOR
 ################################
 encodings: [
-    utf-8
-    ansi
-    utf-8-sig
+    utf-8-sig,
+    utf-8,
+    ansi,
 ]
 
 ################################
@@ -46,10 +46,11 @@ init:
 ################################
 # OLD PARSER SETTINGS
 ################################
+shorten-regn-names  : true
 reg-names-suffixes  : {
-    area          : _area,
-    regn          : _region,
-    segn          : _superregion,
+    area            : _area,
+    regn            : _region,
+    segn            : _superregion,
 }
 skip-at-regload     : "{=}colorareas"
 multival_sep        : "&"

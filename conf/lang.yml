@@ -88,7 +88,7 @@ dlg:
         load        : "Loading"
         save        : "Saving"
         prcs        : "Processing"
-        load-desc   : "Loading original files from "
+        load-desc   : "Loading original files"
 ################
 # Errors
 msg:
@@ -100,6 +100,7 @@ msg:
     locl-not-yml    : "Localisation file is not a valid YAML file"
     locl-not-found  : "Localisation file selected in Config can not be found"
     inv-asnmt-file  : "Invalid Map Assignment file"
+    hist-syntax     : "Syntax error in province history file"
 ################
 # Initializer
 init:

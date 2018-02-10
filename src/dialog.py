@@ -26,7 +26,7 @@ class frameDialog(wx.Frame):
         super().__init__(None, title=lang['frame-title'])
         self.statusBusyStart()
         el.init(static, lang, conf)
-        self.cwd = getcwd()
+        self.cwd = getcwd().replace('\\', '/') + '/'
 
     ################
     # Disables whole Frame and shows dialog with no buttons
@@ -73,10 +73,23 @@ class frameDialog(wx.Frame):
 
 ################################
 class ProgressDialog(wx.ProgressDialog):
-    def __init__(self, tkey, mkey, dr, maximum, parent=None, style=wx.PD_APP_MODAL|wx.PD_AUTO_HIDE):
+    def __init__(self, tkey, mkey, detail, maximum, parent=None,
+                style=wx.PD_CAN_ABORT|wx.PD_APP_MODAL|wx.PD_AUTO_HIDE
+            ):
+        self.parent = parent
+        if self.parent!=None:
+            self.parent.Disable()
         title = lang['dlg']['prg'][tkey]
-        message = lang['dlg']['prg'][mkey] + dr
+        message = lang['dlg']['prg'][mkey]+'\n'+detail
         super().__init__(title, message, maximum, parent, style)
+
+    def Update(self, amount, mkey, detail):
+        return super().Update(amount, lang['dlg']['prg'][mkey]+'\n'+detail)
+
+    def Destroy(self):
+        if self.parent!=None:
+            self.parent.Enable()
+        super().Destroy()
 
 ################################
 class FileDialog(wx.FileDialog):

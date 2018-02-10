@@ -58,7 +58,7 @@ class frameActions(frameEngine):
             path = dlg.GetPath().replace('\\', '/')
         else:
             return
-        #self.AllData = engine.parse(path)
+        self.AllData = self.EngineLoad(path)
 
     ################################
     def actionQuit(self, event):
