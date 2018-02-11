@@ -27,13 +27,6 @@ class frameActions(frameEngine):
 
     ################################
     def actionLoadSheet(self, event):
-        #dlg = wx.FileDialog(self,
-        #    message=lang['dlg']['ld-sh-msg'],
-        #    defaultDir=self.cwd,
-        #    defaultFile='',
-        #    wildcard=getWildcard(['csv']),
-        #    style=wx.FD_OPEN | wx.FD_CHANGE_DIR
-        #)
         dialog = dlg.FileDialog(lang['dlg']['ld-sh-msg'], 'csv')
         if dialog.ShowModal() == wx.ID_OK:
             path = dialog.GetPaths()[0].replace('\\', '/')
@@ -50,7 +43,6 @@ class frameActions(frameEngine):
     def actionLoadOrig(self, event):
         dlg = wx.DirDialog(self,
             message=lang['dlg']['ld-or-msg'],
-            #defaultDir=self.cwd,
             defaultPath=self.cwd,
             style=wx.DD_DEFAULT_STYLE
         )
@@ -59,6 +51,17 @@ class frameActions(frameEngine):
         else:
             return
         self.AllData = self.EngineLoad(path)
+
+    ################################
+    # TEMP
+    def actionTempReprData(self, event):
+        pd.set_option('display.max_rows', 1000)
+        pd.set_option('display.max_columns', 50)
+        pd.set_option('display.width', 250)
+        data = self.AllData.drop(['filename', 'discovered'], axis=1)
+        data = data.loc[data['regn'].isin(['polhemia', 'polabian'])]
+        data.sort_values(['segn', 'regn', 'area'], inplace=True)
+        print(data)
 
     ################################
     def actionQuit(self, event):

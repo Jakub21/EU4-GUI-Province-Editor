@@ -6,6 +6,7 @@
 
 ################################
 from src.conf_parser import getlcl, getstatic, getconf
+import src.elems as el
 from src.menu import frameMenu
 import wx
 import time
@@ -40,14 +41,12 @@ class mainFrame(frameMenu):
         self.panel = wx.Panel(self)
         self.sizer = wx.GridBagSizer()
 
-        btt = wx.Button(self.panel, label=lang['mb']['set-title'],
-            size=(static['cell-x'], static['cell-y']))
+        btt = el.Button(self.panel, lang['mb']['set-title'])
         self.Bind(wx.EVT_BUTTON, self.action, btt)
         self.sizer.Add(btt, pos=(1,1))
 
-        btt = wx.Button(self.panel, label=lang['mb']['inpr-title'],
-            size=(static['cell-x'], static['cell-y']))
-        self.Bind(wx.EVT_BUTTON, self.action, btt)
+        btt = el.Button(self.panel, 'Repr Data')#lang['mb']['inpr-title'])
+        self.Bind(wx.EVT_BUTTON, self.actionTempReprData, btt)
         self.sizer.Add(btt, pos=(2,1))
 
         for i in static['mf']['grw-col']:

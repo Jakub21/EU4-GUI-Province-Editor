@@ -118,8 +118,30 @@ class frameEngine(frameInit):
 
     ################################
     def EngineLoad(self, path):
+        ################
+        def GetValue(keys, data):
+            if len(keys) == 1:
+                return data[keys[0]]
+            else:
+                q = []
+                for sub in data[keys[0]]:
+                    q += GetValue(keys[1:], sub)
+                if q == 'nan':
+                    q = ''
+                return q
+        ################
+        def GetID(filename):
+            numbers = ''.join(map(lambda x: str(x), range(10)))
+            result = ''
+            for c in filename:
+                if c not in numbers:
+                    break
+                result += c
+            return result
+        ################
         total_provs = len(listdir(path))
         d = Progress('load', 'load-desc', '', total_provs, parent=self)
+        rows = []
         i=0
         ################################
         for filename in listdir(path):
@@ -134,5 +156,46 @@ class frameEngine(frameInit):
                 self.prompt('warning', 'hist-syntax', data=filename)
                 return
             i+=1
-        ################################
+            ################
+            province = {}
+            ID = GetID(filename)
+            if ID == '':
+                continue
+            province['id'] = int(ID)
+            province['filename'] = filename
+            province['group'] = ''
+            ################
+            try: province['name'] = self.Locl['PROV'+ID]
+            except KeyError: province['name'] = ''
+            try: province['area'] = self.Assnmt[ID][0]
+            except KeyError: province['area'] = ''
+            try: province['regn'] = self.Assnmt[ID][1]
+            except KeyError: province['regn'] = ''
+            try: province['segn'] = self.Assnmt[ID][2]
+            except KeyError: province['segn'] = ''
+            ################
+            for dKEY in static['history-file-keys']:
+                pKEY = static['history-file-keys'][dKEY]
+                if type(pKEY) == list:
+                    keys = pKEY
+                else:
+                    keys = [pKEY]
+                try:
+                    value = GetValue(keys, contents)
+                except KeyError:
+                    value = []
+                province[dKEY] = value
+            ################
+            row = []
+            for key in static['column-order']:
+                value = province[key]
+                if type(value) == list:
+                    value = '&'.join(value)
+                row.append(value)
+            ################
+            rows.append(row)
+            ################
+        df = pd.DataFrame(rows, columns=static['column-order'])
+        df.set_index('id', inplace=True)
         d.Destroy()
+        return df

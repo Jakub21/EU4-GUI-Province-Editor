@@ -95,7 +95,7 @@ class frameInit(frameDialog):
         for r in [segn, regn, area]:
             if r == {}:
                 self.prompt('error', 'inv-asnmt-file')
-                return
+                return False
 
         result = {}
         usedAreas = []
@@ -137,14 +137,16 @@ class frameInit(frameDialog):
             if key not in usedSegns:
                 self.unusedSegns.append(key)
         ################
-        return result
+        self.Assnmt = result
+        return True
 
 
     ################################
-    def initLocalisation(self, path):
+    def initLocalisation(self):
+        path = conf['path']['locl']
         numbers = ''.join(map(lambda x: str(x), range(10)))
         try:
-            data = open(path, 'r').read()
+            data = open(path, 'r', encoding='UTF-8-SIG').read()
             newdata = ''
             prev = ''
             for c in data:
@@ -153,7 +155,15 @@ class frameInit(frameDialog):
                 newdata += c
                 prev = c
             data = newdata
-            return yaml.load(data)
+            q = False
+            locl = yaml.load(data)
+            for lang in static['locl-langs']:
+                try:
+                    self.Locl = locl[lang]
+                    q = True
+                except KeyError:
+                    pass
+            return q
         except yaml.YAMLError as e:
             self.prompt('error', 'locl-not-yml')
             return False
@@ -189,12 +199,11 @@ class frameInit(frameDialog):
     ################################
     def initSession(self, static, lang):
         if 0 in map(lambda x: len(x), conf['path'].values()):
-            #if conf['was-configured']:
-            #    self.prompt('warning', 'invalid-conf')
             conf['was-configured'] = False
         if not conf['was-configured']:
             self.initInstallation(static, lang)
 
-
-        l = self.initLocalisation(conf['path']['locl'])
-        self.initAssignment()
+        if not self.initLocalisation():
+            exit()
+        if not self.initAssignment():
+            exit()
