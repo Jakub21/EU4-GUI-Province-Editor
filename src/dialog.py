@@ -93,10 +93,20 @@ class ProgressDialog(wx.ProgressDialog):
 
 ################################
 class FileDialog(wx.FileDialog):
-    def __init__(self, message, wildcard):
+    def __init__(self, message, wildcard, mode, default=''):
+        if mode == 'open':
+            style = wx.FD_OPEN | wx.FD_CHANGE_DIR
+        elif mode == 'save':
+            style = wx.FD_SAVE | wx.FD_CHANGE_DIR
         if type(wildcard) == str:
             wildcard = [wildcard]
-        super().__init__(None, message=message, defaultDir=getcwd(), defaultFile='', wildcard=getWildcard(wildcard), style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
+        super().__init__(None,
+            message=message,
+            defaultDir=getcwd(),
+            defaultFile=default,
+            wildcard=getWildcard(wildcard),
+            style=style
+        )
 
 ################################
 class InitDialog(wx.Dialog):
@@ -116,7 +126,11 @@ class InitDialog(wx.Dialog):
         self.pathstr = {}
         ################
         def selectFile(key):
-            d = FileDialog(lang['init'][key], static['formats'][key])
+            d = FileDialog(lang['init'][key],
+                static['formats'][key],
+                'open',
+                static['names'][key] + '.' + static['formats'][key]
+            )
             if d.ShowModal() == wx.ID_OK:
                 path = d.GetPaths()[0]
                 self.pathstr[key].Clear()

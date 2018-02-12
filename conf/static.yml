@@ -29,6 +29,8 @@ encodings           : [
     utf-8,
     ansi,
 ]
+encoding-sheet      : ansi
+encoding-locl       : utf-8-sig
 locl-langs          : [
     l_english, l_spanish, l_french, l_german,
 ]
@@ -41,6 +43,12 @@ formats: # (Wildcard generation)
     regn            : txt
     segn            : txt
     locl            : yml
+# Names of attribute files
+names:
+    area            : area
+    regn            : region
+    segn            : superregion
+    locl            : prov_names_l_english
 init:
     size-x          : 180
     size-y          : 15

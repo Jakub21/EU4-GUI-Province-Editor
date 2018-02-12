@@ -146,7 +146,7 @@ class frameInit(frameDialog):
         path = conf['path']['locl']
         numbers = ''.join(map(lambda x: str(x), range(10)))
         try:
-            data = open(path, 'r', encoding='UTF-8-SIG').read()
+            data = open(path, 'r', encoding=static['encoding-locl']).read()
             newdata = ''
             prev = ''
             for c in data:
@@ -204,6 +204,8 @@ class frameInit(frameDialog):
             self.initInstallation(static, lang)
 
         if not self.initLocalisation():
-            exit()
+            conf['was-configured'] = False
+            yaml.dump(conf, open(self.cwd+PATH.CONF, 'w'), default_flow_style=False)
         if not self.initAssignment():
-            exit()
+            conf['was-configured'] = False
+            yaml.dump(conf, open(self.cwd+PATH.CONF, 'w'), default_flow_style=False)

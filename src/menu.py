@@ -39,13 +39,13 @@ class frameMenu(frameActions):
             fmenu.Append(-1, lang['mb']['load-g-title'], lang['mb']['load-g-desc']))
         # Load-update
         fmenu.AppendSeparator()
-        self.Bind(wx.EVT_MENU, self.action,
+        self.Bind(wx.EVT_MENU, self.actionLoadUpdSheet,
             fmenu.Append(-1, lang['mb']['loadu-s-title'], lang['mb']['loadu-s-desc']))
-        self.Bind(wx.EVT_MENU, self.action,
+        self.Bind(wx.EVT_MENU, self.actionLoadUpdOrig,
             fmenu.Append(-1, lang['mb']['loadu-g-title'], lang['mb']['loadu-g-desc']))
         # Save
         fmenu.AppendSeparator()
-        self.Bind(wx.EVT_MENU, self.action,
+        self.Bind(wx.EVT_MENU, self.actionSaveSheet,
             fmenu.Append(-1, lang['mb']['save-s-title'], lang['mb']['save-s-desc']))
         self.Bind(wx.EVT_MENU, self.action,
             fmenu.Append(-1, lang['mb']['save-g-title'], lang['mb']['save-g-desc']))

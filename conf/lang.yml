@@ -76,8 +76,12 @@ dlg:
     warning         : "Warning"
     info            : "Info"
     # Filestream (Editing)
-    ld-sh-msg       : "Select CSV Spreadsheet"
-    ld-or-msg       : "Select provinces directory"
+    load-s-msg      : "Select CSV Spreadsheet"
+    load-o-msg      : "Select provinces directory"
+    loadu-s-msg     : "Select CSV Spreadsheet to update data with"
+    loadu-o-msg     : "Select province directory to update data with"
+    save-s-msg      : "Save data to Spreadsheet"
+    save-o-msg      : "Save data to game-readable form"
     # Filestream (Init)
     sel-area        : "Select area assignment file"
     sel-regn        : "Select region assignment file"
@@ -92,7 +96,9 @@ dlg:
 ################
 # Errors
 msg:
+    # General
     default         : "DEFAULT ACTION"
+    # Errors
     not-a-csv       : "Loaded file is not a valid CSV Spreadsheet"
     filenotfound    : "File couldn't be found!"
     no-conf         : "Editor can not start with out configuration"

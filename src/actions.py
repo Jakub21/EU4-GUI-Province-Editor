@@ -26,23 +26,31 @@ class frameActions(frameEngine):
         self.prompt('info', 'default')
 
     ################################
-    def actionLoadSheet(self, event):
-        dialog = dlg.FileDialog(lang['dlg']['ld-sh-msg'], 'csv')
+    def actionLoadSheet(self, event, mode='std'):
+        if mode == 'std':
+            msg = lang['dlg']['load-s-msg']
+        elif mode == 'upd':
+            msg = lang['dlg']['loadu-s-msg']
+        dialog = dlg.FileDialog(msg, 'csv', 'open')
         if dialog.ShowModal() == wx.ID_OK:
             path = dialog.GetPaths()[0].replace('\\', '/')
         else:
             return
         dialog.Destroy()
         try:
-            self.AllData = pd.read_csv(path)
+            self.AllData = pd.read_csv(path, encoding=static['encoding-sheet'])
         except pd.errors.ParserError:
             self.prompt('error', 'not-a-csv')
             return
 
     ################################
-    def actionLoadOrig(self, event):
+    def actionLoadOrig(self, event, mode='std'):
+        if mode == 'std':
+            msg = lang['dlg']['load-o-msg']
+        elif mode == 'upd':
+            msg = lang['dlg']['loadu-o-msg']
         dlg = wx.DirDialog(self,
-            message=lang['dlg']['ld-or-msg'],
+            message=msg,
             defaultPath=self.cwd,
             style=wx.DD_DEFAULT_STYLE
         )
@@ -51,6 +59,31 @@ class frameActions(frameEngine):
         else:
             return
         self.AllData = self.EngineLoad(path)
+
+    ################################
+    def actionLoadUpdSheet(self, event):
+        old = self.AllData
+        self.actionLoadSheet(event, 'upd')
+        old.update(self.AllData)
+        self.AllData = old
+
+    ################################
+    def actionLoadUpdOrig(self, event):
+        old = self.AllData
+        self.actionLoadOrig(event, 'upd')
+        old.update(self.AllData)
+        self.AllData = old
+
+    ################################
+    def actionSaveSheet(self, event):
+        msg = lang['dlg']['save-s-msg']
+        dialog = dlg.FileDialog(msg, 'csv', 'save')
+        if dialog.ShowModal() == wx.ID_OK:
+            path = dialog.GetPaths()[0].replace('\\', '/')
+        else:
+            return
+        dialog.Destroy()
+        self.AllData.to_csv(path, encoding=static['encoding-sheet'])
 
     ################################
     # TEMP

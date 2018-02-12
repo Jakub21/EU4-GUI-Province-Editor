@@ -29,8 +29,9 @@ class TextCtrl(wx.TextCtrl):
 
 ################################
 class Button(wx.Button):
-    def __init__(self, parent, label):
+    def __init__(self, parent, label, id=0):
         super().__init__(parent,
             label=label,
+            id=id,
             size=(static['cell-x'], static['cell-y'])
         )
