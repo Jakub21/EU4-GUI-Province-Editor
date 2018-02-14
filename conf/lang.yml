@@ -93,6 +93,7 @@ dlg:
         save        : "Saving"
         prcs        : "Processing"
         load-desc   : "Loading original files"
+        save-desc   : "Savind data to original files"
 ################
 # Errors
 msg:
@@ -107,6 +108,8 @@ msg:
     locl-not-found  : "Localisation file selected in Config can not be found"
     inv-asnmt-file  : "Invalid Map Assignment file"
     hist-syntax     : "Syntax error in province history file"
+    data-not-loaded : "Can not execute this command because no data was loaded"
+
 ################
 # Initializer
 init:

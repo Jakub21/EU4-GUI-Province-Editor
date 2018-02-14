@@ -34,6 +34,7 @@ encoding-locl       : utf-8-sig
 locl-langs          : [
     l_english, l_spanish, l_french, l_german,
 ]
+histfile-prefix     : "# Province no."
 ################################
 # DIALOGS
 ################################
@@ -57,13 +58,19 @@ init:
 # OLD PARSER SETTINGS
 ################################
 shorten-regn-names  : true
+EMPTY               : [xxx, nan, no, 0, none]
+indent              : '    '
+save-info           : {
+    # Lines added to every scope with specified name
+    add_permanent_province_modifier   : 'duration = -1',
+}
 reg-names-suffixes  : {
     area            : _area,
     regn            : _region,
     segn            : _superregion,
 }
 skip-at-regload     : "{=}colorareas"
-multival_sep        : "&"
+mlt-sep             : "&"
 history-file-keys   : {
     capital         : capital,
     cores           : add_core,
@@ -86,6 +93,7 @@ history-file-keys   : {
     discovered      : discovered_by,
     modifiers       : [add_permanent_province_modifier, name],
 }
+column-index        : id
 column-order        : [
     id, name, capital,
     area, regn, segn,

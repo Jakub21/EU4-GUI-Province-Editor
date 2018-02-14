@@ -47,7 +47,7 @@ class frameMenu(frameActions):
         fmenu.AppendSeparator()
         self.Bind(wx.EVT_MENU, self.actionSaveSheet,
             fmenu.Append(-1, lang['mb']['save-s-title'], lang['mb']['save-s-desc']))
-        self.Bind(wx.EVT_MENU, self.action,
+        self.Bind(wx.EVT_MENU, self.actionSaveOrig,
             fmenu.Append(-1, lang['mb']['save-g-title'], lang['mb']['save-g-desc']))
 
         ################

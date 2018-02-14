@@ -86,6 +86,20 @@ class frameActions(frameEngine):
         self.AllData.to_csv(path, encoding=static['encoding-sheet'])
 
     ################################
+    def actionSaveOrig(self, event):
+        msg = lang['dlg']['save-o-msg']
+        dlg = wx.DirDialog(self,
+            message=msg,
+            defaultPath=self.cwd,
+            style=wx.DD_DEFAULT_STYLE
+        )
+        if dlg.ShowModal() == wx.ID_OK:
+            path = dlg.GetPath().replace('\\', '/')
+        else:
+            return
+        self.EngineSave(path)
+
+    ################################
     # TEMP
     def actionTempReprData(self, event):
         pd.set_option('display.max_rows', 1000)
