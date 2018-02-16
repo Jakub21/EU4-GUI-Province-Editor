@@ -190,12 +190,85 @@ class frameEngine(frameInit):
             for key in static['column-order']:
                 value = province[key]
                 if type(value) == list:
-                    value = '&'.join(value)
+                    value = static['mlt-sep'].join(value)
+                if type(value) == str:
+                    value = ''.join(list(filter(lambda ch: ch not in '"', value)))
                 row.append(value)
             ################
             rows.append(row)
             ################
         df = pd.DataFrame(rows, columns=static['column-order'])
-        df.set_index('id', inplace=True)
+        df.set_index(static['column-index'], inplace=True)
         d.Destroy()
         return df
+
+    def EngineSave(self, path):
+        ################
+        def SaveLine(key, value, maxdepth, depth):
+            i = static['indent']
+            result = ''
+            if depth == maxdepth:
+                result += i*depth+key[0]+' = '+value+'\n'
+            else:
+                result += i*depth+key[0]+' = {\n'
+                result += SaveLine(key[1:], value, maxdepth, depth+1)
+                try:
+                    result += i*(depth+1)+static['save-info'][key[0]]+'\n'
+                except KeyError:
+                    pass # Optional
+                result += i*depth + '}\n'
+            return result
+        ################
+        data = self.AllData
+        try:
+            IDList = data.index.values
+        except AttributeError:
+            self.prompt('warning', 'data-not-loaded')
+            return
+        ################
+        data = data.values.tolist()
+        columns = static['column-order']
+        columns.remove(static['column-index'])
+        sep = '/'
+        INDEX = 0
+        TOTAL = len(data)
+        d = Progress('save', 'save-desc', '', TOTAL, parent=self)
+        ################
+        for row in data:
+            row = row[1:]
+            ID = IDList[INDEX]
+            text = static['histfile-prefix'] + str(ID) + '\n'*2
+            filename = ''
+            if not d.Update(INDEX, 'save-desc', filename):
+                d.Destroy()
+                return
+            INDEX += 1
+            for i in range(len(columns)):
+                ################
+                cName = columns[i]
+                value = row[i]
+                if (type(value) == float) and not(pd.isnull(value)):
+                    value = int(value)
+                value = str(value)
+                ################
+                if cName == 'filename':
+                    filename = value
+                if cName not in static['history-file-keys'].keys():
+                    continue
+                ################
+                key = static['history-file-keys'][cName]
+                if type(key) == str:
+                    key = [key]
+                ################
+                if static['mlt-sep'] in value:
+                    value = value.split(static['mlt-sep'])
+                else:
+                    value = [value]
+                ################
+                for element in value:
+                    if ((element.lower()) in static['EMPTY']) or (element==''):
+                        continue
+                    text += SaveLine(key, element, len(key)-1, 0)
+            DIR = path + '/' + filename
+        d.Destroy()
+        return True

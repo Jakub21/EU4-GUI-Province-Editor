@@ -4,3 +4,8 @@ path:
   regn: ""
   segn: ""
 was-configured: false
+column-display      : [
+    name, capital, area, regn, segn, cores, claims, owner, cntrl,
+    culture, religion, hre, tax, prod, manp, trade_goods,
+    city, cost, fort, group,
+]

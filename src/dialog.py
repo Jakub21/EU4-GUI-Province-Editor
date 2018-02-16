@@ -91,6 +91,9 @@ class ProgressDialog(wx.ProgressDialog):
             self.parent.Enable()
         super().Destroy()
 
+    def Close(self):
+        self.prompt('info', 'sure-exit')
+
 ################################
 class FileDialog(wx.FileDialog):
     def __init__(self, message, wildcard, mode, default=''):
@@ -109,6 +112,43 @@ class FileDialog(wx.FileDialog):
         )
 
 ################################
+class SelectDialog(wx.Dialog):
+    def __init__(self, mode, src):
+        super().__init__(None, title=lang['dlg'][mode])
+        if static['center-on-screen']:
+            self.Center()
+        self.initPanel()
+        self.mode = mode
+        self.SRC = src
+    ################
+    def initPanel(self):
+        ################
+        def updateAttrlist(event):
+            i = self.col.GetString(self.col.GetSelection())
+            self.attrList.Set(list(set(self.SRC[i])))
+        ################
+        self.panel = wx.Panel(self)
+        sizer = wx.GridBagSizer()
+
+        self.col = wx.ListBox(self.panel, choices=conf['column-display'])
+        self.col.Bind(wx.EVT_LISTBOX, updateAttrlist)
+        sizer.Add(self.col, pos=(0,0), flag=wx.EXPAND)
+
+        self.attrList = wx.CheckListBox(self.panel,
+            style=wx.LB_SORT|wx.LB_NEEDED_SB|wx.LB_MULTIPLE)
+        sizer.Add(self.attrList, pos=(0,1), flag=wx.EXPAND)
+
+
+        done = el.Button(self.panel, 'done', id=wx.ID_OK)
+        sizer.Add(done, pos=(1,0))
+        cncl = el.Button(self.panel, 'cancel', id=wx.ID_CANCEL)
+        sizer.Add(cncl, pos=(1,1))
+
+        cncl.SetFocus()
+        self.panel.SetSizer(sizer)
+
+
+################################
 class InitDialog(wx.Dialog):
     def __init__(self, static, lang):
         super().__init__(None, title=lang['init']['title'])
@@ -116,7 +156,7 @@ class InitDialog(wx.Dialog):
             self.GetSize()[0] + static['init']['size-x'],
             self.GetSize()[1] + static['init']['size-y'],
         )
-        if static['center_onscreen']:
+        if static['center-on-screen']:
             self.Center()
         self.initPanel()
     ################
@@ -145,7 +185,7 @@ class InitDialog(wx.Dialog):
             sizer.Add(wx.StaticText(panel, label=lang['init'][key]), flag=wx.EXPAND, pos=(row,0))
             self.pathstr[key] = el.TextCtrl(panel, conf['path'][key])
             sizer.Add(self.pathstr[key], flag=wx.EXPAND, pos=(row+1,0))
-            button = el.Button(panel, label=lang['mb']['browse'])
+            button = el.Button(panel, 'browse')
             button.Bind(wx.EVT_BUTTON, _action)
             sizer.Add(button, pos=(row+1,1))
         ################
@@ -156,10 +196,10 @@ class InitDialog(wx.Dialog):
         ################
         bSizer = wx.GridBagSizer()
         ################
-        done = el.Button(panel, id=wx.ID_OK, label=lang['mb']['done'])
+        done = el.Button(panel, 'done', id=wx.ID_OK)
         bSizer.Add(done, pos=(0,0))
         ################
-        cncl = el.Button(panel, id=wx.ID_CANCEL, label=lang['mb']['cancel'])
+        cncl = el.Button(panel, 'cancel', id=wx.ID_CANCEL)
         cncl.SetFocus()
         bSizer.Add(cncl, pos=(0,1))
         ################

@@ -7,6 +7,7 @@
 ################################
 import wx
 from src.dialog import frameDialog, InitDialog
+from pandas import set_option as PandasOption
 from src.conf_parser import PATH
 import yaml
 
@@ -20,6 +21,9 @@ class frameInit(frameDialog):
         global conf
         conf = _conf
         super().__init__(static, lang, conf)
+        PandasOption('display.max_rows', static['pandas']['max-rows'])
+        PandasOption('display.max_columns', static['pandas']['max-cols'])
+        PandasOption('display.width', static['pandas']['disp-width'])
         self.initSession(static, lang)
         self.sessionInitialized = True
 

@@ -5,20 +5,28 @@
 ################################
 # APPEARANCE
 ################################
-center_onscreen     : yes
+center-on-screen    : yes
 ################
 # Standard sizes
 cell-x              : 80
 cell-y              : 27
 ################
 # Frame size modifier (frame size = sizer size + those)
-frame-x             : 0
-frame-y             : 50
+frame-x             : 180
+frame-y             : 150
 ################
 # Main Frame Settings
 mf:
     grw-col         : [0]
     grw-row         : [0]
+
+################################
+# PANDAS
+################################
+pandas:
+    max-rows        : 4500
+    max-cols        : 50
+    disp-width      : 250
 
 
 ################################
@@ -34,6 +42,7 @@ encoding-locl       : utf-8-sig
 locl-langs          : [
     l_english, l_spanish, l_french, l_german,
 ]
+histfile-prefix     : "# Province no."
 ################################
 # DIALOGS
 ################################
@@ -57,13 +66,21 @@ init:
 # OLD PARSER SETTINGS
 ################################
 shorten-regn-names  : true
+empty-marker        : ""
+indent              : '    '
+EMPTY               : [xxx, nan, no, 0, none]
+rem-from-repr       : [modifiers, filename, discovered]
+# Lines added to every scope with specified name
+save-info           : {
+    add_permanent_province_modifier   : 'duration = -1',
+}
 reg-names-suffixes  : {
     area            : _area,
     regn            : _region,
     segn            : _superregion,
 }
 skip-at-regload     : "{=}colorareas"
-multival_sep        : "&"
+mlt-sep             : "&"
 history-file-keys   : {
     capital         : capital,
     cores           : add_core,
@@ -86,6 +103,7 @@ history-file-keys   : {
     discovered      : discovered_by,
     modifiers       : [add_permanent_province_modifier, name],
 }
+column-index        : id
 column-order        : [
     id, name, capital,
     area, regn, segn,

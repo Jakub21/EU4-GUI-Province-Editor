@@ -6,6 +6,8 @@
 # General
 frame-title         : "EU4 GUI Province Editor"
 startup_message     : "Starting Editor"
+all-data            : "All Loaded Data"
+selection           : "Current Selection"
 ################
 # Status Bar
 st:
@@ -68,6 +70,35 @@ mb:
     set-desc        : "Change values in single column in selection"
     inpr-title      : "Inprov"
     inpr-desc       : "Change values in single province"
+    cmd-title       : "Command..."
+    cmd-desc        : "Enter text-command mode"
+################
+# Columns
+columns:
+    id              : "ID"
+    name            : "Name"
+    capital         : "Capital"
+    area            : "Area"
+    regn            : "Region"
+    segn            : "SuperRegion"
+    cores           : "Cores"
+    claims          : "Claims"
+    owner           : "Owner"
+    cntrl           : "Cntrl."
+    culture         : "Culture"
+    religion        : "Religion"
+    hre             : "HRE"
+    tax             : "Base Tax"
+    prod            : "Prod."
+    manp            : "Manpwr."
+    trade_goods     : "Trade Goods"
+    city            : "Is City"
+    cost            : "Extra Cost"
+    fort            : "Has Fort"
+    discovered      : "Discovered"
+    modifiers       : "Modifiers"
+    filename        : "File name"
+    group           : "Group"
 ################
 # Dialogs
 dlg:
@@ -82,6 +113,10 @@ dlg:
     loadu-o-msg     : "Select province directory to update data with"
     save-s-msg      : "Save data to Spreadsheet"
     save-o-msg      : "Save data to game-readable form"
+    # Selection
+    selection-new   : "Conditions for new selection"
+    selection-sub   : "Conditions for sub-selection"
+    selection-app   : "Conditions for appending"
     # Filestream (Init)
     sel-area        : "Select area assignment file"
     sel-regn        : "Select region assignment file"
@@ -93,20 +128,25 @@ dlg:
         save        : "Saving"
         prcs        : "Processing"
         load-desc   : "Loading original files"
+        save-desc   : "Savind data to original files"
 ################
 # Errors
 msg:
     # General
     default         : "DEFAULT ACTION"
+    sure-exit       : "Are you sure want to exit? Unsaved data will be lost."
     # Errors
     not-a-csv       : "Loaded file is not a valid CSV Spreadsheet"
     filenotfound    : "File couldn't be found!"
-    no-conf         : "Editor can not start with out configuration"
+    no-conf         : "Editor can not start until it is configured"
     invalid-conf    : "Editor configuration is invalid"
-    locl-not-yml    : "Localisation file is not a valid YAML file"
-    locl-not-found  : "Localisation file selected in Config can not be found"
+    locl-not-yml    : "Invalid localisation file"
+    locl-not-found  : "Localisation file can not be found"
     inv-asnmt-file  : "Invalid Map Assignment file"
     hist-syntax     : "Syntax error in province history file"
+    data-not-loaded : "Can not do this with no data loaded"
+    data-not-slctd  : "Can not do this with no data selected"
+
 ################
 # Initializer
 init:

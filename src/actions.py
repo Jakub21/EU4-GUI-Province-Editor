@@ -8,6 +8,7 @@
 import wx
 import pandas as pd
 import src.dialog as dlg
+from numpy import nan
 from src.engine import frameEngine
 
 ################################
@@ -20,6 +21,21 @@ class frameActions(frameEngine):
         global conf
         conf = _conf
         super().__init__(static, lang, conf)
+
+    ################################
+    def REPRESENT(self, mode, clear=True):
+        if clear:
+            self.outText.Clear()
+        else:
+            self.outText.AppendText('\n'*4)
+        if mode == 'SEL':
+            data = self.Selection
+            self.outText.AppendText(lang['selection']+'\n'*2)
+        if mode == 'ALL':
+            data = self.AllData
+            self.outText.AppendText(lang['all-data']+'\n'*2)
+        data = data.drop(static['rem-from-repr'], axis=1)
+        self.outText.AppendText(data.__repr__()+'\n')
 
     ################################
     def action(self, event):
@@ -39,9 +55,13 @@ class frameActions(frameEngine):
         dialog.Destroy()
         try:
             self.AllData = pd.read_csv(path, encoding=static['encoding-sheet'])
+            self.AllData.sort_values(['segn', 'regn', 'area'], inplace=True)
+            self.AllData.set_index(static['column-index'], inplace=True)
+            self.AllData.replace(nan, static['empty-marker'], inplace=True)
         except pd.errors.ParserError:
             self.prompt('error', 'not-a-csv')
             return
+        self.REPRESENT('ALL')
 
     ################################
     def actionLoadOrig(self, event, mode='std'):
@@ -59,23 +79,40 @@ class frameActions(frameEngine):
         else:
             return
         self.AllData = self.EngineLoad(path)
+        self.AllData.sort_values(['segn', 'regn', 'area'], inplace=True)
+        self.REPRESENT('ALL')
 
     ################################
     def actionLoadUpdSheet(self, event):
-        old = self.AllData
+        try:
+            old = self.AllData
+        except AttributeError:
+            self.prompt('warning', 'data-not-loaded')
+            return
         self.actionLoadSheet(event, 'upd')
         old.update(self.AllData)
         self.AllData = old
+        self.REPRESENT('ALL')
 
     ################################
     def actionLoadUpdOrig(self, event):
-        old = self.AllData
+        try:
+            old = self.AllData
+        except AttributeError:
+            self.prompt('warning', 'data-not-loaded')
+            return
         self.actionLoadOrig(event, 'upd')
         old.update(self.AllData)
         self.AllData = old
+        self.REPRESENT('ALL')
 
     ################################
     def actionSaveSheet(self, event):
+        try:
+            self.AllData
+        except AttributeError:
+            self.prompt('warning', 'data-not-loaded')
+            return
         msg = lang['dlg']['save-s-msg']
         dialog = dlg.FileDialog(msg, 'csv', 'save')
         if dialog.ShowModal() == wx.ID_OK:
@@ -86,15 +123,75 @@ class frameActions(frameEngine):
         self.AllData.to_csv(path, encoding=static['encoding-sheet'])
 
     ################################
-    # TEMP
-    def actionTempReprData(self, event):
-        pd.set_option('display.max_rows', 1000)
-        pd.set_option('display.max_columns', 50)
-        pd.set_option('display.width', 250)
-        data = self.AllData.drop(['filename', 'discovered'], axis=1)
-        data = data.loc[data['regn'].isin(['polhemia', 'polabian'])]
-        data.sort_values(['segn', 'regn', 'area'], inplace=True)
-        print(data)
+    def actionSaveOrig(self, event):
+        try:
+            self.AllData
+        except AttributeError:
+            self.prompt('warning', 'data-not-loaded')
+            return
+        msg = lang['dlg']['save-o-msg']
+        dlg = wx.DirDialog(self,
+            message=msg,
+            defaultPath=self.cwd,
+            style=wx.DD_DEFAULT_STYLE
+        )
+        if dlg.ShowModal() == wx.ID_OK:
+            path = dlg.GetPath().replace('\\', '/')
+        else:
+            return
+        self.EngineSave(path)
+
+    ################################
+    def actionSELECT(self, mode):
+        # Check if can continue
+        if mode in ['new', 'app']:
+            try:
+                self.AllData
+            except AttributeError:
+                self.prompt('warning', 'data-not-loaded')
+                return 0
+            src = self.AllData
+        elif mode in ['sub', 'app']:
+            try:
+                self.Selection
+            except AttributeError:
+                self.prompt('warning', 'data-not-slctd')
+                return 0
+        ################
+        # Action
+        if mode == 'sub':
+            src = self.Selection
+        d = dlg.SelectDialog('selection-'+mode, src)
+        if d.ShowModal() == wx.ID_OK:
+            condCol = d.col.GetString(d.col.GetSelection())
+            condAttrs = d.attrList.GetCheckedStrings()
+            NEW = src.loc[src[condCol].isin(condAttrs)]
+        else:
+            return 0
+        return NEW
+
+    ################################
+    def actionSelectNew(self, event):
+        NEW = self.actionSELECT('new')
+        if type(NEW) == int:
+            return
+        self.Selection = NEW
+        self.REPRESENT('SEL')
+    ################################
+    def actionSelectSub(self, event):
+        NEW = self.actionSELECT('sub')
+        if type(NEW) == None:
+            return
+        self.Selection = NEW
+        self.REPRESENT('SEL')
+    ################################
+    def actionSelectApp(self, event):
+        NEW = self.actionSELECT('app')
+        if type(NEW) == None:
+            return
+        self.Selection = pd.concat([self.Selection, NEW])
+        self.REPRESENT('SEL')
+
 
     ################################
     def actionQuit(self, event):

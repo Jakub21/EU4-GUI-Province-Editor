@@ -23,7 +23,7 @@ class mainFrame(frameMenu):
         super().__init__(static, lang, conf)
         self.initPanel()
         self.initStatusBar()
-        if static['center_onscreen']:
+        if static['center-on-screen']:
             self.Center()
         self.SetSize(
             self.GetSize()[0] + static['frame-x'],
@@ -40,14 +40,28 @@ class mainFrame(frameMenu):
     def initPanel(self):
         self.panel = wx.Panel(self)
         self.sizer = wx.GridBagSizer()
+        ################
+        # Text Repr. of Data
+        FONT = wx.Font(10, wx.MODERN, wx.NORMAL, wx.NORMAL, False, 'Consolas')
+        self.outText = wx.TextCtrl(self.panel, style = wx.TE_MULTILINE|wx.TE_READONLY)
+        self.sizer.Add(self.outText, pos=(0,0), flag=wx.EXPAND)
+        self.outText.SetFont(FONT)
 
-        btt = el.Button(self.panel, lang['mb']['set-title'])
-        self.Bind(wx.EVT_BUTTON, self.action, btt)
-        self.sizer.Add(btt, pos=(1,1))
+        ################
+        # Right side sizer
+        self.bSizer = wx.GridBagSizer()
+        btt = el.Button(self.panel,'set-title', self.action)
+        self.bSizer.Add(btt, pos=(0,0))
 
-        btt = el.Button(self.panel, 'Repr Data')#lang['mb']['inpr-title'])
-        self.Bind(wx.EVT_BUTTON, self.actionTempReprData, btt)
-        self.sizer.Add(btt, pos=(2,1))
+        btt = el.Button(self.panel,'inpr-title', self.action)
+        self.bSizer.Add(btt, pos=(1,0))
+
+        btt = el.Button(self.panel,'cmd-title', self.action)
+        self.bSizer.Add(btt, pos=(2,0))
+
+        self.sizer.Add(self.bSizer, pos=(0,1), span=(1,1))
+        btt.SetFocus()
+        ################
 
         for i in static['mf']['grw-col']:
             self.sizer.AddGrowableCol(i)

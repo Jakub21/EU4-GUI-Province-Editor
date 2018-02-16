@@ -47,17 +47,17 @@ class frameMenu(frameActions):
         fmenu.AppendSeparator()
         self.Bind(wx.EVT_MENU, self.actionSaveSheet,
             fmenu.Append(-1, lang['mb']['save-s-title'], lang['mb']['save-s-desc']))
-        self.Bind(wx.EVT_MENU, self.action,
+        self.Bind(wx.EVT_MENU, self.actionSaveOrig,
             fmenu.Append(-1, lang['mb']['save-g-title'], lang['mb']['save-g-desc']))
 
         ################
         # SELECTION MENU
         smenu = wx.Menu()
-        self.Bind(wx.EVT_MENU, self.action,
+        self.Bind(wx.EVT_MENU, self.actionSelectNew,
             smenu.Append(-1, lang['mb']['sel-new-title'], lang['mb']['sel-new-desc']))
-        self.Bind(wx.EVT_MENU, self.action,
+        self.Bind(wx.EVT_MENU, self.actionSelectSub,
             smenu.Append(-1, lang['mb']['sel-sub-title'], lang['mb']['sel-sub-desc']))
-        self.Bind(wx.EVT_MENU, self.action,
+        self.Bind(wx.EVT_MENU, self.actionSelectApp,
             smenu.Append(-1, lang['mb']['sel-app-title'], lang['mb']['sel-app-desc']))
         # Deselect
         smenu.AppendSeparator()
