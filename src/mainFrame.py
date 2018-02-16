@@ -42,11 +42,13 @@ class mainFrame(frameMenu):
         self.sizer = wx.GridBagSizer()
         ################
         # Text Repr. of Data
-        FONT = wx.Font(10, wx.MODERN, wx.NORMAL, wx.NORMAL, False, 'Consolas')
+        FONT = wx.Font(conf['repr-font-size'],
+            wx.MODERN, wx.NORMAL, wx.NORMAL,
+            False, 'Consolas'
+        )
         self.outText = wx.TextCtrl(self.panel, style = wx.TE_MULTILINE|wx.TE_READONLY)
         self.sizer.Add(self.outText, pos=(0,0), flag=wx.EXPAND)
         self.outText.SetFont(FONT)
-
         ################
         # Right side sizer
         self.bSizer = wx.GridBagSizer()

@@ -27,8 +27,8 @@ mb:
     done            : "Done"
     cancel          : "Cancel"
     # Main
-    run-static-title: "Run Configuration"
-    run-static-desc : "Configure Editor before first use"
+    run-static-title: "Run Configurator"
+    run-static-desc : "Configure the Editor"
     quit-title      : "Quit"
     quit-desc       : "Exit program with out saving data"
     # Load options
@@ -117,7 +117,7 @@ dlg:
     selection-new   : "Conditions for new selection"
     selection-sub   : "Conditions for sub-selection"
     selection-app   : "Conditions for appending"
-    # Filestream (Init)
+    # Filestream (Configurator)
     sel-area        : "Select area assignment file"
     sel-regn        : "Select region assignment file"
     sel-segn        : "Select super-region assignment file"
@@ -148,13 +148,15 @@ msg:
     data-not-slctd  : "Can not do this with no data selected"
 
 ################
-# Initializer
-init:
-    title           : "Initialize Editor"
+# Configurator
+CONF:
+    title           : "Configurator"
     area            : "Area assignment"
     regn            : "Region assignment"
     segn            : "Super-region assignment"
     locl            : "Provinces localisation"
+    font            : "Font size in Repr. (Requires restart)"
+    hidden          : "Hidden columns (Requires change of scope)"
 ################
 # File Formats (plural)
 formats:

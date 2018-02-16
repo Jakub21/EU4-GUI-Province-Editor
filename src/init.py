@@ -6,7 +6,7 @@
 
 ################################
 import wx
-from src.dialog import frameDialog, InitDialog
+from src.dialog import frameDialog, ConfigDialog
 from pandas import set_option as PandasOption
 from src.conf_parser import PATH
 import yaml
@@ -26,6 +26,13 @@ class frameInit(frameDialog):
         PandasOption('display.width', static['pandas']['disp-width'])
         self.initSession(static, lang)
         self.sessionInitialized = True
+
+    ################################
+    def YamlDump(self, data, path):
+        text = yaml.dump(data, default_flow_style=False, indent=4)
+        f = open(self.cwd+path, 'w', newline='\n')
+        f.write(text)
+        f.close()
 
     ################################
     def RemoveComments(self, text):
@@ -107,7 +114,7 @@ class frameInit(frameDialog):
         usedSegns = []
         for Area in area:
             Regn = Find(Area, regn)
-            Segn = Find(Area, segn)
+            Segn = Find(Regn, segn)
             provs = area[Area]
             ################
             aName = Area
@@ -182,7 +189,7 @@ class frameInit(frameDialog):
         if self.busyDlg != None:
             PausedInitialization = True
             self.statusBusyEnd()
-        d = InitDialog(static, lang)
+        d = ConfigDialog(static, lang)
         if d.ShowModal() == wx.ID_OK:
             for key in conf['path'].keys():
                 conf['path'][key] = d.pathstr[key].GetValue().replace('\\', '/')
@@ -191,7 +198,9 @@ class frameInit(frameDialog):
                 exit() # Can not start Editor w/o initialization
             else:
                 conf['was-configured'] = True
-            yaml.dump(conf, open(self.cwd+PATH.CONF, 'w'), default_flow_style=False)
+            conf['repr-font-size'] = int(d.fontSize.GetValue())
+            conf['rem-from-repr'] = list(d.hiddenCols.GetCheckedStrings())
+            self.YamlDump(conf, PATH.CONF)
         else:
             if not self.sessionInitialized:
                 self.prompt('error', 'no-conf')
@@ -209,7 +218,7 @@ class frameInit(frameDialog):
 
         if not self.initLocalisation():
             conf['was-configured'] = False
-            yaml.dump(conf, open(self.cwd+PATH.CONF, 'w'), default_flow_style=False)
+            self.YamlDump(conf, PATH.CONF)
         if not self.initAssignment():
             conf['was-configured'] = False
-            yaml.dump(conf, open(self.cwd+PATH.CONF, 'w'), default_flow_style=False)
+            self.YamlDump(conf, PATH.CONF)

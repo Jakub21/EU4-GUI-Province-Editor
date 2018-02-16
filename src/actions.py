@@ -34,7 +34,10 @@ class frameActions(frameEngine):
         if mode == 'ALL':
             data = self.AllData
             self.outText.AppendText(lang['all-data']+'\n'*2)
-        data = data.drop(static['rem-from-repr'], axis=1)
+        data = data.drop(conf['rem-from-repr'], axis=1)
+        if conf['hide-no-segn']:
+            drop = data.loc[data['segn'].isin(['', 'none'])]
+            data = data.drop(drop.index)
         self.outText.AppendText(data.__repr__()+'\n')
 
     ################################
@@ -180,14 +183,14 @@ class frameActions(frameEngine):
     ################################
     def actionSelectSub(self, event):
         NEW = self.actionSELECT('sub')
-        if type(NEW) == None:
+        if type(NEW) == int:
             return
         self.Selection = NEW
         self.REPRESENT('SEL')
     ################################
     def actionSelectApp(self, event):
         NEW = self.actionSELECT('app')
-        if type(NEW) == None:
+        if type(NEW) == int:
             return
         self.Selection = pd.concat([self.Selection, NEW])
         self.REPRESENT('SEL')

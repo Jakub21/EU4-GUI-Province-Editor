@@ -8,7 +8,6 @@
 import wx
 from os import getcwd
 from src.conf_parser import getWildcard
-
 ################################
 def init(_static, _lang, _conf):
     global static

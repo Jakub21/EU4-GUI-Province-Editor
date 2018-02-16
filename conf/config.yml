@@ -1,11 +1,12 @@
 path:
-  area: ""
-  locl: ""
-  regn: ""
-  segn: ""
+    area: ""
+    locl: ""
+    regn: ""
+    segn: ""
+rem-from-repr:
+- modifiers
+- filename
+- discovered
+repr-font-size: 10
 was-configured: false
-column-display      : [
-    name, capital, area, regn, segn, cores, claims, owner, cntrl,
-    culture, religion, hre, tax, prod, manp, trade_goods,
-    city, cost, fort, group,
-]
+hide-no-segn: true

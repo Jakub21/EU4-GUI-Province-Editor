@@ -11,6 +11,7 @@ from os import getcwd
 import src.elems as el
 from src.conf_parser import getWildcard
 import time
+from wx.lib.masked.numctrl import NumCtrl as NumCtrl
 
 ################################
 class frameDialog(wx.Frame):
@@ -118,6 +119,10 @@ class SelectDialog(wx.Dialog):
         if static['center-on-screen']:
             self.Center()
         self.initPanel()
+        self.SetSize(
+            self.GetSize()[0] + 40,
+            self.GetSize()[1] + 80,
+        )
         self.mode = mode
         self.SRC = src
     ################
@@ -127,34 +132,40 @@ class SelectDialog(wx.Dialog):
             i = self.col.GetString(self.col.GetSelection())
             self.attrList.Set(list(set(self.SRC[i])))
         ################
+        first = static['column-order']
+        second = set(conf['rem-from-repr'])
+        choices = [item for item in first if item not in second]
+        ################
         self.panel = wx.Panel(self)
         sizer = wx.GridBagSizer()
 
-        self.col = wx.ListBox(self.panel, choices=conf['column-display'])
+        self.col = wx.ListBox(self.panel, choices=choices, size=(212, 264))
         self.col.Bind(wx.EVT_LISTBOX, updateAttrlist)
         sizer.Add(self.col, pos=(0,0), flag=wx.EXPAND)
 
-        self.attrList = wx.CheckListBox(self.panel,
+        self.attrList = wx.CheckListBox(self.panel, size=(211, 264),
             style=wx.LB_SORT|wx.LB_NEEDED_SB|wx.LB_MULTIPLE)
         sizer.Add(self.attrList, pos=(0,1), flag=wx.EXPAND)
 
-
+        ################
+        bSizer = wx.GridBagSizer()
         done = el.Button(self.panel, 'done', id=wx.ID_OK)
-        sizer.Add(done, pos=(1,0))
+        bSizer.Add(done, pos=(0,0))
         cncl = el.Button(self.panel, 'cancel', id=wx.ID_CANCEL)
-        sizer.Add(cncl, pos=(1,1))
-
         cncl.SetFocus()
+        bSizer.Add(cncl, pos=(0,1))
+        sizer.Add(bSizer, pos=(1,0))
+        ################
         self.panel.SetSizer(sizer)
 
 
 ################################
-class InitDialog(wx.Dialog):
+class ConfigDialog(wx.Dialog):
     def __init__(self, static, lang):
-        super().__init__(None, title=lang['init']['title'])
+        super().__init__(None, title=lang['CONF']['title'])
         self.SetSize(
-            self.GetSize()[0] + static['init']['size-x'],
-            self.GetSize()[1] + static['init']['size-y'],
+            self.GetSize()[0] + 180,
+            self.GetSize()[1] + 260,
         )
         if static['center-on-screen']:
             self.Center()
@@ -163,10 +174,11 @@ class InitDialog(wx.Dialog):
     def initPanel(self):
         panel = wx.Panel(self)
         sizer = wx.GridBagSizer()
+        pathSizer = wx.GridBagSizer()
         self.pathstr = {}
         ################
         def selectFile(key):
-            d = FileDialog(lang['init'][key],
+            d = FileDialog(lang['CONF'][key],
                 static['formats'][key],
                 'open',
                 static['names'][key] + '.' + static['formats'][key]
@@ -182,26 +194,38 @@ class InitDialog(wx.Dialog):
         def addRow(key, row):
             def _action(event):
                 selectFile(key)
-            sizer.Add(wx.StaticText(panel, label=lang['init'][key]), flag=wx.EXPAND, pos=(row,0))
+            pathSizer.Add(wx.StaticText(panel, label=lang['CONF'][key]), flag=wx.EXPAND, pos=(row,0))
             self.pathstr[key] = el.TextCtrl(panel, conf['path'][key])
-            sizer.Add(self.pathstr[key], flag=wx.EXPAND, pos=(row+1,0))
+            pathSizer.Add(self.pathstr[key], flag=wx.EXPAND, pos=(row+1,0))
             button = el.Button(panel, 'browse')
             button.Bind(wx.EVT_BUTTON, _action)
-            sizer.Add(button, pos=(row+1,1))
+            pathSizer.Add(button, pos=(row+1,1))
         ################
+        # Attribute files
         addRow('area', 1)
         addRow('regn', 3)
         addRow('segn', 5)
         addRow('locl', 7)
+        sizer.Add(pathSizer, pos=(0,0), span=(0,2))
+        ################
+        # Font size
+        sizer.Add(wx.StaticText(panel, label=lang['CONF']['font']), flag=wx.EXPAND, pos=(1,0))
+        self.fontSize = NumCtrl(panel, value=conf['repr-font-size'])
+        sizer.Add(self.fontSize, pos=(2,0), flag=wx.EXPAND)
+        ################
+        # Hidden columns
+        sizer.Add(wx.StaticText(panel, label=lang['CONF']['hidden']), flag=wx.EXPAND, pos=(3,0))
+        self.hiddenCols = wx.CheckListBox(panel, style=wx.LB_NEEDED_SB|wx.LB_MULTIPLE)
+        self.hiddenCols.Set(static['column-order'])
+        self.hiddenCols.SetCheckedStrings(conf['rem-from-repr'])
+        sizer.Add(self.hiddenCols, pos=(4,0), flag=wx.EXPAND)
         ################
         bSizer = wx.GridBagSizer()
-        ################
         done = el.Button(panel, 'done', id=wx.ID_OK)
         bSizer.Add(done, pos=(0,0))
-        ################
         cncl = el.Button(panel, 'cancel', id=wx.ID_CANCEL)
         cncl.SetFocus()
         bSizer.Add(cncl, pos=(0,1))
+        sizer.Add(bSizer, pos=(6,0))
         ################
-        sizer.Add(bSizer, pos=(9,0))
         panel.SetSizerAndFit(sizer)
