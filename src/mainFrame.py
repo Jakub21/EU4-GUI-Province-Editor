@@ -23,14 +23,14 @@ class mainFrame(frameMenu):
         super().__init__(static, lang, conf)
         self.initPanel()
         self.initStatusBar()
-        if static['center-on-screen']:
-            self.Center()
         self.SetSize(
             self.GetSize()[0] + static['frame-x'],
             self.GetSize()[1] + static['frame-y']
         )
         self.statusBusyEnd()
         self.InitSessionEnd = int(round(time.time() * 1000))
+        if static['center-on-screen']:
+            self.Center()
         self.Show()
 
     def initStatusBar(self):
@@ -46,8 +46,9 @@ class mainFrame(frameMenu):
             wx.MODERN, wx.NORMAL, wx.NORMAL,
             False, 'Consolas'
         )
-        self.outText = wx.TextCtrl(self.panel, style = wx.TE_MULTILINE|wx.TE_READONLY)
-        self.sizer.Add(self.outText, pos=(0,0), flag=wx.EXPAND)
+        self.outText = wx.TextCtrl(self.panel, value=lang['repr']+'\n',
+            style = wx.TE_MULTILINE|wx.TE_READONLY)
+        self.sizer.Add(self.outText, pos=(0,0),  flag=wx.EXPAND)
         self.outText.SetFont(FONT)
         ################
         # Right side sizer

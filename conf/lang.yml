@@ -8,6 +8,8 @@ frame-title         : "EU4 GUI Province Editor"
 startup_message     : "Starting Editor"
 all-data            : "All Loaded Data"
 selection           : "Current Selection"
+other               : "OTHER"
+repr                : "Data Representation"
 ################
 # Status Bar
 st:
@@ -19,6 +21,7 @@ menu:
     file            : "File"
     selc            : "Selection"
     sort            : "Sort"
+    modf            : "Modify"
 ################
 # Menu and Buttons
 mb:
@@ -65,9 +68,14 @@ mb:
     sort-col-desc   : "Sort provinces by specified attributes"
     sort-loc-title  : "Sort by Location"
     sort-loc-desc   : "Sort provinces by regions and areas"
-    # Manipulation
+    # Modify
+    mod-col-title   : "Modify Column"
+    mod-col-desc    : "Change values in column in selection"
+    mod-prov-title  : "Modify Province"
+    mod-prov-desc   : "Change attribute of singe province"
+    # Right-side buttons (TODO)
     set-title       : "Column"
-    set-desc        : "Change values in single column in selection"
+    set-desc        : "Change values in column in selection"
     inpr-title      : "Inprov"
     inpr-desc       : "Change values in single province"
     cmd-title       : "Command..."
@@ -122,6 +130,11 @@ dlg:
     sel-regn        : "Select region assignment file"
     sel-segn        : "Select super-region assignment file"
     sel-locl        : "Select provinces localisation file"
+    # Modify Data Dialog
+    modify-col      : "Change Attribute in selection"
+    modify-prov     : "Change Attribute in province"
+    mod-prov-inp    : "Province ID"
+    mod-oth-inp     : "Specify other value"
     # Progress
     prg:
         load        : "Loading"
@@ -141,11 +154,12 @@ msg:
     no-conf         : "Editor can not start until it is configured"
     invalid-conf    : "Editor configuration is invalid"
     locl-not-yml    : "Invalid localisation file"
-    locl-not-found  : "Localisation file can not be found"
+    locl-not-found  : "Localisation file could not be found"
     inv-asnmt-file  : "Invalid Map Assignment file"
     hist-syntax     : "Syntax error in province history file"
     data-not-loaded : "Can not do this with no data loaded"
     data-not-slctd  : "Can not do this with no data selected"
+    unknown-prov    : "Can not find this province. Make sure it is in Current Selection"
 
 ################
 # Configurator

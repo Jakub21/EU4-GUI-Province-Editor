@@ -23,7 +23,7 @@ class frameActions(frameEngine):
         super().__init__(static, lang, conf)
 
     ################################
-    def REPRESENT(self, mode, clear=True):
+    def REPRESENT(self, mode='SEL', clear=True):
         if clear:
             self.outText.Clear()
         else:
@@ -116,6 +116,9 @@ class frameActions(frameEngine):
         except AttributeError:
             self.prompt('warning', 'data-not-loaded')
             return
+        try:
+            self.AllData.update(self.Selection)
+        except: pass
         msg = lang['dlg']['save-s-msg']
         dialog = dlg.FileDialog(msg, 'csv', 'save')
         if dialog.ShowModal() == wx.ID_OK:
@@ -132,6 +135,9 @@ class frameActions(frameEngine):
         except AttributeError:
             self.prompt('warning', 'data-not-loaded')
             return
+        try:
+            self.AllData.update(self.Selection)
+        except: pass
         msg = lang['dlg']['save-o-msg']
         dlg = wx.DirDialog(self,
             message=msg,
@@ -166,8 +172,8 @@ class frameActions(frameEngine):
             src = self.Selection
         d = dlg.SelectDialog('selection-'+mode, src)
         if d.ShowModal() == wx.ID_OK:
-            condCol = d.col.GetString(d.col.GetSelection())
-            condAttrs = d.attrList.GetCheckedStrings()
+            condCol = d.ListCol.GetString(d.ListCol.GetSelection())
+            condAttrs = d.AttrList.GetCheckedStrings()
             NEW = src.loc[src[condCol].isin(condAttrs)]
         else:
             return 0
@@ -178,6 +184,9 @@ class frameActions(frameEngine):
         NEW = self.actionSELECT('new')
         if type(NEW) == int:
             return
+        try:
+            self.AllData.update(self.Selection)
+        except: pass # No previous Selection exists
         self.Selection = NEW
         self.REPRESENT('SEL')
     ################################
@@ -185,6 +194,7 @@ class frameActions(frameEngine):
         NEW = self.actionSELECT('sub')
         if type(NEW) == int:
             return
+        self.AllData.update(self.Selection)
         self.Selection = NEW
         self.REPRESENT('SEL')
     ################################
@@ -192,9 +202,48 @@ class frameActions(frameEngine):
         NEW = self.actionSELECT('app')
         if type(NEW) == int:
             return
+        self.AllData.update(self.Selection)
         self.Selection = pd.concat([self.Selection, NEW])
         self.REPRESENT('SEL')
 
+
+    ################################
+    def actionModifyColumn(self, event):
+        try:
+            self.Selection
+        except AttributeError:
+            self.prompt('warning', 'data-not-slctd')
+            return 0
+        d = dlg.ModifyDialog('modify-col', self.Selection)
+        if d.ShowModal() == wx.ID_OK:
+            COL = d.ListCol.GetString(d.ListCol.GetSelection())
+            VAL = d.AttrList.GetString(d.AttrList.GetSelection())
+            if VAL == lang['other']:
+                VAL = d.OtherName.GetValue()
+            self.Selection.loc[:, COL] = VAL
+        self.REPRESENT()
+
+    ################################
+    def actionModifyProvince(self, event):
+        try:
+            self.Selection
+        except AttributeError:
+            self.prompt('warning', 'data-not-slctd')
+            return 0
+        d = dlg.ModifyDialog('modify-prov', self.Selection)
+        if d.ShowModal() == wx.ID_OK:
+            COL = d.ListCol.GetString(d.ListCol.GetSelection())
+            VAL = d.AttrList.GetString(d.AttrList.GetSelection())
+            ROW = d.ProvInput.GetValue()
+            try:
+                ID = int(ROW)
+            except:
+                self.prompt('error', 'unknown-prov')
+                return # User's input is not convertable INT
+            if VAL == lang['other']:
+                VAL = d.OtherName.GetValue()
+            self.Selection.loc[ID, COL] = VAL
+        self.REPRESENT()
 
     ################################
     def actionQuit(self, event):

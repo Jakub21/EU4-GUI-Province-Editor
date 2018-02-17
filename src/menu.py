@@ -75,6 +75,14 @@ class frameMenu(frameActions):
             rmenu.Append(-1, lang['mb']['sort-col-title'], lang['mb']['sort-col-desc']))
         self.Bind(wx.EVT_MENU, self.action,
             rmenu.Append(-1, lang['mb']['sort-loc-title'], lang['mb']['sort-loc-desc']))
+
+        ################
+        # MODIFY MENU
+        qmenu = wx.Menu()
+        self.Bind(wx.EVT_MENU, self.actionModifyColumn,
+            qmenu.Append(-1, lang['mb']['mod-col-title'], lang['mb']['mod-col-desc']))
+        self.Bind(wx.EVT_MENU, self.actionModifyProvince,
+            qmenu.Append(-1, lang['mb']['mod-prov-title'], lang['mb']['mod-prov-desc']))
         ################
         # MENU BAR
         menubar = wx.MenuBar()
@@ -82,4 +90,5 @@ class frameMenu(frameActions):
         menubar.Append(fmenu, lang['menu']['file'])
         menubar.Append(smenu, lang['menu']['selc'])
         menubar.Append(rmenu, lang['menu']['sort'])
+        menubar.Append(qmenu, lang['menu']['modf'])
         self.SetMenuBar(menubar)

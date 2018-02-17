@@ -9,6 +9,7 @@ import wx
 from src.dialog import frameDialog, ConfigDialog
 from pandas import set_option as PandasOption
 from src.conf_parser import PATH
+from warnings import filterwarnings
 import yaml
 
 ################################
@@ -21,6 +22,7 @@ class frameInit(frameDialog):
         global conf
         conf = _conf
         super().__init__(static, lang, conf)
+        filterwarnings('ignore')
         PandasOption('display.max_rows', static['pandas']['max-rows'])
         PandasOption('display.max_columns', static['pandas']['max-cols'])
         PandasOption('display.width', static['pandas']['disp-width'])
@@ -53,7 +55,7 @@ class frameInit(frameDialog):
     ################################
     def initAssignment(self):
         ################
-        def Get(path):
+        def Get(self, path):
             text = None
             for enc in static['encodings']:
                 try:
@@ -61,7 +63,7 @@ class frameInit(frameDialog):
                 except:
                     pass
             if text == None:
-                prompt('error', 'filenotfound')
+                self.prompt('error', 'filenotfound')
             return self.RemoveComments(text)
         ################
         def Analysis(text, memDepth):
@@ -100,9 +102,9 @@ class frameInit(frameDialog):
                 name = 'none'
             return name
         ################
-        segn = Analysis(Get(conf['path']['segn']), 1)
-        regn = Analysis(Get(conf['path']['regn']), 2)
-        area = Analysis(Get(conf['path']['area']), 1)
+        segn = Analysis(Get(self, conf['path']['segn']), 1)
+        regn = Analysis(Get(self, conf['path']['regn']), 2)
+        area = Analysis(Get(self, conf['path']['area']), 1)
         for r in [segn, regn, area]:
             if r == {}:
                 self.prompt('error', 'inv-asnmt-file')
@@ -189,7 +191,7 @@ class frameInit(frameDialog):
         if self.busyDlg != None:
             PausedInitialization = True
             self.statusBusyEnd()
-        d = ConfigDialog(static, lang)
+        d = ConfigDialog()
         if d.ShowModal() == wx.ID_OK:
             for key in conf['path'].keys():
                 conf['path'][key] = d.pathstr[key].GetValue().replace('\\', '/')
