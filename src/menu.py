@@ -69,11 +69,9 @@ class frameMenu(frameActions):
         ################
         # SORT MENU
         rmenu = wx.Menu()
-        self.Bind(wx.EVT_MENU, self.action,
+        self.Bind(wx.EVT_MENU, self.actionSortByID,
             rmenu.Append(-1, lang['mb']['sort-id-title'], lang['mb']['sort-id-desc']))
-        self.Bind(wx.EVT_MENU, self.action,
-            rmenu.Append(-1, lang['mb']['sort-col-title'], lang['mb']['sort-col-desc']))
-        self.Bind(wx.EVT_MENU, self.action,
+        self.Bind(wx.EVT_MENU, self.actionSortByLoc,
             rmenu.Append(-1, lang['mb']['sort-loc-title'], lang['mb']['sort-loc-desc']))
 
         ################

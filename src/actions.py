@@ -44,6 +44,7 @@ class frameActions(frameEngine):
     def action(self, event):
         self.prompt('info', 'default')
 
+
     ################################
     def actionLoadSheet(self, event, mode='std'):
         if mode == 'std':
@@ -65,7 +66,6 @@ class frameActions(frameEngine):
             self.prompt('error', 'not-a-csv')
             return
         self.REPRESENT('ALL')
-
     ################################
     def actionLoadOrig(self, event, mode='std'):
         if mode == 'std':
@@ -82,8 +82,9 @@ class frameActions(frameEngine):
         else:
             return
         self.AllData = self.EngineLoad(path)
-        self.AllData.sort_values(['segn', 'regn', 'area'], inplace=True)
+        self.AllData.sort_values(static['sortby-loct-cols'], inplace=True)
         self.REPRESENT('ALL')
+
 
     ################################
     def actionLoadUpdSheet(self, event):
@@ -96,7 +97,6 @@ class frameActions(frameEngine):
         old.update(self.AllData)
         self.AllData = old
         self.REPRESENT('ALL')
-
     ################################
     def actionLoadUpdOrig(self, event):
         try:
@@ -108,6 +108,7 @@ class frameActions(frameEngine):
         old.update(self.AllData)
         self.AllData = old
         self.REPRESENT('ALL')
+
 
     ################################
     def actionSaveSheet(self, event):
@@ -127,7 +128,6 @@ class frameActions(frameEngine):
             return
         dialog.Destroy()
         self.AllData.to_csv(path, encoding=static['encoding-sheet'])
-
     ################################
     def actionSaveOrig(self, event):
         try:
@@ -149,6 +149,7 @@ class frameActions(frameEngine):
         else:
             return
         self.EngineSave(path)
+
 
     ################################
     def actionSELECT(self, mode):
@@ -178,7 +179,6 @@ class frameActions(frameEngine):
         else:
             return 0
         return NEW
-
     ################################
     def actionSelectNew(self, event):
         NEW = self.actionSELECT('new')
@@ -208,6 +208,33 @@ class frameActions(frameEngine):
 
 
     ################################
+    def actionSortByID(self, event):
+        try:
+            self.Selection.sort_index(inplace=True)
+            mode = 'SEL'
+        except:
+            try:
+                self.AllData.sort_index(inplace=True)
+                mode = 'ALL'
+            except:
+                return
+        self.REPRESENT(mode)
+    ################################
+    def actionSortByLoc(self, event):
+        COLS = static['sortby-loct-cols']
+        try:
+            self.Selection.sort_values(COLS, inplace=True)
+            mode = 'SEL'
+        except:
+            try:
+                self.AllData.sort_values(COLS, inplace=True)
+                mode = 'ALL'
+            except:
+                return
+        self.REPRESENT(mode)
+
+
+    ################################
     def actionModifyColumn(self, event):
         try:
             self.Selection
@@ -222,7 +249,6 @@ class frameActions(frameEngine):
                 VAL = d.OtherName.GetValue()
             self.Selection.loc[:, COL] = VAL
         self.REPRESENT()
-
     ################################
     def actionModifyProvince(self, event):
         try:
@@ -245,18 +271,7 @@ class frameActions(frameEngine):
             self.Selection.loc[ID, COL] = VAL
         self.REPRESENT()
 
+
     ################################
     def actionQuit(self, event):
         self.Close()
-
-
-    # TODO (Show function desc on button hover)
-    #def actionMouseEnter(self, event):
-    #    self.StatusBar.PushStatusText("Button Hover")
-    #    event.Skip()
-    #
-    #def actionMouseLeave(self, event):
-    #    self.StatusBar.PopStatusText()
-    #    event.Skip()
-    #button.Bind(wx.EVT_ENTER_WINDOW, self.actionMouseEnter)
-    #button.Bind(wx.EVT_LEAVE_WINDOW, self.actionMouseLeave)

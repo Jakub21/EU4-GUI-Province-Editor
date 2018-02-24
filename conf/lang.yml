@@ -70,16 +70,11 @@ mb:
     sort-loc-desc   : "Sort provinces by regions and areas"
     # Modify
     mod-col-title   : "Modify Column"
+    mod-col-btt     : "Set Column"
     mod-col-desc    : "Change values in column in selection"
     mod-prov-title  : "Modify Province"
+    mod-prov-btt    : "Modify Prov."
     mod-prov-desc   : "Change attribute of singe province"
-    # Right-side buttons (TODO)
-    set-title       : "Column"
-    set-desc        : "Change values in column in selection"
-    inpr-title      : "Inprov"
-    inpr-desc       : "Change values in single province"
-    cmd-title       : "Command..."
-    cmd-desc        : "Enter text-command mode"
 ################
 # Columns
 columns:

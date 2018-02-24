@@ -53,14 +53,11 @@ class mainFrame(frameMenu):
         ################
         # Right side sizer
         self.bSizer = wx.GridBagSizer()
-        btt = el.Button(self.panel,'set-title', self.action)
+        btt = el.Button(self.panel,'mod-col-btt', self.actionModifyColumn)
         self.bSizer.Add(btt, pos=(0,0))
 
-        btt = el.Button(self.panel,'inpr-title', self.action)
+        btt = el.Button(self.panel,'mod-prov-btt', self.actionModifyProvince)
         self.bSizer.Add(btt, pos=(1,0))
-
-        btt = el.Button(self.panel,'cmd-title', self.action)
-        self.bSizer.Add(btt, pos=(2,0))
 
         self.sizer.Add(self.bSizer, pos=(0,1), span=(1,1))
         btt.SetFocus()

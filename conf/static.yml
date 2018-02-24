@@ -43,6 +43,9 @@ locl-langs          : [
     l_english, l_spanish, l_french, l_german,
 ]
 histfile-prefix     : "# Province no."
+sortby-loct-cols    : [segn, regn, area]
+
+
 ################################
 # DIALOGS
 ################################
