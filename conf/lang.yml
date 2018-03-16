@@ -5,7 +5,7 @@
 ################
 # General
 frame-title         : "EU4 GUI Province Editor"
-startup_message     : "Starting Editor"
+startup-message     : "Starting Editor"
 all-data            : "All Loaded Data"
 selection           : "Current Selection"
 other               : "OTHER"

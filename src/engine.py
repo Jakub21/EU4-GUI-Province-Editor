@@ -246,13 +246,19 @@ class frameEngine(frameInit):
             for i in range(len(columns)):
                 ################
                 cName = columns[i]
-                value = row[i]
+                try:
+                    value = row[i]
+                except IndexError:
+                    if cName != 'group':
+                        self.prompt('warning', 'value-not-found', data=str(row[0])+' '+cName)
+                    value = ''
                 if (type(value) == float) and not(pd.isnull(value)):
                     value = int(value)
                 value = str(value)
                 ################
                 if cName == 'filename':
                     filename = value
+                    continue
                 if cName not in static['history-file-keys'].keys():
                     continue
                 ################

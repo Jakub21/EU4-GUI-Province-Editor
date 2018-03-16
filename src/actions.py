@@ -23,7 +23,7 @@ class frameActions(frameEngine):
         super().__init__(static, lang, conf)
 
     ################################
-    def REPRESENT(self, mode='SEL', clear=True):
+    def Represent(self, mode='SEL', clear=True):
         if clear:
             self.outText.Clear()
         else:
@@ -65,7 +65,7 @@ class frameActions(frameEngine):
         except pd.errors.ParserError:
             self.prompt('error', 'not-a-csv')
             return
-        self.REPRESENT('ALL')
+        self.Represent('ALL')
     ################################
     def actionLoadOrig(self, event, mode='std'):
         if mode == 'std':
@@ -83,7 +83,7 @@ class frameActions(frameEngine):
             return
         self.AllData = self.EngineLoad(path)
         self.AllData.sort_values(static['sortby-loct-cols'], inplace=True)
-        self.REPRESENT('ALL')
+        self.Represent('ALL')
 
 
     ################################
@@ -96,7 +96,7 @@ class frameActions(frameEngine):
         self.actionLoadSheet(event, 'upd')
         old.update(self.AllData)
         self.AllData = old
-        self.REPRESENT('ALL')
+        self.Represent('ALL')
     ################################
     def actionLoadUpdOrig(self, event):
         try:
@@ -107,7 +107,7 @@ class frameActions(frameEngine):
         self.actionLoadOrig(event, 'upd')
         old.update(self.AllData)
         self.AllData = old
-        self.REPRESENT('ALL')
+        self.Represent('ALL')
 
 
     ################################
@@ -153,7 +153,7 @@ class frameActions(frameEngine):
 
     ################################
     def actionSELECT(self, mode):
-        # Check if can continue
+        # Check if can start action
         if mode in ['new', 'app']:
             try:
                 self.AllData
@@ -181,30 +181,34 @@ class frameActions(frameEngine):
         return NEW
     ################################
     def actionSelectNew(self, event):
+        try:
+            self.AllData.update(self.Selection)
+        except: pass
         NEW = self.actionSELECT('new')
         if type(NEW) == int:
             return
-        try:
-            self.AllData.update(self.Selection)
-        except: pass # No previous Selection exists
         self.Selection = NEW
-        self.REPRESENT('SEL')
+        self.Represent('SEL')
     ################################
     def actionSelectSub(self, event):
+        try:
+            self.AllData.update(self.Selection)
+        except: pass
         NEW = self.actionSELECT('sub')
         if type(NEW) == int:
             return
-        self.AllData.update(self.Selection)
         self.Selection = NEW
-        self.REPRESENT('SEL')
+        self.Represent('SEL')
     ################################
     def actionSelectApp(self, event):
+        try:
+            self.AllData.update(self.Selection)
+        except: pass
         NEW = self.actionSELECT('app')
         if type(NEW) == int:
             return
-        self.AllData.update(self.Selection)
         self.Selection = pd.concat([self.Selection, NEW])
-        self.REPRESENT('SEL')
+        self.Represent('SEL')
 
 
     ################################
@@ -218,7 +222,7 @@ class frameActions(frameEngine):
                 mode = 'ALL'
             except:
                 return
-        self.REPRESENT(mode)
+        self.Represent(mode)
     ################################
     def actionSortByLoc(self, event):
         COLS = static['sortby-loct-cols']
@@ -231,7 +235,7 @@ class frameActions(frameEngine):
                 mode = 'ALL'
             except:
                 return
-        self.REPRESENT(mode)
+        self.Represent(mode)
 
 
     ################################
@@ -248,7 +252,7 @@ class frameActions(frameEngine):
             if VAL == lang['other']:
                 VAL = d.OtherName.GetValue()
             self.Selection.loc[:, COL] = VAL
-        self.REPRESENT()
+        self.Represent()
     ################################
     def actionModifyProvince(self, event):
         try:
@@ -269,7 +273,7 @@ class frameActions(frameEngine):
             if VAL == lang['other']:
                 VAL = d.OtherName.GetValue()
             self.Selection.loc[ID, COL] = VAL
-        self.REPRESENT()
+        self.Represent()
 
 
     ################################

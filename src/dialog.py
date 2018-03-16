@@ -34,7 +34,7 @@ class frameDialog(wx.Frame):
     # Disables whole Frame and shows dialog with no buttons
     def statusBusyStart(self, event=None):
         self.Disable()
-        self.busyDlg = wx.BusyInfo(lang['startup_message'])
+        self.busyDlg = wx.BusyInfo(lang['startup-message'])
 
     def statusBusyEnd(self, event=None):
         self.Enable()
@@ -49,20 +49,17 @@ class frameDialog(wx.Frame):
             'info'      : wx.OK|wx.ICON_INFORMATION,
         }
         if (dtype not in flags):
-            print('SCRIPT ERR', 'Unknown Dialog Type', sep='\n')
+            print('[src.dialog.prompt] Unknown Dialog Type')
         try:
             msg = lang['msg'][key]
         except KeyError:
-            print('SCRIPT ERR', 'Unknown Dialog Message Key', sep='\n')
+            print('[src.dialog.prompt] Unknown Dialog Message Key')
             raise
         try:
             if len(str(data)) > 0:
                 msg += '\n' + str(data)
         except:
-            print('SCRIPT ERR',
-                'Unhandled error occured while tried to add Data Info to Prompt',
-                sep='\n'
-            )
+            print('[src.dialog.prompt] Unhandled error occured while tried to add Data Info to Prompt')
             raise
         dlg = wx.MessageDialog(None,
             message=msg,
