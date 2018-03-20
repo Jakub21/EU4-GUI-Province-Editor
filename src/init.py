@@ -11,6 +11,10 @@ from pandas import set_option as PandasOption
 from src.conf_parser import PATH
 from warnings import filterwarnings
 import yaml
+import logging
+
+################################
+Log = logging.getLogger('MainLogger')
 
 ################################
 class frameInit(frameDialog):
@@ -23,6 +27,7 @@ class frameInit(frameDialog):
         conf = _conf
         super().__init__(static, lang, conf)
         filterwarnings('ignore')
+        Log.info('Updating Pandas settings')
         PandasOption('display.max_rows', static['pandas']['max-rows'])
         PandasOption('display.max_columns', static['pandas']['max-cols'])
         PandasOption('display.width', static['pandas']['disp-width'])
@@ -54,6 +59,7 @@ class frameInit(frameDialog):
 
     ################################
     def initAssignment(self):
+        Log.info('Loading Assignments')
         ################
         def Get(self, path):
             text = None
@@ -107,6 +113,7 @@ class frameInit(frameDialog):
         area = Analysis(Get(self, conf['path']['area']), 1)
         for r in [segn, regn, area]:
             if r == {}:
+                Log.error('Error occurred during Assignment loading')
                 self.prompt('error', 'inv-asnmt-file')
                 return False
 
@@ -156,6 +163,7 @@ class frameInit(frameDialog):
 
     ################################
     def initLocalisation(self):
+        Log.info('Loading Localisation')
         path = conf['path']['locl']
         numbers = ''.join(map(lambda x: str(x), range(10)))
         try:
@@ -178,15 +186,18 @@ class frameInit(frameDialog):
                     pass
             return q
         except yaml.YAMLError as e:
+            Log.error('YAML Error occurred during Locals loading: '+str(e))
             self.prompt('error', 'locl-not-yml')
             return False
         except FileNotFoundError:
+            Log.error('Localisation file was not found')
             self.prompt('error', 'locl-not-found')
             return False
 
 
     ################################
-    def initInstallation(self, *argv):
+    def Configure(self, *argv):
+        Log.info('Starting Configurator')
         PausedInitialization = False
         if self.busyDlg != None:
             PausedInitialization = True
@@ -194,18 +205,23 @@ class frameInit(frameDialog):
         d = ConfigDialog()
         if d.ShowModal() == wx.ID_OK:
             for key in conf['path'].keys():
-                conf['path'][key] = d.pathstr[key].GetValue().replace('\\', '/')
+                conf['path'][key] = d.PathStr[key].GetValue().replace('\\', '/')
             if 0 in map(lambda x: len(x), conf['path'].values()):
                 self.prompt('error', 'no-conf')
+                Log.info('Configuration is invalid')
                 exit() # Can not start Editor w/o initialization
             else:
                 conf['was-configured'] = True
             conf['repr-font-size'] = int(d.fontSize.GetValue())
             conf['rem-from-repr'] = list(d.hiddenCols.GetCheckedStrings())
+            Log.info('Saving new configuration')
             self.YamlDump(conf, PATH.CONF)
+            Log.info('Configurator done')
         else:
+            Log.info('Configurator canceled')
             if not self.sessionInitialized:
                 self.prompt('error', 'no-conf')
+                Log.error('Configuration is invalid')
                 exit() # Can not start Editor w/o initialization
         d.Destroy()
         if PausedInitialization: # Only resumes PleaseWait if it was running before
@@ -213,10 +229,14 @@ class frameInit(frameDialog):
 
     ################################
     def initSession(self, static, lang):
+        self.WasConfigured = False
+        Log.info('Initializing Session')
         if 0 in map(lambda x: len(x), conf['path'].values()):
             conf['was-configured'] = False
         if not conf['was-configured']:
-            self.initInstallation(static, lang)
+            Log.warn('Configuration is empty or invalid')
+            self.WasConfigured = True
+            self.Configure(static, lang)
 
         if not self.initLocalisation():
             conf['was-configured'] = False

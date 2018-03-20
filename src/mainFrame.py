@@ -9,11 +9,15 @@ from src.conf_parser import getlcl, getstatic, getconf
 import src.elems as el
 from src.menu import frameMenu
 import wx
-import time
+from datetime import datetime
+import logging
+
+################################
+Log = logging.getLogger('MainLogger')
 
 ################################
 class mainFrame(frameMenu):
-    def __init__(self):
+    def __init__(self, isDebug):
         global static
         static = getstatic()
         global lang
@@ -21,6 +25,8 @@ class mainFrame(frameMenu):
         global conf
         conf = getconf()
         super().__init__(static, lang, conf)
+        self.isDebug = isDebug
+        Log.info('Initializing GUI')
         self.initPanel()
         self.initStatusBar()
         self.SetSize(
@@ -28,9 +34,10 @@ class mainFrame(frameMenu):
             self.GetSize()[1] + static['frame-y']
         )
         self.statusBusyEnd()
-        self.InitSessionEnd = int(round(time.time() * 1000))
+        self.InitSessionEnd = datetime.now()
         if static['center-on-screen']:
             self.Center()
+        Log.info('Revealing Frame')
         self.Show()
 
     def initStatusBar(self):
@@ -42,13 +49,13 @@ class mainFrame(frameMenu):
         self.sizer = wx.GridBagSizer()
         ################
         # Text Repr. of Data
-        FONT = wx.Font(conf['repr-font-size'],
-            wx.MODERN, wx.NORMAL, wx.NORMAL,
-            False, 'Consolas'
-        )
         self.outText = wx.TextCtrl(self.panel, value=lang['repr']+'\n',
             style = wx.TE_MULTILINE|wx.TE_READONLY)
         self.sizer.Add(self.outText, pos=(0,0),  flag=wx.EXPAND)
+        # Changing font
+        FontSize = conf['repr-font-size']
+        Log.info('Changing font of Repr to '+str(FontSize)+' px')
+        FONT = wx.Font(FontSize, wx.MODERN, wx.NORMAL, wx.NORMAL, False, 'Consolas')
         self.outText.SetFont(FONT)
         ################
         # Right side sizer

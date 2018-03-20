@@ -1,5 +1,5 @@
 ################################
-# EU4 Province Editor Configuration
+# EU4 Province Editor Core Configuration
 ################################
 
 ################################
@@ -19,6 +19,10 @@ frame-y             : 150
 mf:
     grw-col         : [0]
     grw-row         : [0]
+################################
+# Logging
+engine-log-rate     : 500 # Log progress percentage every _ provinces parsed
+
 
 ################################
 # PANDAS
@@ -63,7 +67,7 @@ names:
     locl            : prov_names_l_english
 
 ################################
-# OLD PARSER SETTINGS
+# HISTORY PARSER SETTINGS
 ################################
 shorten-regn-names  : true
 empty-marker        : ""

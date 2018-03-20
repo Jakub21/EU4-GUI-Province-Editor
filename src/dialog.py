@@ -11,13 +11,17 @@ import pandas as pd
 from os import getcwd
 import src.elems as el
 from src.conf_parser import getWildcard
-import time
+from datetime import datetime
 from wx.lib.masked.numctrl import NumCtrl as NumCtrl
+import logging
+
+################################
+Log = logging.getLogger('MainLogger')
 
 ################################
 class frameDialog(wx.Frame):
     def __init__(self, _stt, _lang, _conf):
-        self.InitSessionBegin = int(round(time.time() * 1000))
+        self.InitSessionBegin = datetime.now()
         self.sessionInitialized = False
         global lang
         lang = _lang
@@ -33,10 +37,12 @@ class frameDialog(wx.Frame):
     ################
     # Disables whole Frame and shows dialog with no buttons
     def statusBusyStart(self, event=None):
+        Log.info('Busy Status Started')
         self.Disable()
         self.busyDlg = wx.BusyInfo(lang['startup-message'])
 
     def statusBusyEnd(self, event=None):
+        Log.info('Busy Status Finished')
         self.Enable()
         self.busyDlg = None
 
@@ -49,17 +55,17 @@ class frameDialog(wx.Frame):
             'info'      : wx.OK|wx.ICON_INFORMATION,
         }
         if (dtype not in flags):
-            print('[src.dialog.prompt] Unknown Dialog Type')
+            Log.info('Unknown Dialog Type')
         try:
             msg = lang['msg'][key]
         except KeyError:
-            print('[src.dialog.prompt] Unknown Dialog Message Key')
+            Log.info('Unknown Dialog Message Key')
             raise
         try:
             if len(str(data)) > 0:
                 msg += '\n' + str(data)
         except:
-            print('[src.dialog.prompt] Unhandled error occured while tried to add Data Info to Prompt')
+            Log.info('Unhandled error occurred while tried to add Data Info to Prompt')
             raise
         dlg = wx.MessageDialog(None,
             message=msg,

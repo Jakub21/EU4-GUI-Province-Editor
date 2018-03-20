@@ -10,6 +10,10 @@ import pandas as pd
 from src.init import frameInit
 from os import listdir
 from src.dialog import ProgressDialog as Progress
+import logging
+
+################################
+Log = logging.getLogger('MainLogger')
 
 ################################
 class frameEngine(frameInit):
@@ -118,6 +122,7 @@ class frameEngine(frameInit):
 
     ################################
     def EngineLoad(self, path):
+        Log.info('Starting Load procedure')
         ################
         def GetValue(keys, data):
             if len(keys) == 1:
@@ -140,6 +145,7 @@ class frameEngine(frameInit):
             return result
         ################
         total_provs = len(listdir(path))
+        Log.debug('Province count: '+str(total_provs))
         d = Progress('load', 'load-desc', '', total_provs, parent=self)
         rows = []
         i=0
@@ -147,14 +153,17 @@ class frameEngine(frameInit):
         for filename in listdir(path):
             if not d.Update(i, 'load-desc', filename):
                 d.Destroy()
-                return
+                return 0
+            if i % static['engine-log-rate'] == 0:
+                Log.debug('Progress: '+str(100*(i/total_provs))[:4]+'%')
             t = self.EngineGetFile(path+'/'+filename)
             try:
                 contents = self.EngineGetScope(t.split())
             except TypeError:
                 d.Destroy()
+                Log.warn('Syntax Error in History File ('+filename+')')
                 self.prompt('warning', 'hist-syntax', data=filename)
-                return
+                continue
             i+=1
             ################
             province = {}
@@ -200,9 +209,11 @@ class frameEngine(frameInit):
         df = pd.DataFrame(rows, columns=static['column-order'])
         df.set_index(static['column-index'], inplace=True)
         d.Destroy()
+        Log.info('Load procedure complete')
         return df
 
     def EngineSave(self, path):
+        Log.info('Starting Save procedure')
         ################
         def SaveLine(key, value, maxdepth, depth):
             i = static['indent']
@@ -227,6 +238,7 @@ class frameEngine(frameInit):
             return
         ################
         data = data.values.tolist()
+        ColumnOrder = static['column-order']
         columns = static['column-order']
         columns.remove(static['column-index'])
         sep = '/'
@@ -242,6 +254,8 @@ class frameEngine(frameInit):
             if not d.Update(INDEX, 'save-desc', filename):
                 d.Destroy()
                 return
+            if INDEX % static['engine-log-rate'] == 0:
+                Log.debug('Progress: '+str(100*(INDEX/TOTAL))[:4]+'%')
             INDEX += 1
             for i in range(len(columns)):
                 ################
@@ -277,4 +291,7 @@ class frameEngine(frameInit):
                     text += SaveLine(key, element, len(key)-1, 0)
             DIR = path + '/' + filename
         d.Destroy()
+        Log.info('Save procedure complete')
+        static['column-order'] = ColumnOrder # Value is overwritten before the loop
+            # Save procedure could run only 1 time, then program restart was required
         return True

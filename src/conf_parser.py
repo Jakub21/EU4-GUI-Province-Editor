@@ -7,6 +7,10 @@
 ################################
 import yaml
 from os import getcwd
+import logging
+
+################################
+Log = logging.getLogger('MainLogger')
 
 ################################
 class PATH:
@@ -25,29 +29,32 @@ def getfile(fname):
         path = getcwd().replace('\\', '/')+fname
         return yaml.load(open(path, 'r').read())
     except FileNotFoundError:
-        print(FLS_ERR)
+        Log.error(FLS_ERR)
         exit()
     except yaml.YAMLError as e:
-        print(YML_ERR, e, sep='\n')
+        Log.error(YML_ERR+'\n'+e)
         exit()
     except Exception as e:
-        print(UNH_ERR, e, sep='\n')
+        Log.error(UNH_ERR+'\n'+e)
         exit()
 
 ################################
 def getstatic():
+    Log.info('Loading Static')
     global static
     static = getfile(PATH.STAT)
     return static
 
 ################################
 def getconf():
+    Log.info('Loading Configuration')
     global conf
     conf = getfile(PATH.CONF)
     return conf
 
 ################################
 def getlcl():
+    Log.info('Loading Localisation')
     global lang
     lang = getfile(PATH.LANG)
     return lang

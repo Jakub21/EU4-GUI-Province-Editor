@@ -8,8 +8,14 @@
 import wx
 from os import getcwd
 from src.conf_parser import getWildcard
+import logging
+
+################################
+Log = logging.getLogger('MainLogger')
+
 ################################
 def init(_static, _lang, _conf):
+    Log.info('Initializing UI elements')
     global static
     static = _static
     global lang

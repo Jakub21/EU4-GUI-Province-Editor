@@ -7,6 +7,10 @@
 ################################
 from src.actions import frameActions
 import wx
+import logging
+
+################################
+Log = logging.getLogger('MainLogger')
 
 ################################
 class frameMenu(frameActions):
@@ -18,13 +22,14 @@ class frameMenu(frameActions):
         global conf
         conf = _conf
         super().__init__(static, lang, conf)
+        Log.info('Initializing Menu Bar')
         self.initMenu()
 
     def initMenu(self):
         ################
         # MAIN MENU
         mmenu = wx.Menu()
-        self.Bind(wx.EVT_MENU, self.initInstallation,
+        self.Bind(wx.EVT_MENU, self.Configure,
             mmenu.Append(-1, lang['mb']['run-static-title'], lang['mb']['run-static-desc']))
         self.Bind(wx.EVT_MENU, self.actionQuit,
             mmenu.Append(-1, lang['mb']['quit-title'], lang['mb']['quit-desc']))

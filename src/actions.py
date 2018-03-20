@@ -10,6 +10,10 @@ import pandas as pd
 import src.dialog as dlg
 from numpy import nan
 from src.engine import frameEngine
+import logging
+
+################################
+Log = logging.getLogger('MainLogger')
 
 ################################
 class frameActions(frameEngine):
@@ -42,11 +46,13 @@ class frameActions(frameEngine):
 
     ################################
     def action(self, event):
+        Log.info('Action is not assigned')
         self.prompt('info', 'default')
 
 
     ################################
     def actionLoadSheet(self, event, mode='std'):
+        Log.info('Loading Sheet')
         if mode == 'std':
             msg = lang['dlg']['load-s-msg']
         elif mode == 'upd':
@@ -55,6 +61,7 @@ class frameActions(frameEngine):
         if dialog.ShowModal() == wx.ID_OK:
             path = dialog.GetPaths()[0].replace('\\', '/')
         else:
+            Log.info('Loading Canceled')
             return
         dialog.Destroy()
         try:
@@ -63,11 +70,15 @@ class frameActions(frameEngine):
             self.AllData.set_index(static['column-index'], inplace=True)
             self.AllData.replace(nan, static['empty-marker'], inplace=True)
         except pd.errors.ParserError:
+            Log.warn('Loading Canceled, File is not a valid CSV Spreadsheet')
             self.prompt('error', 'not-a-csv')
             return
-        self.Represent('ALL')
+        if mode == 'std':
+            self.Represent('ALL')
+        return True
     ################################
     def actionLoadOrig(self, event, mode='std'):
+        Log.info('Loading Original')
         if mode == 'std':
             msg = lang['dlg']['load-o-msg']
         elif mode == 'upd':
@@ -80,31 +91,47 @@ class frameActions(frameEngine):
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath().replace('\\', '/')
         else:
+            Log.info('Loading Canceled')
             return
-        self.AllData = self.EngineLoad(path)
+        Data = self.EngineLoad(path)
+        if type(Data) != int:
+            self.AllData = Data
+        else:
+            Log.info('Loading Canceled')
+            return
         self.AllData.sort_values(static['sortby-loct-cols'], inplace=True)
-        self.Represent('ALL')
+        if mode == 'std':
+            self.Represent('ALL')
+        return True
 
 
     ################################
     def actionLoadUpdSheet(self, event):
+        Log.info('Updating with Sheet')
         try:
             old = self.AllData
         except AttributeError:
             self.prompt('warning', 'data-not-loaded')
             return
-        self.actionLoadSheet(event, 'upd')
+        state = self.actionLoadSheet(event, 'upd')
+        if not state:
+            Log.info('Updating Canceled')
+            return
         old.update(self.AllData)
         self.AllData = old
         self.Represent('ALL')
     ################################
     def actionLoadUpdOrig(self, event):
+        Log.info('Updating with Original')
         try:
             old = self.AllData
         except AttributeError:
             self.prompt('warning', 'data-not-loaded')
             return
-        self.actionLoadOrig(event, 'upd')
+        state = self.actionLoadOrig(event, 'upd')
+        if not state:
+            Log.info('Updating Canceled')
+            return
         old.update(self.AllData)
         self.AllData = old
         self.Represent('ALL')
@@ -112,6 +139,7 @@ class frameActions(frameEngine):
 
     ################################
     def actionSaveSheet(self, event):
+        Log.info('Saving sheet')
         try:
             self.AllData
         except AttributeError:
@@ -125,11 +153,13 @@ class frameActions(frameEngine):
         if dialog.ShowModal() == wx.ID_OK:
             path = dialog.GetPaths()[0].replace('\\', '/')
         else:
+            Log.info('Saving canceled')
             return
         dialog.Destroy()
         self.AllData.to_csv(path, encoding=static['encoding-sheet'])
     ################################
     def actionSaveOrig(self, event):
+        Log.info('Saving original')
         try:
             self.AllData
         except AttributeError:
@@ -147,7 +177,9 @@ class frameActions(frameEngine):
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath().replace('\\', '/')
         else:
+            Log.info('Saving canceled')
             return
+        dlg.Destroy()
         self.EngineSave(path)
 
 
@@ -181,31 +213,37 @@ class frameActions(frameEngine):
         return NEW
     ################################
     def actionSelectNew(self, event):
+        Log.info('Creating new selection')
         try:
             self.AllData.update(self.Selection)
         except: pass
         NEW = self.actionSELECT('new')
         if type(NEW) == int:
+            Log.info('Selection change canceled')
             return
         self.Selection = NEW
         self.Represent('SEL')
     ################################
     def actionSelectSub(self, event):
+        Log.info('Creating sub selection')
         try:
             self.AllData.update(self.Selection)
         except: pass
         NEW = self.actionSELECT('sub')
         if type(NEW) == int:
+            Log.info('Selection change canceled')
             return
         self.Selection = NEW
         self.Represent('SEL')
     ################################
     def actionSelectApp(self, event):
+        Log.info('Appending to selection')
         try:
             self.AllData.update(self.Selection)
         except: pass
         NEW = self.actionSELECT('app')
         if type(NEW) == int:
+            Log.info('Selection change canceled')
             return
         self.Selection = pd.concat([self.Selection, NEW])
         self.Represent('SEL')
@@ -213,6 +251,7 @@ class frameActions(frameEngine):
 
     ################################
     def actionSortByID(self, event):
+        Log.info('Sorting by ID')
         try:
             self.Selection.sort_index(inplace=True)
             mode = 'SEL'
@@ -225,6 +264,7 @@ class frameActions(frameEngine):
         self.Represent(mode)
     ################################
     def actionSortByLoc(self, event):
+        Log.info('Sorting by Location')
         COLS = static['sortby-loct-cols']
         try:
             self.Selection.sort_values(COLS, inplace=True)
@@ -240,6 +280,7 @@ class frameActions(frameEngine):
 
     ################################
     def actionModifyColumn(self, event):
+        Log.info('Modifying column')
         try:
             self.Selection
         except AttributeError:
@@ -255,6 +296,7 @@ class frameActions(frameEngine):
         self.Represent()
     ################################
     def actionModifyProvince(self, event):
+        Log.info('Modifying province')
         try:
             self.Selection
         except AttributeError:
@@ -278,4 +320,5 @@ class frameActions(frameEngine):
 
     ################################
     def actionQuit(self, event):
-        self.Close()
+        Log.info('Quit Action')
+        super().Close()
