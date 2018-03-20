@@ -14,9 +14,9 @@ Log = logging.getLogger('MainLogger')
 
 ################################
 class PATH:
-    STAT = '/conf/static.yml'
-    CONF = '/conf/config.yml'
-    LANG = '/conf/lang.yml'
+    STAT = 'conf/static.yml'
+    CONF = 'conf/config.yml'
+    LANG = 'conf/lang.yml'
 
 ################################
 YML_ERR = 'Yaml Error occurred. Please check config and localisation files.'
@@ -26,17 +26,13 @@ UNH_ERR = 'Unhandled error in conf_parser.py'
 ################################
 def getfile(fname):
     try:
-        path = getcwd().replace('\\', '/')+fname
-        return yaml.load(open(path, 'r').read())
+        return yaml.load(open(fname, 'r').read())
     except FileNotFoundError:
         Log.error(FLS_ERR)
-        exit()
-    except yaml.YAMLError as e:
-        Log.error(YML_ERR+'\n'+e)
-        exit()
-    except Exception as e:
-        Log.error(UNH_ERR+'\n'+e)
-        exit()
+        raise
+    except yaml.YAMLError:
+        Log.error(YML_ERR)
+        raise
 
 ################################
 def getstatic():

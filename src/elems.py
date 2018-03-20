@@ -37,7 +37,7 @@ class Button(wx.Button):
         super().__init__(parent,
             label=lang['mb'][label],
             id=id,
-            size=(static['cell-x'], static['cell-y'])
+            size=(static['btt-x'], static['btt-y'])
         )
         if action != None:
             self.Bind(wx.EVT_BUTTON, action)

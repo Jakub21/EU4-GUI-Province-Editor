@@ -166,6 +166,7 @@ CONF:
     locl            : "Provinces localisation"
     font            : "Font size in Repr. (Requires restart)"
     hidden          : "Hidden columns (Requires change of scope)"
+    no-segn         : "Hide provinces with no super-region"
 ################
 # File Formats (plural)
 formats:

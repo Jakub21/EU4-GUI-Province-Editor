@@ -11,6 +11,9 @@ start_time = datetime.now()
 ################################
 import wx
 import logging
+import sys
+import os
+import traceback as Trb
 from src.mainFrame import mainFrame
 
 ################################
@@ -23,6 +26,10 @@ pathOlder   = 'logs/older.log'
 ################################
 def main(isDebug):
     ################################
+    # Check directory
+    directory = os.path.dirname(path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     # Moving old logs
     try:
         current = open(path, 'r').read()
@@ -52,24 +59,43 @@ def main(isDebug):
     FileHandler.setLevel(level)
     FileHandler.setFormatter(formatter)
     Log.addHandler(FileHandler)
+
     ################################
+    # Log Uncaught Exceptions
+    Original = sys.excepthook
+    def excepthook(type, value, traceback):
+        traceback = ''.join(Trb.format_tb(traceback))
+        m = 'Uncaught exception:\n'
+        if len(traceback) > 0:
+            m += 'Traceback (most recent call last):\n'+traceback+'\n'
+        else:
+            m += 'No traceback available\n'
+        m += type.__name__+': '+str(value)
+        Log.error(m)
+    sys.excepthook = excepthook
+
+    ################################
+    # Initialize Frame
     Log.info('Starting Editor ('+str(start_time.time())[:11]+')')
     Log.info('Debug mode: '+str(isDebug))
     app = wx.App()
     f = mainFrame(isDebug=isDebug)
     prompt_time = f.InitSessionBegin
     done_time = f.InitSessionEnd
-    WasConfigured = f.WasConfigured
+    WasConfigurated = f.InitConfig
+
     ################################
-    # Unreliable when Configurator is running
+    # Measure launch time
     total = done_time - start_time
     prompt = done_time - prompt_time
-    if WasConfigured:
+    if WasConfigurated:
         Log.info('Launch time measurement is unreliable because Configurator was running')
     else:
         Log.info('Registered Editor launch time [ms]: '+str(total.total_seconds())[2:-3])
         Log.info('Duration of PleaseWait prompt [ms]: '+str(prompt.total_seconds())[2:-3])
+
     ################################
+    # Main Event Loop
     Log.info('Starting Main Loop')
     app.MainLoop()
     Log.info('MainLoop returned. Program stops')

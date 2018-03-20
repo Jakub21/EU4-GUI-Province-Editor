@@ -30,8 +30,8 @@ class mainFrame(frameMenu):
         self.initPanel()
         self.initStatusBar()
         self.SetSize(
-            self.GetSize()[0] + static['frame-x'],
-            self.GetSize()[1] + static['frame-y']
+            self.GetSize()[0] + 180,
+            self.GetSize()[1] + 150,
         )
         self.statusBusyEnd()
         self.InitSessionEnd = datetime.now()
@@ -70,8 +70,8 @@ class mainFrame(frameMenu):
         btt.SetFocus()
         ################
 
-        for i in static['mf']['grw-col']:
+        for i in [0]:
             self.sizer.AddGrowableCol(i)
-        for i in static['mf']['grw-row']:
+        for i in [0]:
             self.sizer.AddGrowableRow(i)
         self.panel.SetSizerAndFit(self.sizer)

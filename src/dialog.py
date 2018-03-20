@@ -245,7 +245,7 @@ class ConfigDialog(basicDialog):
         self.initPanel()
         self.SetSize(
             self.GetSize()[0] + 150,
-            self.GetSize()[1] + 260,
+            self.GetSize()[1] + 290,
         )
         if static['center-on-screen']:
             self.Center()
@@ -260,7 +260,14 @@ class ConfigDialog(basicDialog):
         sizer.Add(wx.StaticText(self.panel, label=lang['CONF']['font']),
             flag=wx.EXPAND, pos=(9,0))
         self.fontSize = NumCtrl(self.panel, value=conf['repr-font-size'])
-        sizer.Add(self.fontSize, pos=(10,0), flag=wx.EXPAND)
+        sizer.Add(self.fontSize, pos=(10,0))#, flag=wx.EXPAND)
+        ################################
+        # Hide no-segion provinces
+        sizer.Add(wx.StaticText(self.panel, label=lang['CONF']['no-segn']),
+            flag=wx.EXPAND, pos=(11,0))
+        self.NoSegn = wx.CheckBox(self.panel)
+        self.NoSegn.SetValue(conf['hide-no-segn'])
+        sizer.Add(self.NoSegn, pos=(12,0), flag=wx.EXPAND)
         ################################
         # Attribute Files
         def selectFile(key):
@@ -288,12 +295,12 @@ class ConfigDialog(basicDialog):
         ################################
         # Hidden Columns
         sizer.Add(wx.StaticText(self.panel, label=lang['CONF']['hidden']),
-            flag=wx.EXPAND, pos=(11,0))
+            flag=wx.EXPAND, pos=(13,0))
         self.hiddenCols = wx.CheckListBox(self.panel,
             style=wx.LB_NEEDED_SB|wx.LB_MULTIPLE)
         self.hiddenCols.Set(static['column-order'])
         self.hiddenCols.SetCheckedStrings(conf['rem-from-repr'])
-        sizer.Add(self.hiddenCols, pos=(12,0), flag=wx.EXPAND)
+        sizer.Add(self.hiddenCols, pos=(14,0), flag=wx.EXPAND)
         ################################
         # Bottom buttons
         bSizer = wx.GridBagSizer()
@@ -302,8 +309,8 @@ class ConfigDialog(basicDialog):
         cncl = el.Button(self.panel, 'cancel', id=wx.ID_CANCEL)
         cncl.SetFocus()
         bSizer.Add(cncl, pos=(0,1))
-        sizer.Add(bSizer, pos=(13,0), flag=wx.EXPAND)
+        sizer.Add(bSizer, pos=(15,0), flag=wx.EXPAND)
         ################################
         sizer.AddGrowableCol(0)
-        sizer.AddGrowableRow(12)
+        sizer.AddGrowableRow(14)
         self.panel.SetSizerAndFit(sizer)

@@ -196,7 +196,7 @@ class frameInit(frameDialog):
 
 
     ################################
-    def Configure(self, *argv):
+    def Configure(self, event=None):
         Log.info('Starting Configurator')
         PausedInitialization = False
         if self.busyDlg != None:
@@ -204,16 +204,22 @@ class frameInit(frameDialog):
             self.statusBusyEnd()
         d = ConfigDialog()
         if d.ShowModal() == wx.ID_OK:
+            ################ Assignment / Localisation
             for key in conf['path'].keys():
                 conf['path'][key] = d.PathStr[key].GetValue().replace('\\', '/')
             if 0 in map(lambda x: len(x), conf['path'].values()):
                 self.prompt('error', 'no-conf')
-                Log.info('Configuration is invalid')
-                exit() # Can not start Editor w/o initialization
+                Log.info('User attempted to close Configurator with missing files')
+                exit() # Can not start Editor w/o configuration
             else:
                 conf['was-configured'] = True
+            ################ Representation Font Size
             conf['repr-font-size'] = int(d.fontSize.GetValue())
+            ################ Hidden no-segn provinces
+            conf['hide-no-segn'] = d.NoSegn.GetValue()
+            ################ Hidden Columns
             conf['rem-from-repr'] = list(d.hiddenCols.GetCheckedStrings())
+            ################ Saving
             Log.info('Saving new configuration')
             self.YamlDump(conf, PATH.CONF)
             Log.info('Configurator done')
@@ -222,21 +228,22 @@ class frameInit(frameDialog):
             if not self.sessionInitialized:
                 self.prompt('error', 'no-conf')
                 Log.error('Configuration is invalid')
-                exit() # Can not start Editor w/o initialization
+                exit() # Can not start Editor w/o configuration
         d.Destroy()
         if PausedInitialization: # Only resumes PleaseWait if it was running before
             self.statusBusyStart()
+        return True
 
     ################################
     def initSession(self, static, lang):
-        self.WasConfigured = False
+        self.InitConfig = False
         Log.info('Initializing Session')
         if 0 in map(lambda x: len(x), conf['path'].values()):
             conf['was-configured'] = False
         if not conf['was-configured']:
             Log.warn('Configuration is empty or invalid')
-            self.WasConfigured = True
-            self.Configure(static, lang)
+            self.InitConfig = True
+            self.Configure()
 
         if not self.initLocalisation():
             conf['was-configured'] = False

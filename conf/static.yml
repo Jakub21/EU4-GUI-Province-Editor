@@ -7,18 +7,9 @@
 ################################
 center-on-screen    : yes
 ################
-# Standard sizes
-cell-x              : 80
-cell-y              : 27
-################
-# Frame size modifier (frame size = sizer size + those)
-frame-x             : 180
-frame-y             : 150
-################
-# Main Frame Settings
-mf:
-    grw-col         : [0]
-    grw-row         : [0]
+# Standard button sizes
+btt-x              : 80
+btt-y              : 27
 ################################
 # Logging
 engine-log-rate     : 500 # Log progress percentage every _ provinces parsed
@@ -30,7 +21,7 @@ engine-log-rate     : 500 # Log progress percentage every _ provinces parsed
 pandas:
     max-rows        : 4500
     max-cols        : 50
-    disp-width      : 1000 # Only limited by outText width
+    disp-width      : 1500 # Only limited by outText width
 
 
 ################################
