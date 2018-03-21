@@ -145,7 +145,6 @@ class frameEngine(frameInit):
             return result
         ################
         total_provs = len(listdir(path))
-        Log.debug('Province count: '+str(total_provs))
         d = Progress('load', 'load-desc', '', total_provs, parent=self)
         rows = []
         i=0
@@ -160,7 +159,6 @@ class frameEngine(frameInit):
             try:
                 contents = self.EngineGetScope(t.split())
             except TypeError:
-                d.Destroy()
                 Log.warn('Syntax Error in History File ('+filename+')')
                 self.prompt('warning', 'hist-syntax', data=filename)
                 continue
@@ -209,6 +207,8 @@ class frameEngine(frameInit):
         df = pd.DataFrame(rows, columns=static['column-order'])
         df.set_index(static['column-index'], inplace=True)
         d.Destroy()
+        Log.debug('Loaded '+str(i)+' provinces.'+\
+            'There are '+str(len(listdir(path)))+' files in the directory.')
         Log.info('Load procedure complete')
         return df
 
@@ -238,16 +238,13 @@ class frameEngine(frameInit):
             return
         ################
         data = data.values.tolist()
-        ColumnOrder = static['column-order']
-        columns = static['column-order']
-        columns.remove(static['column-index'])
+        columns = static['column-order'][1:]
         sep = '/'
         INDEX = 0
         TOTAL = len(data)
         d = Progress('save', 'save-desc', '', TOTAL, parent=self)
         ################
         for row in data:
-            row = row[1:]
             ID = IDList[INDEX]
             text = static['histfile-prefix'] + str(ID) + '\n'*2
             filename = ''
@@ -265,7 +262,7 @@ class frameEngine(frameInit):
                 except IndexError:
                     if cName != 'group':
                         self.prompt('warning', 'value-not-found', data=str(row[0])+' '+cName)
-                    value = ''
+                    continue
                 if (type(value) == float) and not(pd.isnull(value)):
                     value = int(value)
                 value = str(value)
@@ -275,6 +272,8 @@ class frameEngine(frameInit):
                     continue
                 if cName not in static['history-file-keys'].keys():
                     continue
+                if (cName == 'capital') and (len(value.split()) > 1):
+                    value = '"'+value+'"'
                 ################
                 key = static['history-file-keys'][cName]
                 if type(key) == str:
@@ -290,8 +289,11 @@ class frameEngine(frameInit):
                         continue
                     text += SaveLine(key, element, len(key)-1, 0)
             DIR = path + '/' + filename
+            try:
+                open(DIR, 'w').write(text)
+            except PermissionError:
+                Log.warn('Permission denied: "'+DIR+'"')
         d.Destroy()
+        Log.debug('Saved '+str(INDEX)+' out of '+str(len(data))+' provinces')
         Log.info('Save procedure complete')
-        static['column-order'] = ColumnOrder # Value is overwritten before the loop
-            # Save procedure could run only 1 time, then program restart was required
         return True

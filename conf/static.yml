@@ -97,7 +97,7 @@ history-file-keys   : {
     discovered      : discovered_by,
     modifiers       : [add_permanent_province_modifier, name],
 }
-column-index        : id
+column-index        : id # Whatever is here, it has to be 1st in column-order
 column-order        : [ # All Columns
     id, name, capital,
     area, regn, segn,
