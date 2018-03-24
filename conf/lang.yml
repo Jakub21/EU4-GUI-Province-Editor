@@ -136,7 +136,7 @@ dlg:
         save        : "Saving"
         prcs        : "Processing"
         load-desc   : "Loading original files"
-        save-desc   : "Savind data to original files"
+        save-desc   : "Saving data to original files"
 ################
 # Errors
 msg:
@@ -145,7 +145,7 @@ msg:
     sure-exit       : "Are you sure want to exit? Unsaved data will be lost."
     # Errors
     not-a-csv       : "Loaded file is not a valid CSV Spreadsheet"
-    filenotfound    : "File couldn't be found!"
+    filenotfound    : "File could not be found!"
     no-conf         : "Editor can not start until it is configured"
     invalid-conf    : "Editor configuration is invalid"
     locl-not-yml    : "Invalid localisation file"
