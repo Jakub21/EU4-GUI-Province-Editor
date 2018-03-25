@@ -30,10 +30,14 @@ mb:
     done            : "Done"
     cancel          : "Cancel"
     # Main
-    run-static-title: "Run Configurator"
-    run-static-desc : "Configure the Editor"
+    configure-title : "Run Configurator"
+    configure-desc  : "Configure the Editor"
     quit-title      : "Quit"
     quit-desc       : "Exit program with out saving data"
+    # Commands
+    cmd-file-title  : "Load Commands"
+    cmd-file-desc   : "Execute commands set from file"
+    cmd-line-btt    : "Execute"
     # Load options
     load-s-title    : "Load Sheet"
     load-s-desc     : "Load Spreadsheet"
@@ -109,6 +113,8 @@ dlg:
     error           : "Error"
     warning         : "Warning"
     info            : "Info"
+    # Commands
+    comm-selfile    : "Select commands file"
     # Filestream (Editing)
     load-s-msg      : "Select CSV Spreadsheet"
     load-o-msg      : "Select provinces directory"
@@ -174,3 +180,4 @@ formats:
     csv             : "CSV Spreadsheets"
     yml             : "YAML Configuration"
     txt             : "Text Files"
+    euge            : "EU4 GUI Editor Command Set"

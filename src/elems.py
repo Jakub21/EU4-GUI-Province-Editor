@@ -26,7 +26,7 @@ def init(_static, _lang, _conf):
 
 ################################
 class TextCtrl(wx.TextCtrl):
-    def __init__(self, parent, value='', modifier=6):
+    def __init__(self, parent, value=''):
         super().__init__(parent)
         self.SetValue(value)
         self.SetInsertionPoint(self.GetInsertionPoint())

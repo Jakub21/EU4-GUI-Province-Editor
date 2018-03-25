@@ -5,7 +5,7 @@
 # Python 3.6.3
 
 ################################
-from src.actions import frameActions
+from src.commands import frameCommands
 import wx
 import logging
 
@@ -13,7 +13,7 @@ import logging
 Log = logging.getLogger('MainLogger')
 
 ################################
-class frameMenu(frameActions):
+class frameMenu(frameCommands):
     def __init__(self, _stt, _lang, _conf):
         global static
         static = _stt
@@ -30,8 +30,10 @@ class frameMenu(frameActions):
         # MAIN MENU
         mmenu = wx.Menu()
         self.Bind(wx.EVT_MENU, self.Configure,
-            mmenu.Append(-1, lang['mb']['run-static-title'], lang['mb']['run-static-desc']))
-        self.Bind(wx.EVT_MENU, self.actionQuit,
+            mmenu.Append(-1, lang['mb']['configure-title'], lang['mb']['configure-desc']))
+        self.Bind(wx.EVT_MENU, self.actionGetCommands,
+            mmenu.Append(-1, lang['mb']['cmd-file-title'], lang['mb']['cmd-file-desc']))
+        self.Bind(wx.EVT_MENU, self.actionGetCommands,
             mmenu.Append(-1, lang['mb']['quit-title'], lang['mb']['quit-desc']))
 
         ################

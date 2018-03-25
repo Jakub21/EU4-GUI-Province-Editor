@@ -23,6 +23,12 @@ pandas:
     max-cols        : 50
     disp-width      : 1500 # Only limited by outText width
 
+################################
+# COMMANDS
+################################
+cmd-list            : [
+    load loadu save select sort in repr exit
+]
 
 ################################
 # EDITOR

@@ -49,6 +49,25 @@ class frameActions(frameEngine):
         Log.info('Action is not assigned')
         self.prompt('info', 'default')
 
+    ################################
+    def actionGetCommands(self, event):
+        Log.info('Loading command set from file')
+        dialog = dlg.FileDialog(lang['dlg']['comm-selfile'], 'euge', 'open')
+        if dialog.ShowModal() == wx.ID_OK:
+            path = dialog.GetPaths()[0].replace('\\', '/')
+        else:
+            Log.info('Loading Canceled')
+            return
+        dialog.Destroy()
+        self.DoCommandSet(path)
+
+    ################################
+    def actionExeCmd(self, event):
+        Log.info('Executing command from CmdLine')
+        command = self.cmdLine.GetValue()
+        self.cmdLine.Clear()
+        self.DoCommand(command=command)
+
 
     ################################
     def actionLoadSheet(self, event, mode='std'):

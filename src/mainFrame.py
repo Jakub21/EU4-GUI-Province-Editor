@@ -47,31 +47,41 @@ class mainFrame(frameMenu):
     def initPanel(self):
         self.panel = wx.Panel(self)
         self.sizer = wx.GridBagSizer()
+
+        ################
+        # Command line
+        self.cmdLine = wx.TextCtrl(self.panel, style=wx.TE_PROCESS_ENTER)
+        self.cmdLine.Bind(wx.EVT_TEXT_ENTER, self.actionExeCmd)
+        self.sizer.Add(self.cmdLine, pos=(0,0), flag=wx.EXPAND)
+
         ################
         # Text Repr. of Data
         self.outText = wx.TextCtrl(self.panel, value=lang['repr']+'\n',
             style = wx.TE_MULTILINE|wx.TE_READONLY)
-        self.sizer.Add(self.outText, pos=(0,0),  flag=wx.EXPAND)
+        self.sizer.Add(self.outText, pos=(1,0), flag=wx.EXPAND)
         # Changing font
         FontSize = conf['repr-font-size']
         Log.info('Changing font of Repr to '+str(FontSize)+' px')
         FONT = wx.Font(FontSize, wx.MODERN, wx.NORMAL, wx.NORMAL, False, 'Consolas')
         self.outText.SetFont(FONT)
+
         ################
         # Right side sizer
         self.bSizer = wx.GridBagSizer()
-        btt = el.Button(self.panel,'mod-col-btt', self.actionModifyColumn)
+        btt = el.Button(self.panel,'cmd-line-btt', self.actionModifyColumn)
         self.bSizer.Add(btt, pos=(0,0))
 
-        btt = el.Button(self.panel,'mod-prov-btt', self.actionModifyProvince)
+        btt = el.Button(self.panel,'mod-col-btt', self.actionModifyColumn)
         self.bSizer.Add(btt, pos=(1,0))
 
-        self.sizer.Add(self.bSizer, pos=(0,1), span=(1,1))
-        btt.SetFocus()
-        ################
+        btt = el.Button(self.panel,'mod-prov-btt', self.actionModifyProvince)
+        self.bSizer.Add(btt, pos=(2,0))
 
-        for i in [0]:
-            self.sizer.AddGrowableCol(i)
-        for i in [0]:
-            self.sizer.AddGrowableRow(i)
+        self.sizer.Add(self.bSizer, pos=(0,1), span=(2,0))
+        btt.SetFocus()
+
+        ################
+        # Changing Frame appearance
+        self.sizer.AddGrowableCol(0)
+        self.sizer.AddGrowableRow(1)
         self.panel.SetSizerAndFit(self.sizer)
