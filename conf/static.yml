@@ -27,7 +27,7 @@ pandas:
 # COMMANDS
 ################################
 cmd-list            : [
-    load loadu save select sort in repr exit
+    load, loadu, save, select, sort, set, in, repr, exit,
 ]
 
 ################################

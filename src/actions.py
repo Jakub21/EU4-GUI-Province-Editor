@@ -35,6 +35,7 @@ class frameActions(frameEngine):
             return True
         except AttributeError:
             self.prompt('warning', 'data-not-loaded')
+            Log.warn('AllData does not exist')
             return False
     ################################
     def checkSelection(self):
@@ -43,18 +44,22 @@ class frameActions(frameEngine):
             return True
         except AttributeError:
             self.prompt('warning', 'data-not-slctd')
+            Log.warn('AllData does not exist')
             return False
     ################################
     def applyChanges(self):
         try:
             self.AllData.update(self.Selection)
+            Log.info('Changes applied successfully')
             return True
-        except: return False
+        except:
+            Log.info('Could not apply changes')
+            return False
 
 
 
     ################################
-    def Represent(self, mode='SEL', clear=True):
+    def Represent(self, event=None, clear=True):
         if clear:
             self.outText.Clear()
         else:
@@ -74,14 +79,14 @@ class frameActions(frameEngine):
 
 
     ################################
-    def action(self, event):
+    def action(self, event=None):
         Log.info('Action is not assigned')
         self.prompt('info', 'default')
 
 
 
     ################################
-    def actionGetCommands(self, event):
+    def actionGetCommands(self, event=None):
         Log.info('GetCommands UserInput')
         dialog = dlg.FileDialog(lang['dlg']['comm-selfile'], 'euge', 'open')
         if dialog.ShowModal() == wx.ID_OK:
@@ -90,7 +95,7 @@ class frameActions(frameEngine):
             Log.info('Loading Canceled')
             return
         dialog.Destroy()
-        self.getCommands(path)
+        self.GetCommands(path)
     ################################
     def GetCommands(self, path):
         Log.info('Loading command set from file')
@@ -99,19 +104,19 @@ class frameActions(frameEngine):
 
 
     ################################
-    def actionExeCmd(self, event):
+    def actionExeCmd(self, event=None):
         self.ExeCmd()
     ################################
     def ExeCmd(self):
-        Log.info('Executing command from CmdLine')
         command = self.cmdLine.GetValue()
+        Log.info('Command: '+command)
         self.cmdLine.Clear()
         self.DoCommand(command=command)
 
 
 
     ################################
-    def actionLoadSheet(self, event, mode='std'):
+    def actionLoadSheet(self, event=None, silent=False):
         Log.info('LoadSheet User Input')
         msg = lang['dlg']['load-s-msg']
         dialog = dlg.FileDialog(msg, 'csv', 'open')
@@ -121,9 +126,9 @@ class frameActions(frameEngine):
             Log.info('User cancelled')
             return
         dialog.Destroy()
-        self.LoadSheet(path)
+        self.LoadSheet(path, silent=silent)
     ################################
-    def LoadSheet(self, path):
+    def LoadSheet(self, path, silent=False):
         Log.info('Loading Sheet')
         try:
             self.AllData = pd.read_csv(path, encoding=static['encoding-sheet'])
@@ -134,13 +139,14 @@ class frameActions(frameEngine):
             Log.warn('Loading Canceled, File is not a valid CSV Spreadsheet')
             self.prompt('error', 'not-a-csv')
             return
-        self.Represent()
+        if not silent:
+            self.Represent()
         return True
 
 
 
     ################################
-    def actionLoadOrig(self, event, mode='std'):
+    def actionLoadOrig(self, event=None, silent=False):
         Log.info('LoadOrig User Input')
         msg = lang['dlg']['load-o-msg']
         dlg = wx.DirDialog(self,
@@ -154,9 +160,9 @@ class frameActions(frameEngine):
             Log.info('Loading Canceled')
             return
         dlg.Destroy()
-        self.LoadOrig(path)
+        self.LoadOrig(path, silent=silent)
     ################################
-    def LoadOrig(self, path):
+    def LoadOrig(self, path, silent=False):
         Log.info('Loading Original')
         Data = self.EngineLoad(path)
         if type(Data) != int:
@@ -165,13 +171,14 @@ class frameActions(frameEngine):
             Log.info('Loading Canceled')
             return
         self.AllData.sort_values(static['sortby-loct-cols'], inplace=True)
-        self.Represent()
+        if not silent:
+            self.Represent()
         return True
 
 
 
     ################################
-    def actionLoadUpdSheet(self):
+    def actionLoadUpdSheet(self, event=None, silent=False):
         Log.info('LoadUpdSheet User Input')
         msg = lang['dlg']['loadu-o-msg']
         dialog = dlg.FileDialog(msg, 'csv', 'open')
@@ -181,9 +188,9 @@ class frameActions(frameEngine):
             Log.info('User cancelled')
             return
         dialog.Destroy()
-        self.LoadUpdSheet(path)
+        self.LoadUpdSheet(path, silent=silent)
     ################################
-    def LoadUpdSheet(self, path):
+    def LoadUpdSheet(self, path, silent=False):
         Log.info('Updating with Sheet')
         if not self.checkAllData(): return
         try:
@@ -196,13 +203,14 @@ class frameActions(frameEngine):
             self.prompt('error', 'not-a-csv')
             return
         self.AllData.update(Data)
-        self.Represent()
+        if not silent:
+            self.Represent()
         return True
 
 
 
     ################################
-    def actionLoadUpdOrig(self):
+    def actionLoadUpdOrig(self, event=None, silent=False):
         Log.info('LoadUpdOrig User Input')
         msg = lang['dlg']['loadu-o-msg']
         dlg = wx.DirDialog(self,
@@ -215,9 +223,9 @@ class frameActions(frameEngine):
         else:
             Log.info('Loading Canceled')
             return
-        self.LoadUpdOrig(path)
+        self.LoadUpdOrig(path, silent=silent)
     ################################
-    def LoadUpdOrig(self, path):
+    def LoadUpdOrig(self, path, silent=False):
         Log.info('Updating with Original')
         Data = self.EngineLoad(path)
         if type(Data) == int:
@@ -225,13 +233,14 @@ class frameActions(frameEngine):
             return
         Data.sort_values(static['sortby-loct-cols'], inplace=True)
         self.AllData.update(Data)
-        self.Represent()
+        if not silent:
+            self.Represent()
         return True
 
 
 
     ################################
-    def actionSaveSheet(self, event):
+    def actionSaveSheet(self, event=None):
         Log.info('SaveSheet User Input')
         if not self.checkAllData(): return
         msg = lang['dlg']['save-s-msg']
@@ -251,7 +260,7 @@ class frameActions(frameEngine):
 
 
     ################################
-    def actionSaveOrig(self, event):
+    def actionSaveOrig(self, event=None):
         Log.info('SaveOrig User Input')
         if not self.checkAllData(): return
         Log.info('Saving original')
@@ -277,7 +286,7 @@ class frameActions(frameEngine):
 
 
     ################################
-    def actionSelectNew(self, event):
+    def actionSelectNew(self, event=None, silent=False):
         Log.info('SelectNew User Input')
         self.applyChanges()
         if not self.checkAllData(): return
@@ -289,19 +298,20 @@ class frameActions(frameEngine):
         else:
             Log.info('Selection change canceled')
             return 0
-        self.SelectNew(attr, cols)
+        self.SelectNew(attr, cols, silent=silent)
     ################################
-    def SelectNew(self, attr, cols):
+    def SelectNew(self, attr, cols, silent=False):
         Log.info('Selection: New')
         if not self.checkAllData(): return
         self.applyChanges()
         self.Selection = self.AllData.loc[self.AllData[attr].isin(cols)]
-        self.Represent()
+        if not silent:
+            self.Represent()
 
 
 
     ################################
-    def actionSelectSub(self, event):
+    def actionSelectSub(self, event=None, silent=False):
         Log.info('SelectSub User Input')
         self.applyChanges()
         if not self.checkSelection(): return
@@ -313,19 +323,20 @@ class frameActions(frameEngine):
         else:
             Log.info('Selection change canceled')
             return 0
-        self.SelectSub(attr, cols)
+        self.SelectSub(attr, cols, silent=silent)
     ################################
-    def SelectSub(self, attr, cols):
+    def SelectSub(self, attr, cols, silent=False):
         Log.info('Selection: Sub')
         if not self.checkSelection(): return
         self.applyChanges()
         self.Selection = self.Selection.loc[self.Selection[attr].isin(cols)]
-        self.Represent()
+        if not silent:
+            self.Represent()
 
 
 
     ################################
-    def actionSelectApp(self, event):
+    def actionSelectApp(self, event=None, silent=False):
         Log.info('SelectApp User Input')
         self.applyChanges()
         if not self.checkSelection(): return
@@ -337,43 +348,46 @@ class frameActions(frameEngine):
         else:
             Log.info('Selection change canceled')
             return 0
-        self.SelectApp(attr, cols)
+        self.SelectApp(attr, cols, silent=silent)
     ################################
-    def SelectApp(self, attr, cols):
+    def SelectApp(self, attr, cols, silent=False):
         Log.info('Selection: App')
         if not self.checkSelection(): return
         self.applyChanges()
         New = self.AllData.loc[self.AllData[attr].isin(cols)]
         self.Selection = pd.concat([self.Selection, New])
-        self.Represent()
+        if not silent:
+            self.Represent()
 
 
 
     ################################
-    def actionSortByID(self, event):
+    def actionSortByID(self, event=None, silent=False):
         Log.info('Sorting by ID')
         try: self.Selection.sort_index(inplace=True)
         except: pass
         try: self.AllData.sort_index(inplace=True)
         except: pass
-        self.Represent()
+        if not silent:
+            self.Represent()
 
 
 
     ################################
-    def actionSortByLoc(self, event):
+    def actionSortByLoc(self, event=None, silent=False):
         Log.info('Sorting by Location')
         COLS = static['sortby-loct-cols']
         try: self.Selection.sort_values(COLS, inplace=True)
         except: pass
         try: self.AllData.sort_values(COLS, inplace=True)
         except: pass
-        self.Represent()
+        if not silent:
+            self.Represent()
 
 
 
     ################################
-    def actionModifyColumn(self, event):
+    def actionModifyColumn(self, event=None, silent=False):
         Log.info('ModifyingColumn User Input')
         if not self.checkSelection(): return
         d = dlg.ModifyDialog('modify-col', self.Selection)
@@ -384,34 +398,35 @@ class frameActions(frameEngine):
                 VAL = d.OtherName.GetValue()
         else:
             return
-        self.ModifyColumn(COL, VAL)
+        self.ModifyColumn(COL, VAL, silent=silent)
     ################################
-    def ModifyColumn(self, COL, VAL):
+    def ModifyColumn(self, COL, VAL, silent=False):
         Log.info('Modifying column')
         if not self.checkSelection(): return
         self.Selection.loc[:, COL] = VAL
-        self.Represent()
+        if not silent:
+            self.Represent()
 
 
     ################################
-    def actionModifyProvince(self, event):
+    def actionModifyProvince(self, event=None, silent=False):
         Log.info('ModifyProvince User Input')
         if not self.checkSelection(): return
         d = dlg.ModifyDialog('modify-prov', self.Selection)
         if d.ShowModal() == wx.ID_OK:
             COL = d.ListCol.GetString(d.ListCol.GetSelection())
             VAL = d.AttrList.GetString(d.AttrList.GetSelection())
-            ROW = d.ProvInput.GetValue()
+            ROW = d.ProvInput.GetValue().split()
             if VAL == lang['other']:
                 VAL = d.OtherName.GetValue()
         else: return
-        self.ModifyProvince(ROW, COL, VAL)
+        self.ModifyProvince(ROW, COL, VAL, silent=silent)
     ################################
-    def ModifyProvince(self, IDS, COL, VAL):
+    def ModifyProvince(self, IDS, COL, VAL, silent=False):
         Log.info('Modifying province')
         if not self.checkSelection(): return
         try:
-            IDS = list(map(lambda x: int(x), IDS.split()))
+            IDS = list(map(lambda x: int(x), IDS))
         except ValueError:
             Log.warn('Province ID must be convertable to INT type', ROW.split())
             self.prompt('error', 'unknown-prov')
@@ -421,12 +436,13 @@ class frameActions(frameEngine):
         Log.info(IDS)
         for ID in IDS:
             self.Selection.loc[ID, COL] = VAL
-        self.Represent()
+        if not silent:
+            self.Represent()
 
 
 
 
     ################################
-    def actionQuit(self, event):
+    def actionQuit(self, event=None):
         Log.info('Quit Action')
         super().Close()

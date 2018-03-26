@@ -24,39 +24,37 @@ class frameCommands(frameActions):
 
     ################################
     def DoCommandSet(self, path):
-        f = open(path, 'r').read().replace('\n', ' ')
+        Log.info('Executing command set from file: '+'/'.join(path.split('/')[-3:]))
+        data = open(path, 'r').read().replace('\n', ' ')
+        data = data.split('>')
+        data = list(filter(lambda x: not x.startswith('#'), data))[1:]
         ################
-        F = ''
-        C = ['[', ']']
-        for c in f:
-            if c in C:
-                c = ' '+c+' '
-            F+=c
-        f = F
-        ################
-        f = f.split('>')
-        f = list(filter(lambda x: not x.startswith('#'), f))[1:]
-        f = list(map(lambda x: x.split(), f))
-        Log.info('Executing commands from file ('+str(len(f))+' instructions)')
+        Log.info('Instructions count: '+str(len(data)))
         index = 0
-        for command in f:
+        for command in data:
             try:
-                self.DoCommand(command=command)
+                Log.info('Command no.'+str(index))
+                result = self.DoCommand(command=command, fromFile=True)
             except:
-                Log.info('Uncaught error occurred during attempt to execute \
-                command no.'+str(index)+' ('+' '.join(command)+').\nRaising error')
+                Log.error('Uncaught error occurred ('+command+').\nRaising error')
                 raise
+            if not result:
+                Log.info('Leaving CommandSet exe loop')
+                return
             index += 1
+        Log.info('Command set executed successfully')
 
     ################################
-    def DoCommand(self, event=None, command=''):
+    def DoCommand(self, event=None, command='', fromFile=False):
+        command = command.replace('[', ' [ ').replace(']', ' ] ')
+        command = command.split()
         try:
-            Func = command.split()[0]
+            Func = command[0]
         except IndexError:
             Log.info('Empty instruction')
-            return # Empty instruction
+            return True # Empty instruction, allows continuation
         try:
-            args = command.split()[1:]
+            args = command[1:]
             if '[' in args:
                 A = []
                 L = []
@@ -75,8 +73,123 @@ class frameCommands(frameActions):
                         A.append(arg)
                 args = A
         except IndexError: args=[]
-        if Func in static['cmd-list']:
-            Log.debug('Issued Cmd: '+Func+' with args: '+str(args))
-        else:
+        if Func not in static['cmd-list']:
             Log.warn('Issued unknown command')
+            self.prompt('warning', 'unknown-cmd')
             return
+
+        MissingArgs = False
+
+        if Func in ['load', 'loadu', 'save', 'select', 'sort']:
+            try: Type = args[0]
+            except: MissingArgs = True
+        if Func in ['load', 'loadu', 'save']:
+            try: path = args[1][1:-1]
+            except: MissingArgs = True
+
+
+        if MissingArgs:
+            Log.info('Missing arguments for function '+Func)
+            return
+
+        if Func == 'load':
+            if Type == 'sheet':
+                self.LoadSheet(path, silent=fromFile)
+            elif Type == 'orig':
+                self.LoadOrig(path, silent=fromFile)
+            else:
+                Log.warn('Invalid argument')
+                self.prompt('warning', 'invalid-arg')
+
+        elif Func == 'loadu':
+            if Type == 'sheet':
+                self.LoadUpdSheet(path, silent=fromFile)
+            elif Type == 'orig':
+                self.LoadUpdOrig(path, silent=fromFile)
+            else:
+                Log.warn('Invalid argument')
+                self.prompt('warning', 'invalid-arg')
+
+        elif Func == 'save':
+            if Type == 'sheet':
+                self.SaveSheet(path)
+            elif Type == 'orig':
+                self.SaveOrig(path)
+            else:
+                Log.warn('Invalid argument')
+                self.prompt('warning', 'invalid-arg')
+
+        elif Func == 'select':
+            attr = args[1]
+            cols = args[2]
+            if type(cols) == str:
+                cols = [cols]
+            if attr not in static['column-order']:
+                Log.warn('Unknown column "'+attr+'"')
+                self.prompt('warning', 'unknown-col')
+                return
+            if Type == 'new':
+                self.SelectNew(attr, cols, silent=fromFile)
+            elif Type == 'sub':
+                self.SelectSub(attr, cols, silent=fromFile)
+            elif Type == 'app':
+                self.SelectApp(attr, cols, silent=fromFile)
+            else:
+                Log.warn('Invalid argument')
+                self.prompt('warning', 'invalid-arg')
+
+        elif Func == 'sort':
+            if Type == 'loc':
+                self.actionSortByLoc(silent=fromFile)
+            elif Type == 'id':
+                self.actionSortByID(silent=fromFile)
+            else:
+                Log.warn('Invalid argument')
+                self.prompt('warning', 'invalid-arg')
+
+        elif Func == 'set':
+            attr = args[0]
+            val = args[1]
+            if attr not in static['column-order']:
+                Log.warn('Unknown column "'+attr+'"')
+                self.prompt('warning', 'unknown-col')
+                return
+            self.ModifyColumn(attr, val, silent=fromFile)
+
+        elif Func == 'in':
+            cAttr = args[0] # Condition
+            cond = args[1]
+            vAttr = args[2] # Value
+            value = args[3]
+            if type(cond) == str:
+                cond = [cond]
+            if cAttr not in static['column-order']+['prov']:
+                Log.warn('Unknown column "'+cAttr+'"')
+                self.prompt('warning', 'unknown-col')
+                return
+            if vAttr not in static['column-order']:
+                Log.warn('Unknown column "'+vAttr+'"')
+                self.prompt('warning', 'unknown-col')
+                return
+            if cAttr == 'prov':
+                self.ModifyProvince(cond, vAttr, value, silent=fromFile)
+            else:
+                try:
+                    CurrentSel = list(self.Selection.index)
+                except AttributeError:
+                    Log.warn('Can not do this with no data selected')
+                    self.prompt('warning', 'data-not-slctd')
+                    return
+                self.SelectNew(cAttr, cond, silent=fromFile)
+                self.ModifyColumn(vAttr, value, silent=fromFile)
+                self.applyChanges()
+                self.Selection = self.AllData.loc[CurrentSel,:]
+
+
+        elif Func == 'repr':
+            self.Represent()
+
+        elif Func == 'exit':
+            self.actionQuit()
+
+        return True

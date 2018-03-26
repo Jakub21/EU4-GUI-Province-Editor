@@ -161,6 +161,10 @@ msg:
     data-not-loaded : "Can not do this with no data loaded"
     data-not-slctd  : "Can not do this with no data selected"
     unknown-prov    : "Can not find this province. Make sure it is in Current Selection"
+    # Warnings
+    unknown-cmd     : "Unknown command"
+    unknown-col     : "Unknown column name"
+    invalid-arg     : "Invalid Argument"
 
 ################
 # Configurator
