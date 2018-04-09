@@ -72,7 +72,7 @@ class frameActions(frameEngine):
             self.outText.AppendText(lang['all-data']+'\n'*2)
         data = data.drop(conf['rem-from-repr'], axis=1)
         if conf['hide-no-segn']:
-            drop = data.loc[data['segn'].isin(['', 'none'])]
+            drop = data.loc[data['segn'].isin([''])]
             data = data.drop(drop.index)
         self.outText.AppendText(data.__repr__()+'\n')
 
@@ -109,7 +109,6 @@ class frameActions(frameEngine):
     ################################
     def ExeCmd(self):
         command = self.cmdLine.GetValue()
-        Log.info('Command: '+command)
         self.cmdLine.Clear()
         self.DoCommand(command=command)
 
@@ -433,7 +432,6 @@ class frameActions(frameEngine):
             return
         if False in map(lambda x: x in self.Selection.index, IDS):
             Log.warn('One of the provinces is not in selected scope')
-        Log.info(IDS)
         for ID in IDS:
             self.Selection.loc[ID, COL] = VAL
         if not silent:

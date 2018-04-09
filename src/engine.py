@@ -48,7 +48,7 @@ class frameEngine(frameInit):
         ssc_cuthead = 1     # How many words remove from subscope head
         depth       = 0
         total_index = 0
-        key         = 'none'
+        key         = ''
         value       = ''
         inquotes    = False
         quoted      = ''

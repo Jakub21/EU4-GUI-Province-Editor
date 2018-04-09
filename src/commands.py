@@ -55,6 +55,7 @@ class frameCommands(frameActions):
             return True # Empty instruction, allows continuation
         try:
             args = command[1:]
+            args = list(map(lambda x: x.replace('NONE', ''), args))
             if '[' in args:
                 A = []
                 L = []

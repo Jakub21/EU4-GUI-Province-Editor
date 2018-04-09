@@ -75,7 +75,7 @@ class frameInit(frameDialog):
         def Analysis(text, memDepth):
             par_depth = 0
             depth = 0 # Starting
-            master = 'none'
+            master = ''
             members = []
             result = {}
             for word in text.split():
@@ -84,7 +84,7 @@ class frameInit(frameDialog):
                 if word in static['skip-at-regload']:
                     continue
                 if depth == par_depth:
-                    if master != 'none':
+                    if master != '':
                         result[master] = members
                     master = word
                     members = []
@@ -105,7 +105,7 @@ class frameInit(frameDialog):
                 if name.endswith(suffix):
                     name = name[:-len(suffix)]
             except AttributeError:
-                name = 'none'
+                name = ''
             return name
         ################
         segn = Analysis(Get(self, conf['path']['segn']), 1)
