@@ -81,7 +81,7 @@ reg-names-suffixes  : {
 }
 skip-at-regload     : "{=}colorareas"
 mlt-sep             : "&"
-history-file-keys   : {
+history-file-keys   : { # Internal:Original
     capital         : capital,
     cores           : add_core,
     claims          : add_claim,
@@ -94,6 +94,7 @@ history-file-keys   : {
     prod            : base_production,
     manp            : base_manpower,
     trade_goods     : trade_goods,
+    latent_tg       : latent_trade_goods,
     city            : is_city,
     ntv_size        : native_size,
     ntv_ferc        : native_ferocity,
@@ -103,6 +104,10 @@ history-file-keys   : {
     discovered      : discovered_by,
     modifiers       : [add_permanent_province_modifier, name],
 }
+file-lists  : [ # Data saved as lists instead of multiple 'key=value' pairs
+    latent_tg
+]
+
 column-index        : id # Whatever is here, it has to be 1st in column-order
 column-order        : [ # All Columns
     id, name, capital,
@@ -111,7 +116,7 @@ column-order        : [ # All Columns
     owner, cntrl,
     culture, religion, hre,
     tax, prod, manp,
-    trade_goods,
+    trade_goods, latent_tg,
     city, cost, fort,
     discovered, modifiers,
     filename, group,

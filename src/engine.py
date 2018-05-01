@@ -68,6 +68,9 @@ class frameEngine(frameInit):
             last = False
             fromsub = False
             ################
+            if len(text) == 1:
+                return text[0]
+            ################
             if word == obr:
                 depth += 1
             elif word == cbr:
@@ -98,7 +101,7 @@ class frameEngine(frameInit):
                 key = word
             elif index == eqs_index:
                 if word != eqs:
-                    raise TypeError
+                    return static['mlt-sep'].join(text)
             elif index == val_index:
                 if not last:
                     value = word
@@ -130,7 +133,7 @@ class frameEngine(frameInit):
             else:
                 q = []
                 for sub in data[keys[0]]:
-                    q += GetValue(keys[1:], sub, ID)
+                    q += GetValue(keys[1:], sub)
                 return q
             if result in [['nan'], ['no']]:
                 result = ''
@@ -198,7 +201,7 @@ class frameEngine(frameInit):
             for key in static['column-order']:
                 value = province[key]
                 if type(value) == list:
-                    value = static['mlt-sep'].join(value)
+                    value = static['mlt-sep'].join(map(lambda x: str(x), value))
                 if type(value) == str:
                     value = ''.join(list(filter(lambda ch: ch not in '"', value)))
                 row.append(value)
@@ -216,7 +219,7 @@ class frameEngine(frameInit):
     def EngineSave(self, path):
         Log.info('Starting Save procedure')
         ################
-        def SaveLine(key, value, maxdepth, depth):
+        def SaveLine(key, value, maxdepth, depth=0):
             i = static['indent']
             result = ''
             if depth == maxdepth:
@@ -229,6 +232,12 @@ class frameEngine(frameInit):
                 except KeyError:
                     pass # Optional
                 result += i*depth + '}\n'
+            return result
+        ################
+        def SaveList(key, values, depth=0):
+            i = static['indent']
+            result = i*depth+key[0]+' = {\n'+i*(depth+1)
+            result += ' '.join(values)+'\n'+i*depth+'}\n'
             return result
         ################
         data = self.AllData
@@ -285,10 +294,14 @@ class frameEngine(frameInit):
                 else:
                     value = [value]
                 ################
-                for element in value:
-                    if ((element.lower()) in static['EMPTY']) or (element==''):
-                        continue
-                    text += SaveLine(key, element, len(key)-1, 0)
+                if cName in static['file-lists']: # (key={val val})
+                    if value != ['']:
+                        text += SaveList(key, value)
+                else: # (key=val key=val)
+                    for element in value:
+                        if ((element.lower()) in static['EMPTY']) or (element==''):
+                            continue
+                        text += SaveLine(key, element, len(key)-1)
             DIR = path + '/' + filename
             try:
                 open(DIR, 'w').write(text)
