@@ -33,7 +33,7 @@ class frameMenu(frameCommands):
             mmenu.Append(-1, lang['mb']['configure-title'], lang['mb']['configure-desc']))
         self.Bind(wx.EVT_MENU, self.actionGetCommands,
             mmenu.Append(-1, lang['mb']['cmd-file-title'], lang['mb']['cmd-file-desc']))
-        self.Bind(wx.EVT_MENU, self.actionGetCommands,
+        self.Bind(wx.EVT_MENU, self.actionQuit,
             mmenu.Append(-1, lang['mb']['quit-title'], lang['mb']['quit-desc']))
 
         ################

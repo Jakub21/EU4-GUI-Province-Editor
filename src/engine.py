@@ -126,14 +126,15 @@ class frameEngine(frameInit):
         ################
         def GetValue(keys, data):
             if len(keys) == 1:
-                return data[keys[0]]
+                result = data[keys[0]]
             else:
                 q = []
                 for sub in data[keys[0]]:
-                    q += GetValue(keys[1:], sub)
-                if q == 'nan':
-                    q = ''
+                    q += GetValue(keys[1:], sub, ID)
                 return q
+            if result in [['nan'], ['no']]:
+                result = ''
+            return result
         ################
         def GetID(filename):
             numbers = ''.join(map(lambda x: str(x), range(10)))

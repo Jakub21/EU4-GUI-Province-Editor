@@ -79,6 +79,11 @@ class frameCommands(frameActions):
             self.prompt('warning', 'unknown-cmd')
             return
 
+        ################################
+        def ShowMissingArgs(Func):
+            Log.info('Missing arguments for function '+Func)
+            self.prompt('info', 'missing-arg', 'For function '+Func)
+        ################################
         MissingArgs = False
 
         if Func in ['load', 'loadu', 'save', 'select', 'sort']:
@@ -88,9 +93,8 @@ class frameCommands(frameActions):
             try: path = args[1][1:-1]
             except: MissingArgs = True
 
-
         if MissingArgs:
-            Log.info('Missing arguments for function '+Func)
+            ShowMissingArgs(Func)
             return
 
         if Func == 'load':
@@ -121,8 +125,12 @@ class frameCommands(frameActions):
                 self.prompt('warning', 'invalid-arg')
 
         elif Func == 'select':
-            attr = args[1]
-            cols = args[2]
+            try:
+                attr = args[1]
+                cols = args[2]
+            except:
+                ShowMissingArgs(Func)
+                return
             if type(cols) == str:
                 cols = [cols]
             if attr not in static['column-order']:
@@ -149,8 +157,12 @@ class frameCommands(frameActions):
                 self.prompt('warning', 'invalid-arg')
 
         elif Func == 'set':
-            attr = args[0]
-            val = args[1]
+            try:
+                attr = args[0]
+                val = args[1]
+            except:
+                ShowMissingArgs(Func)
+                return
             if attr not in static['column-order']:
                 Log.warn('Unknown column "'+attr+'"')
                 self.prompt('warning', 'unknown-col')
@@ -158,10 +170,14 @@ class frameCommands(frameActions):
             self.ModifyColumn(attr, val, silent=fromFile)
 
         elif Func == 'in':
-            cAttr = args[0] # Condition
-            cond = args[1]
-            vAttr = args[2] # Value
-            value = args[3]
+            try:
+                cAttr = args[0] # Condition
+                cond = args[1]
+                vAttr = args[2] # Value
+                value = args[3]
+            except:
+                ShowMissingArgs(Func)
+                return
             if type(cond) == str:
                 cond = [cond]
             if cAttr not in static['column-order']+['prov']:

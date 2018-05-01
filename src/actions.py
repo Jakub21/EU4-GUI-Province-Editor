@@ -134,6 +134,7 @@ class frameActions(frameEngine):
             self.AllData.sort_values(['segn', 'regn', 'area'], inplace=True)
             self.AllData.set_index(static['column-index'], inplace=True)
             self.AllData.replace(nan, static['empty-marker'], inplace=True)
+            self.AllData.replace('no', static['empty-marker'], inplace=True)
         except pd.errors.ParserError:
             Log.warn('Loading Canceled, File is not a valid CSV Spreadsheet')
             self.prompt('error', 'not-a-csv')
@@ -387,7 +388,7 @@ class frameActions(frameEngine):
 
     ################################
     def actionModifyColumn(self, event=None, silent=False):
-        Log.info('ModifyingColumn User Input')
+        Log.info('ModifyColumn User Input')
         if not self.checkSelection(): return
         d = dlg.ModifyDialog('modify-col', self.Selection)
         if d.ShowModal() == wx.ID_OK:

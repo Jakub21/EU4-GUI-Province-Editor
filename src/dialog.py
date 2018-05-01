@@ -137,11 +137,12 @@ class SelectDialog(basicDialog):
         ################################
         def updateAttrlist(event):
             i = self.ListCol.GetString(self.ListCol.GetSelection())
-            self.AttrList.Set(list(set(self.SRC[i])))
+            self.AttrList.Set(list(map(lambda x: str(x), set(self.SRC[i]))))
         ################################
         choices = [
             i for i in static['column-order'] if i not in set(conf['rem-from-repr'])
         ]
+        choices.remove('id')
         self.panel = wx.Panel(self)
         sizer = wx.GridBagSizer()
 

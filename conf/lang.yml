@@ -165,6 +165,7 @@ msg:
     unknown-cmd     : "Unknown command"
     unknown-col     : "Unknown column name"
     invalid-arg     : "Invalid Argument"
+    missing-arg     : "Missing arguments"
 
 ################
 # Configurator
