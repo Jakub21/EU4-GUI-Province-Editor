@@ -1,3 +1,12 @@
+hidden-segns:
+- west_american_sea
+- east_american_sea
+- south_european_sea
+- north_european_sea
+- west_african_sea
+- east_african_sea
+- indian_pacific_sea
+- north_pacific_sea
 path:
     area: ""
     locl: ""
@@ -9,4 +18,5 @@ rem-from-repr:
 - discovered
 repr-font-size: 10
 was-configured: false
+hide-listed-segn: true
 hide-no-segn: true

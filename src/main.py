@@ -91,8 +91,8 @@ def main(isDebug):
     if WasConfigurated:
         Log.info('Launch time measurement is unreliable because Configurator was running')
     else:
-        Log.info('Registered Editor launch time [ms]: '+str(total.total_seconds())[2:-3])
-        Log.info('Duration of PleaseWait prompt [ms]: '+str(prompt.total_seconds())[2:-3])
+        Log.info('Registered Editor launch time [ms]: '+str(int(total.total_seconds()*1e3)))
+        Log.info('Duration of PleaseWait prompt [ms]: '+str(int(prompt.total_seconds()*1e3)))
 
     ################################
     # Main Event Loop

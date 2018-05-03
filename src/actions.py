@@ -74,6 +74,9 @@ class frameActions(frameEngine):
         if conf['hide-no-segn']:
             drop = data.loc[data['segn'].isin([''])]
             data = data.drop(drop.index)
+        if conf['hide-listed-segn']:
+            drop = data.loc[data['segn'].isin(conf['hidden-segns'])]
+            data = data.drop(drop.index)
         self.outText.AppendText(data.__repr__()+'\n')
 
 

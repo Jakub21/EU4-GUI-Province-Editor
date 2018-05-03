@@ -124,10 +124,12 @@ class basicDialog(wx.Dialog):
 class SelectDialog(basicDialog):
     def __init__(self, mode, src):
         super().__init__(lang['dlg'][mode])
+        self.ExtendX = 40
+        self.ExtendY = 20
         self.initPanel()
         self.SetSize(
-            self.GetSize()[0] + 20,
-            self.GetSize()[1] + 40,
+            self.GetSize()[0] + self.ExtendY,
+            self.GetSize()[1] + self.ExtendX,
         )
         if static['center-on-screen']:
             self.Center()
@@ -173,10 +175,12 @@ class ModifyDialog(basicDialog):
         super().__init__(lang['dlg'][mode])
         self.SRC = src
         self.MODE = mode
+        self.ExtendX = 40
+        self.ExtendY = 20
         self.initPanel()
         self.SetSize(
-            self.GetSize()[0] + 20,
-            self.GetSize()[1] + 40,
+            self.GetSize()[0] + self.ExtendY,
+            self.GetSize()[1] + self.ExtendX,
         )
         if static['center-on-screen']:
             self.Center()
@@ -243,10 +247,12 @@ class ModifyDialog(basicDialog):
 class ConfigDialog(basicDialog):
     def __init__(self):
         super().__init__(lang['CONF']['title'])
+        self.ExtendX = 150
+        self.ExtendY = 500
         self.initPanel()
         self.SetSize(
-            self.GetSize()[0] + 150,
-            self.GetSize()[1] + 290,
+            self.GetSize()[0] + self.ExtendX,
+            self.GetSize()[1] + self.ExtendY,
         )
         if static['center-on-screen']:
             self.Center()
@@ -255,22 +261,87 @@ class ConfigDialog(basicDialog):
         self.PathStr = {}
         self.panel = wx.Panel(self)
         sizer = wx.GridBagSizer()
-        pathSizer = wx.GridBagSizer()
+        FileKeys = ['area', 'regn', 'segn', 'locl']
+        R = 2*len(FileKeys)+1
+
         ################################
         # Repr Font Size
         sizer.Add(wx.StaticText(self.panel, label=lang['CONF']['font']),
-            flag=wx.EXPAND, pos=(9,0))
+            flag=wx.EXPAND, pos=(R+1,0))
         self.fontSize = NumCtrl(self.panel, value=conf['repr-font-size'])
-        sizer.Add(self.fontSize, pos=(10,0))#, flag=wx.EXPAND)
+        sizer.Add(self.fontSize, pos=(R+2,0))
+
         ################################
-        # Hide no-segion provinces
+        # Hide no-segion provinces CheckBox
         sizer.Add(wx.StaticText(self.panel, label=lang['CONF']['no-segn']),
-            flag=wx.EXPAND, pos=(11,0))
+            flag=wx.EXPAND, pos=(R+3,0))
         self.NoSegn = wx.CheckBox(self.panel)
         self.NoSegn.SetValue(conf['hide-no-segn'])
-        sizer.Add(self.NoSegn, pos=(12,0), flag=wx.EXPAND)
+        sizer.Add(self.NoSegn, pos=(R+4,0), flag=wx.EXPAND)
+
         ################################
-        # Attribute Files
+        # Hide sea-segion provinces CheckBox
+        sizer.Add(wx.StaticText(self.panel, label=lang['CONF']['hide-segn']),
+            flag=wx.EXPAND, pos=(R+5,0))
+        self.HideSegn = wx.CheckBox(self.panel)
+        self.HideSegn.SetValue(conf['hide-listed-segn'])
+        sizer.Add(self.HideSegn, pos=(R+6,0), flag=wx.EXPAND)
+
+        ################################
+        # Hidden Superregions List
+        self.HiddenSuperRegions = conf['hidden-segns']
+        def hsUpdate():
+            self.hiddenSegns.DeleteAllItems()
+            for elm in self.HiddenSuperRegions:
+                self.hiddenSegns.Append([elm])
+        def hsAdd(event):
+            d = wx.TextEntryDialog(self,
+                lang['CONF']['inp-hs-msg'], lang['CONF']['inp-hs-cap'])
+            if d.ShowModal() == wx.ID_OK:
+                self.HiddenSuperRegions.append(d.GetValue())
+                hsUpdate()
+        def hsRem(event):
+            self.HiddenSuperRegions.remove(
+                self.HiddenSuperRegions[self.hiddenSegns.GetFirstSelected()])
+            hsUpdate()
+        sizer.Add(wx.StaticText(self.panel, label=lang['CONF']['hidden-segns']),
+            flag=wx.EXPAND, pos=(R+7,0))
+        self.hiddenSegns = wx.ListCtrl(self.panel, style=wx.LC_REPORT|wx.LC_SINGLE_SEL)
+        self.hiddenSegns.AppendColumn('Super-region')
+        self.hiddenSegns.SetColumnWidth(0,
+            self.hiddenSegns.GetSize()[0]+self.ExtendX-20)
+        hsUpdate()
+        sizer.Add(self.hiddenSegns, pos=(R+8,0), flag=wx.EXPAND)
+        # Button
+        bSizer = wx.GridBagSizer()
+        bSizer.Add(el.Button(self.panel, 'add', hsAdd), pos=(0,0))
+        bSizer.Add(el.Button(self.panel, 'rem', hsRem), pos=(1,0))
+        sizer.Add(bSizer, pos=(R+8,1))
+
+        ################################
+        # Hidden Columns List
+        sizer.Add(wx.StaticText(self.panel, label=lang['CONF']['hidden-cols']),
+            flag=wx.EXPAND, pos=(R+9,0))
+        self.hiddenCols = wx.CheckListBox(self.panel,
+            style=wx.LB_NEEDED_SB|wx.LB_MULTIPLE)
+        self.hiddenCols.Set(static['column-order'])
+        self.hiddenCols.SetCheckedStrings(conf['rem-from-repr'])
+        sizer.Add(self.hiddenCols, pos=(R+10,0), flag=wx.EXPAND)
+
+        ################################
+        # Bottom buttons
+        bSizer = wx.GridBagSizer()
+        done = el.Button(self.panel, 'done', id=wx.ID_OK)
+        bSizer.Add(done, pos=(0,0))
+        cncl = el.Button(self.panel, 'cancel', id=wx.ID_CANCEL)
+        cncl.SetFocus()
+        bSizer.Add(cncl, pos=(0,1))
+        sizer.Add(bSizer, pos=(R+11,0), flag=wx.EXPAND)
+
+        ################################
+        # Attribute Files # WARNING
+        # Despite being on the top of window the section has to be defined here
+        # Otherwise the text in 1st TextCtrl is shifted and is not fully visible
         def selectFile(key):
             d = FileDialog(lang['CONF'][key], static['formats'][key], 'open',
                 static['names'][key]+'.'+static['formats'][key])
@@ -288,30 +359,11 @@ class ConfigDialog(basicDialog):
             sizer.Add(self.PathStr[key], flag=wx.EXPAND, pos=(row+1,0))
             button = el.Button(self.panel, 'browse', Action)
             sizer.Add(button, pos=(row+1,1))
-        addRow('area', 1)
-        addRow('regn', 3)
-        addRow('segn', 5)
-        addRow('locl', 7)
-        sizer.Add(pathSizer, pos=(0,0), span=(0,1), flag=wx.EXPAND)
-        ################################
-        # Hidden Columns
-        sizer.Add(wx.StaticText(self.panel, label=lang['CONF']['hidden']),
-            flag=wx.EXPAND, pos=(13,0))
-        self.hiddenCols = wx.CheckListBox(self.panel,
-            style=wx.LB_NEEDED_SB|wx.LB_MULTIPLE)
-        self.hiddenCols.Set(static['column-order'])
-        self.hiddenCols.SetCheckedStrings(conf['rem-from-repr'])
-        sizer.Add(self.hiddenCols, pos=(14,0), flag=wx.EXPAND)
-        ################################
-        # Bottom buttons
-        bSizer = wx.GridBagSizer()
-        done = el.Button(self.panel, 'done', id=wx.ID_OK)
-        bSizer.Add(done, pos=(0,0))
-        cncl = el.Button(self.panel, 'cancel', id=wx.ID_CANCEL)
-        cncl.SetFocus()
-        bSizer.Add(cncl, pos=(0,1))
-        sizer.Add(bSizer, pos=(15,0), flag=wx.EXPAND)
+        for row, name in enumerate(FileKeys):
+            addRow(name, 2*row)
+
         ################################
         sizer.AddGrowableCol(0)
-        sizer.AddGrowableRow(14)
+        sizer.AddGrowableRow(R+8) # Hidden segn list
+        sizer.AddGrowableRow(R+10) # Hidden columns list
         self.panel.SetSizerAndFit(sizer)

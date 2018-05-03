@@ -78,7 +78,7 @@ class frameInit(frameDialog):
             master = ''
             members = []
             result = {}
-            for word in text.split():
+            for word in text.split()+['_']:
                 depth += word.count('{')
                 depth -= word.count('}')
                 if word in static['skip-at-regload']:
@@ -215,8 +215,10 @@ class frameInit(frameDialog):
                 conf['was-configured'] = True
             ################ Representation Font Size
             conf['repr-font-size'] = int(d.fontSize.GetValue())
-            ################ Hidden no-segn provinces
+            ################ Hidden super-regions
             conf['hide-no-segn'] = d.NoSegn.GetValue()
+            conf['hide-listed-segn'] = d.HideSegn.GetValue()
+            conf['hidden-segns'] = d.HiddenSuperRegions
             ################ Hidden Columns
             conf['rem-from-repr'] = list(d.hiddenCols.GetCheckedStrings())
             ################ Saving
