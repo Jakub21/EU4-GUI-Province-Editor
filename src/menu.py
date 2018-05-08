@@ -56,6 +56,9 @@ class frameMenu(frameCommands):
             fmenu.Append(-1, lang['mb']['save-s-title'], lang['mb']['save-s-desc']))
         self.Bind(wx.EVT_MENU, self.actionSaveOrig,
             fmenu.Append(-1, lang['mb']['save-g-title'], lang['mb']['save-g-desc']))
+        self.Bind(wx.EVT_MENU, self.actionSaveChanged,
+            fmenu.Append(-1, lang['mb']['save-c-title'], lang['mb']['save-c-desc']))
+
 
         ################
         # SELECTION MENU

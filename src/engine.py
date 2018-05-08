@@ -174,7 +174,8 @@ class frameEngine(frameInit):
                 continue
             province['id'] = int(ID)
             province['filename'] = filename
-            province['group'] = ''
+            for key in static['not-in-file']:
+                province[key] = ''
             ################
             try: province['name'] = self.Locl['PROV'+ID]
             except KeyError: province['name'] = ''
@@ -216,7 +217,7 @@ class frameEngine(frameInit):
         Log.info('Load procedure complete')
         return df
 
-    def EngineSave(self, path):
+    def EngineSave(self, path, onlyChanged=False):
         Log.info('Starting Save procedure')
         ################
         def SaveLine(key, value, maxdepth, depth=0):
@@ -251,41 +252,32 @@ class frameEngine(frameInit):
         columns = static['column-order'][1:]
         sep = '/'
         INDEX = 0
-        TOTAL = len(data)
+        if onlyChanged:
+            TOTAL = self.Changed
+        else:
+            TOTAL = len(data)
         d = Progress('save', 'save-desc', '', TOTAL, parent=self)
         ################
         for row in data:
             ID = IDList[INDEX]
             text = static['histfile-prefix'] + str(ID) + '\n'*2
             filename = ''
-            if not d.Update(INDEX, 'save-desc', filename):
-                d.Destroy()
-                return
-            if INDEX % static['engine-log-rate'] == 0:
-                Log.debug('Progress: '+str(100*(INDEX/TOTAL))[:4]+'%')
-            INDEX += 1
-            for i in range(len(columns)):
-                ################
-                cName = columns[i]
-                try:
-                    value = row[i]
-                except IndexError:
-                    if cName != 'group':
-                        self.prompt('warning', 'value-not-found', data=str(row[0])+' '+cName)
-                    continue
-                if (type(value) == float) and not(pd.isnull(value)):
+            Changed = False
+            for col, value in zip(columns, row):
+                if static['float-to-int'] and (type(value) == float):
                     value = int(value)
                 value = str(value)
-                ################
-                if cName == 'filename':
+                if (col == 'changed') and (value == 'yes'):
+                    Changed = True
+                if col == 'filename':
                     filename = value
                     continue
-                if cName not in static['history-file-keys'].keys():
-                    continue
-                if (cName == 'capital') and (len(value.split()) > 1):
+                if (col == 'capital') and (len(value.split()) > 1):
                     value = '"'+value+'"'
+                if col not in static['history-file-keys'].keys():
+                    continue
                 ################
-                key = static['history-file-keys'][cName]
+                key = static['history-file-keys'][col]
                 if type(key) == str:
                     key = [key]
                 ################
@@ -294,20 +286,29 @@ class frameEngine(frameInit):
                 else:
                     value = [value]
                 ################
-                if cName in static['file-lists']: # (key={val val})
-                    if value != ['']:
-                        text += SaveList(key, value)
-                else: # (key=val key=val)
-                    for element in value:
-                        if ((element.lower()) in static['EMPTY']) or (element==''):
+                if (col in static['file-lists']) and (value != ['']):
+                    # key = {val val}
+                    text += SaveList(key, value)
+                elif col not in static['file-lists']:
+                    # key = val  key = val
+                    for elem in value:
+                        if (elem.lower() in static['EMPTY']) or (elem == ''):
                             continue
-                        text += SaveLine(key, element, len(key)-1)
+                        text += SaveLine(key, elem, len(key)-1)
             DIR = path + '/' + filename
-            try:
-                open(DIR, 'w').write(text)
-            except PermissionError:
-                Log.warn('Permission denied: "'+DIR+'"')
+            if Changed or not(onlyChanged):
+                INDEX += 1
+                if not d.Update(INDEX, 'save-desc', filename):
+                    d.Destroy()
+                    return
+                if INDEX % static['engine-log-rate'] == 0:
+                    Log.debug('Progress: '+str(100*(INDEX/TOTAL))[:4]+'%')
+                try:
+                    open(DIR, 'w').write(text)
+                except PermissionError:
+                    Log.warn('Permission denied: "'+DIR+'"')
+
         d.Destroy()
-        Log.debug('Saved '+str(INDEX)+' out of '+str(len(data))+' provinces')
+        Log.debug('Saved '+str(INDEX)+' out of '+str(TOTAL)+' provinces')
         Log.info('Save procedure complete')
         return True

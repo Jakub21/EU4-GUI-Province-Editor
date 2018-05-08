@@ -120,6 +120,8 @@ class frameCommands(frameActions):
                 self.SaveSheet(path)
             elif Type == 'orig':
                 self.SaveOrig(path)
+            elif Type == 'diff':
+                self.SaveChanged(path)
             else:
                 Log.warn('Invalid argument')
                 self.prompt('warning', 'invalid-arg')

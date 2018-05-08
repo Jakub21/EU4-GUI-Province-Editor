@@ -56,6 +56,8 @@ mb:
     save-s-desc     : "Save data to Spreadsheet"
     save-g-title    : "Save to Original"
     save-g-desc     : "Save data to files readable by the game"
+    save-c-title    : "Save to Original (Changed)"
+    save-c-desc     : "Save changed provinces to files readable by the game"
     # Selection
     sel-new-title   : "New Selection"
     sel-new-desc    : "Create new selection"
@@ -125,6 +127,7 @@ dlg:
     loadu-o-msg     : "Select province directory to update data with"
     save-s-msg      : "Save data to Spreadsheet"
     save-o-msg      : "Save data to game-readable form"
+    save-c-msg      : "Save data to game-readable form (only changed)"
     # Selection
     selection-new   : "Conditions for new selection"
     selection-sub   : "Conditions for sub-selection"
@@ -183,10 +186,10 @@ CONF:
     locl            : "Provinces localisation"
     # Hidden columns
     hidden-cols     : "Hidden columns (Requires change of scope)"
-    hidden-segns    : "Hidden super-regions"
     # Hidden super-regions
     no-segn         : "Hide provinces with no super-region"
     hide-segn       : "Hide provinces of specified super-regions"
+    hidden-segns    : "Hidden super-regions"
     inp-hs-cap      : "Add hidden super-region"
     inp-hs-msg      : "Name of super-region to hide"
 

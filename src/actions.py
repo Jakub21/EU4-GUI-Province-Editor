@@ -25,6 +25,7 @@ class frameActions(frameEngine):
         global conf
         conf = _conf
         super().__init__(static, lang, conf)
+        self.Changed = 0
 
 
 
@@ -142,6 +143,7 @@ class frameActions(frameEngine):
             Log.warn('Loading Canceled, File is not a valid CSV Spreadsheet')
             self.prompt('error', 'not-a-csv')
             return
+        self.Changed = self.AllData['changed'].value_counts()['yes']
         if not silent:
             self.Represent()
         return True
@@ -174,6 +176,7 @@ class frameActions(frameEngine):
             Log.info('Loading Canceled')
             return
         self.AllData.sort_values(static['sortby-loct-cols'], inplace=True)
+        self.Changed = 0
         if not silent:
             self.Represent()
         return True
@@ -206,6 +209,7 @@ class frameActions(frameEngine):
             self.prompt('error', 'not-a-csv')
             return
         self.AllData.update(Data)
+        self.Changed = self.AllData['changed'].value_counts()['yes']
         if not silent:
             self.Represent()
         return True
@@ -236,6 +240,7 @@ class frameActions(frameEngine):
             return
         Data.sort_values(static['sortby-loct-cols'], inplace=True)
         self.AllData.update(Data)
+        self.Changed = self.AllData['changed'].value_counts()['yes']
         if not silent:
             self.Represent()
         return True
@@ -266,7 +271,6 @@ class frameActions(frameEngine):
     def actionSaveOrig(self, event=None):
         Log.info('SaveOrig User Input')
         if not self.checkAllData(): return
-        Log.info('Saving original')
         msg = lang['dlg']['save-o-msg']
         dlg = wx.DirDialog(self,
             message=msg,
@@ -286,6 +290,29 @@ class frameActions(frameEngine):
         if not self.checkAllData(): return
         self.EngineSave(path)
 
+
+    ################################
+    def actionSaveChanged(self, event=None):
+        Log.info('SaveOrigChanged User Input')
+        if not self.checkAllData(): return
+        msg = lang['dlg']['save-c-msg']
+        dlg = wx.DirDialog(self,
+            message = msg,
+            defaultPath=self.cwd,
+            style=wx.DD_DEFAULT_STYLE
+        )
+        if dlg.ShowModal() == wx.ID_OK:
+            path = dlg.GetPath().replace('\\', '/')
+        else:
+            Log.info('Saving canceled')
+            return
+        dlg.Destroy()
+        self.SaveChanged(path)
+    ################################
+    def SaveChanged(self, path):
+        Log.info('Saving changed')
+        if not self.checkAllData(): return
+        self.EngineSave(path, onlyChanged=True)
 
 
     ################################
@@ -406,6 +433,10 @@ class frameActions(frameEngine):
     def ModifyColumn(self, COL, VAL, silent=False):
         Log.info('Modifying column')
         if not self.checkSelection(): return
+        for id, old in zip(self.Selection.index, self.Selection.loc[:, COL]):
+            if old != VAL:
+                self.Selection.loc[id, 'changed'] = 'yes'
+                self.Changed += 1
         self.Selection.loc[:, COL] = VAL
         if not silent:
             self.Represent()
@@ -437,6 +468,9 @@ class frameActions(frameEngine):
         if False in map(lambda x: x in self.Selection.index, IDS):
             Log.warn('One of the provinces is not in selected scope')
         for ID in IDS:
+            if self.Selection.loc[ID, COL] != VAL:
+                self.Selection.loc[ID, 'changed'] = 'yes'
+                self.Changed += 1
             self.Selection.loc[ID, COL] = VAL
         if not silent:
             self.Represent()
