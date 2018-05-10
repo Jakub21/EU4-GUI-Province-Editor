@@ -154,22 +154,28 @@ class frameActions(frameEngine):
     def actionLoadOrig(self, event=None, silent=False):
         Log.info('LoadOrig User Input')
         msg = lang['dlg']['load-o-msg']
-        dlg = wx.DirDialog(self,
+        dialog = wx.DirDialog(self,
             message=msg,
             defaultPath=self.cwd,
             style=wx.DD_DEFAULT_STYLE
         )
-        if dlg.ShowModal() == wx.ID_OK:
-            path = dlg.GetPath().replace('\\', '/')
+        if dialog.ShowModal() == wx.ID_OK:
+            path = dialog.GetPath().replace('\\', '/')
         else:
-            Log.info('Loading Canceled')
+            Log.info('Loading Canceled (1)')
             return
-        dlg.Destroy()
-        self.LoadOrig(path, silent=silent)
+        dialog = dlg.DateDialog()
+        if dialog.ShowModal() == wx.ID_OK:
+            date = (dialog.Year.GetValue(), dialog.Month.GetValue(), dialog.Day.GetValue())
+        else:
+            Log.info('Loading Canceled (2)')
+            return
+        dialog.Destroy()
+        self.LoadOrig(path, date, silent=silent)
     ################################
-    def LoadOrig(self, path, silent=False):
-        Log.info('Loading Original')
-        Data = self.EngineLoad(path)
+    def LoadOrig(self, path, date, silent=False):
+        Log.info('Loading original (history until '+'.'.join([str(i) for i in date])+')')
+        Data = self.EngineLoad(path, date)
         if type(Data) != int:
             self.AllData = Data
         else:
@@ -220,21 +226,28 @@ class frameActions(frameEngine):
     def actionLoadUpdOrig(self, event=None, silent=False):
         Log.info('LoadUpdOrig User Input')
         msg = lang['dlg']['loadu-o-msg']
-        dlg = wx.DirDialog(self,
+        dialog = wx.DirDialog(self,
             message=msg,
             defaultPath=self.cwd,
             style=wx.DD_DEFAULT_STYLE
         )
-        if dlg.ShowModal() == wx.ID_OK:
-            path = dlg.GetPath().replace('\\', '/')
+        if dialog.ShowModal() == wx.ID_OK:
+            path = dialog.GetPath().replace('\\', '/')
         else:
-            Log.info('Loading Canceled')
+            Log.info('Loading Canceled (1)')
             return
-        self.LoadUpdOrig(path, silent=silent)
+        dialog = dlg.DateDialog()
+        if dialog.ShowModal() == wx.ID_OK:
+            date = (dialog.Year, dialog.Month, dialog.Day)
+        else:
+            Log.info('Loading Canceled (2)')
+            return
+        dialog.Destroy()
+        self.LoadUpdOrig(path, date, silent=silent)
     ################################
-    def LoadUpdOrig(self, path, silent=False):
-        Log.info('Updating with Original')
-        Data = self.EngineLoad(path)
+    def LoadUpdOrig(self, path, date, silent=False):
+        Log.info('Updating with original (history until '+'.'.join([str(i) for i in date])+')')
+        Data = self.EngineLoad(path, date)
         if type(Data) == int:
             Log.info('Updating Canceled')
             return

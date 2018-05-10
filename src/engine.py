@@ -124,7 +124,7 @@ class frameEngine(frameInit):
         return result
 
     ################################
-    def EngineLoad(self, path):
+    def EngineLoad(self, path, limit):
         Log.info('Starting Load procedure')
         ################
         def GetValue(keys, data):
@@ -148,8 +148,20 @@ class frameEngine(frameInit):
                 result += c
             return result
         ################
+        def LoadScope(contents):
+            province = {k:'' for k in static['not-in-file']}
+            for dataKey in static['history-file-keys'].keys():
+                fileKey = static['history-file-keys'][dataKey]
+                if type(fileKey) != list: fileKey = [fileKey]
+                try: province[dataKey] = GetValue(fileKey, contents)
+                except KeyError: pass
+            return province
+        ################
         total_provs = len(listdir(path))
         d = Progress('load', 'load-desc', '', total_provs, parent=self)
+        Y, M, D = 0,1,2
+        GetDate = lambda x: (tuple(map(lambda q: int(q), x.split('.'))))
+        NotADate = {}
         rows = []
         i=0
         ################################
@@ -168,14 +180,12 @@ class frameEngine(frameInit):
                 continue
             i+=1
             ################
-            province = {}
+            province = {k:'' for k in list(static['history-file-keys'].keys())+static['not-in-file']}
             ID = GetID(filename)
             if ID == '':
                 continue
             province['id'] = int(ID)
             province['filename'] = filename
-            for key in static['not-in-file']:
-                province[key] = ''
             ################
             try: province['name'] = self.Locl['PROV'+ID]
             except KeyError: province['name'] = ''
@@ -186,17 +196,19 @@ class frameEngine(frameInit):
             try: province['segn'] = self.Assnmt[ID][2]
             except KeyError: province['segn'] = ''
             ################
-            for dKEY in static['history-file-keys']:
-                pKEY = static['history-file-keys'][dKEY]
-                if type(pKEY) == list:
-                    keys = pKEY
-                else:
-                    keys = [pKEY]
+            province.update(LoadScope(contents))
+            for key in [ k for k in contents.keys() if
+                    (k not in static['history-file-keys'].values()) and (k not in static['not-in-file'])
+                ]:
                 try:
-                    value = GetValue(keys, contents)
-                except KeyError:
-                    value = []
-                province[dKEY] = value
+                    date = GetDate(key)
+                    if (date[Y] < limit[Y])or(
+                        (date[Y] == limit[Y])and((date[M] < limit[M])or(
+                            (date[M] == limit[M])and(date[D] <= limit[D])))):
+                        province.update(LoadScope(contents[key][0]))
+                except ValueError:
+                    try: NotADate[str(key)].append(str(ID))
+                    except KeyError: NotADate[str(key)] = [str(ID)]
             ################
             row = []
             for key in static['column-order']:
@@ -208,7 +220,9 @@ class frameEngine(frameInit):
                 row.append(value)
             ################
             rows.append(row)
-            ################
+        ################
+        for key in NotADate:
+            Log.warn('Unsuccessful attempt to convert file-key "'+key+'" to Date in '+str(len(NotADate[key]))+' provinces')
         df = pd.DataFrame(rows, columns=static['column-order'])
         df.set_index(static['column-index'], inplace=True)
         d.Destroy()
@@ -217,6 +231,7 @@ class frameEngine(frameInit):
         Log.info('Load procedure complete')
         return df
 
+    ################################
     def EngineSave(self, path, onlyChanged=False):
         Log.info('Starting Save procedure')
         ################

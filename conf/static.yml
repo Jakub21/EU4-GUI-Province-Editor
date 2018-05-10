@@ -33,6 +33,8 @@ histfile-prefix     : "# Province no."
 indent              : '    '
 # Sorting
 sortby-loct-cols    : [segn, regn, area]
+# Default Date
+date: [1444, 11, 11]
 # Wildcard generation
 formats:
     area            : txt

@@ -79,6 +79,7 @@ class frameCommands(frameActions):
             self.prompt('warning', 'unknown-cmd')
             return
 
+
         ################################
         def ShowMissingArgs(Func):
             Log.info('Missing arguments for function '+Func)
@@ -97,11 +98,17 @@ class frameCommands(frameActions):
             ShowMissingArgs(Func)
             return
 
+        GetDate = lambda x: (tuple(map(lambda q: int(q), x.split('.'))))
+        if Func in ['load', 'loadu']:
+            if Type == 'orig': # Can not use 'and'. It would cause an error
+                try: date = GetDate(args[2])
+                except: date = tuple(static['date'])
+
         if Func == 'load':
             if Type == 'sheet':
                 self.LoadSheet(path, silent=fromFile)
             elif Type == 'orig':
-                self.LoadOrig(path, silent=fromFile)
+                self.LoadOrig(path, date, silent=fromFile)
             else:
                 Log.warn('Invalid argument')
                 self.prompt('warning', 'invalid-arg')
@@ -110,7 +117,7 @@ class frameCommands(frameActions):
             if Type == 'sheet':
                 self.LoadUpdSheet(path, silent=fromFile)
             elif Type == 'orig':
-                self.LoadUpdOrig(path, silent=fromFile)
+                self.LoadUpdOrig(path, date, silent=fromFile)
             else:
                 Log.warn('Invalid argument')
                 self.prompt('warning', 'invalid-arg')

@@ -142,6 +142,9 @@ dlg:
     modify-prov     : "Change Attribute in province"
     mod-prov-inp    : "Province ID"
     mod-oth-inp     : "Specify other value"
+    # Date selection
+    choose-date     : "Choose date"
+    choose-date-msg : "Please choose the date to load"
     # Progress
     prg:
         load        : "Loading"

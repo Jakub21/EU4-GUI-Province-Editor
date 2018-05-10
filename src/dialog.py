@@ -12,7 +12,7 @@ from os import getcwd
 import src.elems as el
 from src.conf_parser import getWildcard
 from datetime import datetime
-from wx.lib.masked.numctrl import NumCtrl as NumCtrl
+from wx.lib.masked.numctrl import NumCtrl
 import logging
 
 ################################
@@ -113,12 +113,50 @@ class FileDialog(wx.FileDialog):
             style=style
         )
 
-
 ################################
 # Following dialogs inherit from this one
 class basicDialog(wx.Dialog):
     def __init__(self, title, style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER):
         super().__init__(None, title=title, style=style)
+
+################################
+class DateDialog(basicDialog):
+    def __init__(self):
+        super().__init__(lang['dlg']['choose-date'])
+        self.ExtendY = -100
+        self.ExtendX = 0
+        self.initPanel()
+        self.SetSize(
+            self.GetSize()[0] + self.ExtendX,
+            self.GetSize()[1] + self.ExtendY,
+        )
+        if static['center-on-screen']:
+            self.Center()
+    def initPanel(self):
+        self.panel = wx.Panel(self)
+        sizer = wx.GridBagSizer()
+        header = wx.StaticText(self.panel, label=lang['dlg']['choose-date-msg'])
+        sizer.Add(header, pos=(0,0))
+        ################
+        dSizer = wx.GridBagSizer()
+        self.Year = NumCtrl(self.panel, value=static['date'][0], integerWidth=4)
+        dSizer.Add(self.Year, pos=(0,0))
+        self.Month = NumCtrl(self.panel, value=static['date'][1], integerWidth=2)
+        dSizer.Add(self.Month, pos=(0,1), flag=wx.EXPAND)
+        self.Day = NumCtrl(self.panel, value=static['date'][2], integerWidth=2)
+        dSizer.Add(self.Day, pos=(0,2), flag=wx.EXPAND)
+        sizer.Add(dSizer, pos=(2,0))
+        ################
+        bSizer = wx.GridBagSizer()
+        done = el.Button(self.panel, 'done', id=wx.ID_OK)
+        bSizer.Add(done, pos=(0,0))
+        cncl = el.Button(self.panel, 'cancel', id=wx.ID_CANCEL)
+        done.SetFocus()
+        bSizer.Add(cncl, pos=(0,1))
+        sizer.Add(bSizer, pos=(3,0))
+        ################
+        sizer.AddGrowableRow(0)
+        self.panel.SetSizer(sizer)
 
 ################################
 class SelectDialog(basicDialog):
@@ -160,7 +198,7 @@ class SelectDialog(basicDialog):
         done = el.Button(self.panel, 'done', id=wx.ID_OK)
         bSizer.Add(done, pos=(0,0))
         cncl = el.Button(self.panel, 'cancel', id=wx.ID_CANCEL)
-        cncl.SetFocus()
+        done.SetFocus()
         bSizer.Add(cncl, pos=(0,1))
         sizer.Add(bSizer, pos=(1,0))
         ################
@@ -334,7 +372,7 @@ class ConfigDialog(basicDialog):
         done = el.Button(self.panel, 'done', id=wx.ID_OK)
         bSizer.Add(done, pos=(0,0))
         cncl = el.Button(self.panel, 'cancel', id=wx.ID_CANCEL)
-        cncl.SetFocus()
+        done.SetFocus()
         bSizer.Add(cncl, pos=(0,1))
         sizer.Add(bSizer, pos=(R+11,0), flag=wx.EXPAND)
 
