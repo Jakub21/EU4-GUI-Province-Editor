@@ -32,12 +32,12 @@ def main(isDebug):
         os.makedirs(directory)
     # Moving old logs
     try:
-        current = open(path, 'r').read()
-        open(pathOld, 'w').write(current)
-    except: pass
-    try:
         old = open(pathOld, 'r').read()
         open(pathOlder, 'w').write(old)
+    except: pass
+    try:
+        current = open(path, 'r').read()
+        open(pathOld, 'w').write(current)
     except: pass
     open(path, 'w').write('')
 
