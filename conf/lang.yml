@@ -52,7 +52,7 @@ mb:
     loadu-g-title   : "Update with Original"
     loadu-g-desc    : "Update current data with selected folder"
     # Save options
-    save-s-title    : "Save Sheet"
+    save-s-title    : "Save to Sheet"
     save-s-desc     : "Save data to Spreadsheet"
     save-g-title    : "Save to Original"
     save-g-desc     : "Save data to files readable by the game"
@@ -191,7 +191,7 @@ CONF:
     hidden-cols     : "Hidden columns (Requires change of scope)"
     # Hidden super-regions
     no-segn         : "Hide provinces with no super-region"
-    hide-segn       : "Hide provinces of specified super-regions"
+    hide-segn       : "Hide provinces with specified super-regions"
     hidden-segns    : "Hidden super-regions"
     inp-hs-cap      : "Add hidden super-region"
     inp-hs-msg      : "Name of super-region to hide"

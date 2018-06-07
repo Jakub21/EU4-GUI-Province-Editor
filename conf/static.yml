@@ -69,11 +69,14 @@ column-order        : [
     cores, claims,
     owner, cntrl,
     culture, religion, hre,
+    estate, parliament,
     tax, prod, manp,
     trade_goods, latent_tg,
+    unrest, revolt_risk,
     city, cost, fort,
-    discovered, modifiers,
-    filename, group, changed
+    ntv_size, ntv_ferc, ntv_hstl,
+    discovered, modifiers, trig_modifiers,
+    group, filename, changed
 ]
 # Lines added to every scope with specified name
 save-info           : {
@@ -89,19 +92,24 @@ history-file-keys   : {
     culture         : culture,
     religion        : religion,
     hre             : hre,
+    estate          : estate,
+    parliament      : seat_in_parliament,
     tax             : base_tax,
     prod            : base_production,
     manp            : base_manpower,
     trade_goods     : trade_goods,
     latent_tg       : latent_trade_goods,
+    unrest          : unrest,
+    revolt_risk     : revolt_risk,
     city            : is_city,
+    cost            : extra_cost,
+    fort            : fort_15th,
     ntv_size        : native_size,
     ntv_ferc        : native_ferocity,
     ntv_hstl        : native_hostileness,
-    cost            : extra_cost,
-    fort            : fort_15th,
     discovered      : discovered_by,
     modifiers       : [add_permanent_province_modifier, name],
+    trig_modifiers  : add_province_triggered_modifier,
 }
 # Data saved as lists instead of multiple 'key=value' pairs
 file-lists          : [

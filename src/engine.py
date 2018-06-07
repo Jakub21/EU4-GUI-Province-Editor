@@ -148,8 +148,7 @@ class frameEngine(frameInit):
                 result += c
             return result
         ################
-        def LoadScope(contents):
-            province = {k:'' for k in static['not-in-file']}
+        def LoadScope(contents, province={k:'' for k in static['column-order']}):
             for dataKey in static['history-file-keys'].keys():
                 fileKey = static['history-file-keys'][dataKey]
                 if type(fileKey) != list: fileKey = [fileKey]
@@ -180,7 +179,21 @@ class frameEngine(frameInit):
                 continue
             i+=1
             ################
-            province = {k:'' for k in list(static['history-file-keys'].keys())+static['not-in-file']}
+            province = LoadScope(contents)
+            for key in [ k for k in contents.keys() if
+                    (k not in static['history-file-keys'].values()) and
+                    (k not in static['not-in-file'])
+                ]:
+                try:
+                    date = GetDate(key)
+                    if (date[Y] < limit[Y])or(
+                        (date[Y] == limit[Y])and((date[M] < limit[M])or(
+                            (date[M] == limit[M])and(date[D] <= limit[D])))):
+                        province = LoadScope(contents[key][0], province)
+                except ValueError:
+                    try: NotADate[str(key)].append(str(ID))
+                    except KeyError: NotADate[str(key)] = [str(ID)]
+            ################
             ID = GetID(filename)
             if ID == '':
                 continue
@@ -195,20 +208,6 @@ class frameEngine(frameInit):
             except KeyError: province['regn'] = ''
             try: province['segn'] = self.Assnmt[ID][2]
             except KeyError: province['segn'] = ''
-            ################
-            province.update(LoadScope(contents))
-            for key in [ k for k in contents.keys() if
-                    (k not in static['history-file-keys'].values()) and (k not in static['not-in-file'])
-                ]:
-                try:
-                    date = GetDate(key)
-                    if (date[Y] < limit[Y])or(
-                        (date[Y] == limit[Y])and((date[M] < limit[M])or(
-                            (date[M] == limit[M])and(date[D] <= limit[D])))):
-                        province.update(LoadScope(contents[key][0]))
-                except ValueError:
-                    try: NotADate[str(key)].append(str(ID))
-                    except KeyError: NotADate[str(key)] = [str(ID)]
             ################
             row = []
             for key in static['column-order']:

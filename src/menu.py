@@ -69,12 +69,6 @@ class frameMenu(frameCommands):
             smenu.Append(-1, lang['mb']['sel-sub-title'], lang['mb']['sel-sub-desc']))
         self.Bind(wx.EVT_MENU, self.actionSelectApp,
             smenu.Append(-1, lang['mb']['sel-app-title'], lang['mb']['sel-app-desc']))
-        # Deselect
-        smenu.AppendSeparator()
-        self.Bind(wx.EVT_MENU, self.action,
-            smenu.Append(-1, lang['mb']['desel-t-title'], lang['mb']['desel-t-desc']))
-        self.Bind(wx.EVT_MENU, self.action,
-            smenu.Append(-1, lang['mb']['desel-n-title'], lang['mb']['desel-n-desc']))
 
         ################
         # SORT MENU

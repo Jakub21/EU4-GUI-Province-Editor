@@ -13,9 +13,18 @@ path:
     regn: ""
     segn: ""
 rem-from-repr:
+- estate
+- parliament
+- unrest
+- revolt_risk
+- ntv_size
+- ntv_ferc
+- ntv_hstl
 - modifiers
+- trig_modifiers
 - filename
 - discovered
+- changed
 repr-font-size: 10
 was-configured: false
 hide-listed-segn: true
