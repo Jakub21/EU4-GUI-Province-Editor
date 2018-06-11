@@ -85,7 +85,7 @@ Program displays data representation in frame in the center of main window. In c
 # Commands
 Program can receive commands from Command Line as well as Command Files. This section explains how to use commands.
 
-##### Symbols used in list of commands
+#### Symbols used in list of commands
 `[]` - Required argument,  
 `{}` - Conditional argument,  
 `*` - Argument supports multiple values  
@@ -113,7 +113,7 @@ In command files, each command should start with `>`. First word of every comman
 ```
 
 ### Filestream Commands
-##### Load
+#### Load
 `[type]` argument only can have values: `sheet`, `orig`  
 `[path]` path of directory/sheet to load data from  
 `{date}` argument is only required if `[type]` has value `orig`
@@ -122,7 +122,7 @@ load [type] [path] {date}
 load sheet sample.csv
 ```
 
-##### Load-Update
+#### Load-Update
 `[type]` argument only can have values: `sheet`, `orig`  
 `[path]` path of directory/sheet to load data from  
 `{date}` argument is only required if `[type]` has value `orig`  
@@ -131,7 +131,7 @@ loadu [type] [path] {date}
 loadu orig samples/provinces 1642.7.3
 ```
 
-##### Save
+#### Save
 `[type]` argument only can have values: `sheet`, `orig`, `diff`  
 `[path]` path of directory/sheet to save data to
 ```
@@ -140,7 +140,7 @@ save diff samples/result
 ```
 
 ### Data Manipulation Commands
-##### Select
+#### Select
 `[mode]` Selection mode. Valid values: `new` `sub` `app`.  
 `[column]` Name of column to search for values in  
 `[value]*` Provinces with this value will be added to selection  
@@ -149,14 +149,14 @@ select [mode] [column] [value]*
 select new area slovakia
 ```
 
-##### Sort
+#### Sort
 Sorts provinces. Available sorting modes are `loc` - by location and `id` - by id. Provinces are automatically sorted by location every time data is loaded.
 ```
 sort [mode]
 sort id
 ```
 
-##### Set
+#### Set
 In current selection, changes all values in specified column to specified value.  
 `[column]` specifies column  
 `[value]` specifies value  
@@ -165,7 +165,7 @@ set [column] [value]
 set culture austrian
 ```
 
-##### In-scope
+#### In-scope
 Finds provinces with "condition value" in "condition column" and changes all entries in "value column" to "value"
 ```
 in [condition column] [condition value]* [value column] [value]
@@ -173,13 +173,13 @@ in regn iberia religion catholic
 ```
 
 ### General Commands
-##### Represent
+#### Represent
 Update central frame with current data
 ```
 repr
 ```
 
-##### Exit
+#### Exit
 Leave program, any unsaved changes are lost.
 ```
 exit
@@ -197,10 +197,10 @@ Program can create and read spreadsheets. The only supported format is CSV (comm
 Also refered to as `original files`.  
 In this mode, every file from selected directory is loaded and parsed. Each file is a separate province. Province ID generation is based on a file name. Those are history files so they contain data for various in-game starting dates. Program can only load a single state of history so a date is required. Date format is `yyyy.mm.dd`. Default starting date is stored in  `conf/static.yml` at key `date` and it's  `1444.11.11`.
 
-##### Region names shortening
+#### Region names shortening
 Provinces are automatically assigned to areas, regions and super-regions. Names of regions are shortened. This action removes region level indicator from a region name. For example `mazovia_area` is changed to `mazovia`. This can be disabled in `conf/static.yml` by changing option `shorten-regn-names` to `false`.
 
-##### Exclusive saving
+#### Exclusive saving
 Only files for provinces with `yes` value in column [`changed`](#was-modified-attribute) will be generated.
 
 
@@ -209,20 +209,20 @@ Only files for provinces with `yes` value in column [`changed`](#was-modified-at
 # Attributes
 List of province attributes.
 
-##### History attributes
+#### History attributes
 Attributes loaded from history files. The current list of them can be found in `conf/static.yml` at key `history-file-keys`. As of June 2018 there are 25 of them.
 
-##### Location attributes
+#### Location attributes
 Attributes based on [region assignment files](#files). They define location of a province.
 
-##### Was-modified attribute
+#### Was-modified attribute
 Program stores it in column `changed`. After data is loaded from original files column is empty. When a province (row) is modified, a cell in this column is automatically set to `yes`. This column is required for [exclusive save mode](exclusive-saving) to work properly. Column's content is saved to spreadsheets. Saving data to a spreadsheet and then loading from it again will not cause column to reset.
 
-##### Group attribute
+#### Group attribute
 The group column can be freely used by user. User can, for example, create specific sets of provinces that are frequently used or require complex procedure to re-create.
 
-##### Province name
+#### Province name
 Province name loaded from [localisation file](#files). Its purpose is for user to be able to recognize provinces. Changing it has no effect on in-game localisation.
 
-##### Source file name
+#### Source file name
 The `filename` attribute stores name of source file a province was loaded from. Storing original names instead of generating new ones is better because of the way the game loads mods. Data from files with other names would not overwrite original data, possibly causing problems.
