@@ -12,7 +12,7 @@ Development started February 2018
 Program was developed for [Python 3.6](https://www.python.org/). As of May 2018 program was not tested with other versions of Python.
 
 ### Packages
-The following Python packages (and their dependencies) are required to run the program
+The following Python packages (and their dependencies) are required to run the program:
 - [Pandas](https://pandas.pydata.org/)
 - [wxPython](https://www.wxpython.org/)
 - [PyYAML](https://pyyaml.org/)
@@ -53,7 +53,7 @@ Top bar consists of 5 menus.
     - `Modify Province` modify single cell
 
 ### Commands bar
-Commands bar is where [commands](#commands) are to be entered
+Commands bar is where [commands](#commands) are to be entered.
 
 ### Side bar
 Side bar contains various buttons. It is here for future use. The buttons there are just for tests.
@@ -64,7 +64,7 @@ Program displays data representation in central frame. Representation is generat
 
 
 # Configurator
-To open configurator, on top bar, click `Main` menu and choose `Run Configurator` option
+To open configurator, on top bar, click `Main` menu and choose `Run Configurator` option.
 
 ### Files
 Editor needs 4 files from game directory to work properly. This is list of these files and their paths in game directory. Program does not modify them.
@@ -94,13 +94,11 @@ Program can receive commands from Command Line as well as Command Files. This se
 Commands parser supports lists. If argument allows multiple values, wrap those values in square brackets `[]`. See examples below:
 ```
 select sub area [champagne ile_de_france]
-```
-```
 in prov [183 4389] fort yes
 ```
 
 ### Comments
-To add comment in Commands File use `>#`. Comment ends when next `>` character is found. Example:
+To add comment in Commands File use `>#`. Comments end when next `>` character is found. Example:
 ```
 > command
 ># This is comment
@@ -171,7 +169,7 @@ set culture austrian
 Finds provinces with "condition value" in "condition column" and changes all entries in "value column" to "value"
 ```
 in [condition column] [condition value]* [value column] [value]
-in region iberia religion catholic
+in regn iberia religion catholic
 ```
 
 ### General Commands
@@ -186,3 +184,45 @@ Leave program, any unsaved changes are lost.
 ```
 exit
 ```
+
+
+
+# Filestream
+This section describes how program loads and saves data from storage.
+
+### Spreadsheets
+Program can create and read spreadsheets. The only supported format is CSV (comma as separator). Modifying `column-order` list in `conf/static.yml` may make old sheets impossible to read.
+
+### Game-readable files
+Also refered to as `original files`.  
+In this mode, every file from selected directory is loaded and parsed. Each file is a separate province. Province ID generation is based on a file name. Those are history files so they contain data for various in-game starting dates. Program can only load a single state of history so a date is required. Date format is `yyyy.mm.dd`. Default starting date is stored in  `conf/static.yml` at key `date` and it's  `1444.11.11`.
+
+##### Region names shortening
+Provinces are automatically assigned to areas, regions and super-regions. Names of regions are shortened. This action removes region level indicator from a region name. For example `mazovia_area` is changed to `mazovia`. This can be disabled in `conf/static.yml` by changing option `shorten-regn-names` to `false`.
+
+##### Exclusive saving
+Only files for provinces with `yes` value in column [`changed`](#was-modified-attribute) will be generated.
+
+
+
+
+# Attributes
+List of province attributes.
+
+##### History attributes
+Attributes loaded from history files. The current list of them can be found in `conf/static.yml` at key `history-file-keys`. As of June 2018 there are 25 of them.
+
+##### Location attributes
+Attributes based on [region assignment files](#files). They define location of a province.
+
+##### Was-modified attribute
+Program stores it in column `changed`. After data is loaded from original files column is empty. When a province (row) is modified, a cell in this column is automatically set to `yes`. This column is required for [exclusive save mode](exclusive-saving) to work properly. Column's content is saved to spreadsheets. Saving data to a spreadsheet and then loading from it again will not cause column to reset.
+
+##### Group attribute
+The group column can be freely used by user. User can, for example, create specific sets of provinces that are frequently used or require complex procedure to re-create.
+
+##### Province name
+Province name loaded from [localisation file](#files). Its purpose is for user to be able to recognize provinces. Changing it has no effect on in-game localisation.
+
+##### Source file name
+The `filename` attribute stores name of source file a province was loaded from. Storing original names instead of generating new ones is better because of the way the game loads mods. Data from files with other names would not overwrite original data, possibly causing problems.
