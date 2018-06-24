@@ -1,12 +1,8 @@
-################################
-# Jakub21
-# March 2018
-# License: MIT
-# Python 3.6.3
-
-################################
-import src.main as main
-
-################################
-if __name__ == '__main__':
-    main.main(False)
+#!/usr/bin/env python
+# coding=utf-8
+'''Developed by Jakub21 in June 2018 under MIT License.
+Python version: 3.6.5
+Start Editor
+'''
+from src.main import main
+main(False)

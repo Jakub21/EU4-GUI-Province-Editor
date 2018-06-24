@@ -7,22 +7,16 @@
 ################################
 import wx
 from os import getcwd
-from src.conf_parser import getWildcard
 import logging
 
 ################################
 Log = logging.getLogger('MainLogger')
 
 ################################
-def init(_static, _lang, _conf):
+def init(core, locl):
     Log.info('Initializing UI elements')
-    global static
-    static = _static
-    global lang
-    lang = _lang
-    global conf
-    conf = _conf
-
+    global CORE, LOCL
+    CORE, LOCL = core, locl
 
 ################################
 class TextCtrl(wx.TextCtrl):
@@ -33,11 +27,15 @@ class TextCtrl(wx.TextCtrl):
 
 ################################
 class Button(wx.Button):
-    def __init__(self, parent, label, action=None, id=0):
+    def __init__(self, parent, key, action=None, id=0):
+        try:
+            label = LOCL[key]
+        except KeyError:
+            label = 'LOCL['+str(key)+']'
         super().__init__(parent,
-            label=lang['mb'][label],
+            label=label,
             id=id,
-            size=(static['btt-x'], static['btt-y'])
+            size=(CORE['btt-width'], CORE['btt-height'])
         )
         if action != None:
             self.Bind(wx.EVT_BUTTON, action)

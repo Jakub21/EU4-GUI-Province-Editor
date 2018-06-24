@@ -1,0 +1,53 @@
+################################
+# Editor Core Configuration
+################################
+
+# Files
+path:
+    map-def: /map/default.map
+    color-def: /map/definition.csv
+    prov-map: /map/provinces.bmp
+    prov-names: /localisation/prov_names_l_$LANG$.yml
+    area-assign: /map/area.txt
+    regn-assign: /map/region.txt
+    segn-assign: /map/superregion.txt
+    prov-hist-dir: /history/provinces/
+
+encodings-list: [
+    utf-8-sig, utf-8, ansi
+]
+
+# Images
+scale-step: 1.1 # fraction in range 1 - 2
+scale-max: 1.55
+scale-min: 0.4
+
+# Interface
+scroll-step: 3
+scroll-start: [880, 60] # NW corner of visible (in px, divided by scroll step)
+btt-width: 80
+btt-height: 27
+
+# History data
+val-keys: # Can have 1 value at a time
+    is_city: city
+    capital: capital
+    owner: owner
+    controller: cntrl
+    culture: culture
+    religion: religion
+    hre: HRE
+    base_tax: tax
+    base_production: prod
+    base_manpower: manpower
+    trade_goods: tr_goods
+    fort_15th: fort
+    extra_cost: cost
+
+add-keys: # Can have multiple values (add command)
+    add_core: core
+    discovered_by: discovered
+    add_province_triggered_modifier: trig_mod
+
+rem-keys: # (remove command)
+    remove_core: core

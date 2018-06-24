@@ -1,0 +1,14 @@
+################################
+# Editor Localisation
+################################
+
+# General
+frame-title: 'EGE2'
+
+# Side-bar buttons
+scale-inc: 'Zoom in'
+scale-dec: 'Zoom out'
+unmark: 'Unmark all'
+
+# Basic Dialog Messages
+msg-loading: 'Loading'
