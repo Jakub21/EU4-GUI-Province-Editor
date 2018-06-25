@@ -8,6 +8,7 @@ frame-title: 'EGE2'
 # Side-bar buttons
 scale-inc: 'Zoom in'
 scale-dec: 'Zoom out'
+scale-rst: 'Reset zoom'
 unmark: 'Unmark all'
 
 # Basic Dialog Messages

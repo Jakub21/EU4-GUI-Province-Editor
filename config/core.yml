@@ -17,14 +17,15 @@ encodings-list: [
     utf-8-sig, utf-8, ansi
 ]
 
-# Images
+# Images scaling
 scale-step: 1.1 # fraction in range 1 - 2
-scale-max: 1.55
-scale-min: 0.4
+scale-ignore: 0.03 # if abs(1-scale) is less than this, scale will be set to 1
+scale-max: 1.8
+scale-min: 0.3
 
 # Interface
 scroll-step: 3
-scroll-start: [880, 60] # NW corner of visible (in px, divided by scroll step)
+scroll-start: [44, 8] # NW corner of visible (% of whole map)
 btt-width: 80
 btt-height: 27
 

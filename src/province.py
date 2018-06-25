@@ -45,10 +45,10 @@ class Province:
     def mark(self):
         if self.marked:
             self.marked = False
-            self.parent._update_map(self.pixels, self.color_g)
+            self.parent.mark_prov_map(self.pixels, self.color_g)
         else:
             self.marked = True
-            self.parent._update_map(self.pixels, self.color_m)
+            self.parent.mark_prov_map(self.pixels, self.color_m)
 
     def set_pixels(self, pixels):
         self.pixels = pixels
