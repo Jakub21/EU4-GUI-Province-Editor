@@ -8,19 +8,11 @@ import yaml
 import logging
 Log = logging.getLogger('MainLogger')
 
-def init_file(core, locl, gpath, mpath):
-    '''Copy global variables to this file
-    Prevents repeating long construct lines of File class
-    TODO: Find a way to do this w/o this function
-    '''
-    global CORE, LOCL, GPATH, MPATH
-    CORE, LOCL, GPATH, MPATH = core, locl, gpath, mpath
-
 class File:
     '''File Class
     See __init__ docs for usage
     '''
-    def __init__(self, path, type, is_game=False):
+    def __init__(self, parent, path, type, is_game=False):
         '''Class constructor
         Create File object
         Parameters:
@@ -35,17 +27,12 @@ class File:
                 parameter is not recognized. When False: Return raw file
                 contents. When True: Raise exception
         '''
-        try: # Copy globals
-            self.CORE, self.LOCL, self.GPATH, self.MPATH =\
-                CORE, LOCL, GPATH, MPATH
-        except:
-            raise TypeError('Please call init_file function first')
-        self.path, self.type, self.is_game = \
-            path, type, is_game # Copy parameters
+        self.CORE, self.LOCL, self.GPATH, self.MPATH =\
+            parent.CORE, parent.LOCL, parent.GPATH, parent.MPATH
+        self.path, self.type, self.is_game = path, type, is_game
         self.csv_separator = ';'
         self.raw_read = False
         self.raise_at_unknown = True
-        #
 
     def _file_read(self, effective_path):
         try:

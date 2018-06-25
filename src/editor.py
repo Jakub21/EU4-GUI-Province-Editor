@@ -6,8 +6,8 @@ import yaml
 from PIL import Image
 from os import listdir
 from src.gui import MainFrame
-from src.province import Province, init_prov_file
-from src.file import File, init_file
+from src.province import Province
+from src.file import File
 
 import logging
 Log = logging.getLogger('MainLogger')
@@ -20,8 +20,6 @@ class Editor(MainFrame):
         Log.info('Initializing Superclass')
         super().__init__(self.CORE, self.LOCL)
         Log.info('Initializing Filefuncs')
-        init_file(self.CORE, self.LOCL, self.GPATH, self.MPATH)
-        init_prov_file(self.CORE, self.LOCL)
         Log.info('Reading game data')
         self.load_game_data()
         Log.info('Creating province objects')
@@ -77,7 +75,7 @@ class Editor(MainFrame):
         except FileNotFoundError: pass
         namelist = list(set(namelist))
         for fn in namelist:
-            file = File(subdir+fn, 'game', True)
+            file = File(self, subdir+fn, 'game', True)
             contents = file.read()
             id = self._get_id(fn)
             self.provs[id].set_history(contents)
@@ -115,7 +113,7 @@ class Editor(MainFrame):
 
     def _load_map_def(self):
         path = self.CORE['path']['map-def']
-        map_def = File(path, 'game', True)
+        map_def = File(self, path, 'game', True)
         map_def = map_def.read()
 
         map_size = int(map_def['width'][0]), int(map_def['height'][0])
@@ -126,7 +124,7 @@ class Editor(MainFrame):
 
     def _load_clr_def(self):
         path = self.CORE['path']['color-def']
-        clr_def = File(path, 'csv', True)
+        clr_def = File(self, path, 'csv', True)
         clr_def = clr_def.read()
         clr_def = {int(row[0]):tuple([ int(el) for el in row[1:4] ])\
             for row in clr_def[1:]}
@@ -160,7 +158,7 @@ class Editor(MainFrame):
 
     def _load_prov_map(self):
         path = self.CORE['path']['prov-map']
-        prov_map = File(path, 'img', True)
+        prov_map = File(self, path, 'img', True)
         image = prov_map.read()
         self.ID_POS = self._map_pixels_clr(image)
         image = self._prov_map_filter(image)
@@ -168,16 +166,16 @@ class Editor(MainFrame):
 
     def _load_localisation(self):
         path = self.CORE['path']['prov-names']
-        locl = File(path, 'yaml', True)
+        locl = File(self, path, 'yaml', True)
         return locl.read()['l_'+self.LANG]
 
     def _load_assignment(self):
         path_area = self.CORE['path']['area-assign']
         path_regn = self.CORE['path']['regn-assign']
         path_segn = self.CORE['path']['segn-assign']
-        areas = File(path_area, 'game', True).read()
-        regns = File(path_regn, 'game', True).read()
-        segns = File(path_segn, 'game', True).read()
+        areas = File(self, path_area, 'game', True).read()
+        regns = File(self, path_regn, 'game', True).read()
+        segns = File(self, path_segn, 'game', True).read()
         areas = {k:[int(el) for el in v[0] if el not in 'color={}']\
             for k,v in areas.items()}
         segns = {k:[el for el in v[0]] for k,v in segns.items()}

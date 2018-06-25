@@ -3,23 +3,11 @@ License: MIT
 Python version: 3.6.5
 '''
 
-def init_prov_file(core, locl):
-    '''Copy global variables to this file
-    Prevents repeating long construct lines of Province class
-    TODO: Find a way to do this w/o this function
-    '''
-    global CORE, LOCL
-    CORE, LOCL = core, locl
-
-
 class Province:
     '''Province'''
     def __init__(self, parent, id, name, type):
-        try: # Copy globals
-            self.CORE, self.LOCL = CORE, LOCL
-        except:
-            raise TypeError('Please call init_prov_file function first')
         self.parent, self.id, self.name, self.type = parent, id, name, type
+        self.CORE, self.LOCL = parent.CORE, parent.LOCL
         self.marked = False
 
     def __repr__(self):
