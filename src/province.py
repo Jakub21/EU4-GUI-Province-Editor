@@ -17,12 +17,19 @@ class Province:
         try:
             text += i+'Color: '+str(self.color)
             text += ' [gray: '+str(self.color_g)
-            text += ' marked:'+str(self.color_m)+']\n'
-        except AttributesError: text += 'Colors not set\n'
+            text += ' marked: '+str(self.color_m)+']\n'
+        except AttributesError: text += i+'Colors not set\n'
         try:
             text += i+'Assignment: '+str(self.segn)+'/'
             text += str(self.regn)+'/'+str(self.area)+'\n'
-        except AttributeError: text += 'Assignment not set\n'
+        except AttributeError: text += i+'Assignment not set\n'
+        try:
+            self.history # Check if exists
+            text += i+'History:\n'
+            s = max([len(str(key)) for key in self.history.keys()])
+            for key, value in self.history.items():
+                text += i*2+str(key)+' '*(s-len(key))+' : '+str(value)+'\n'
+        except AttributeError: text += i+'History not loaded\n'
         return text[:-1]
 
     def set_color(self, id_color, gray_color, marked_color):
