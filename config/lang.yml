@@ -13,3 +13,6 @@ unmark: 'Unmark all'
 
 # Basic Dialog Messages
 msg-loading: 'Loading'
+msg-loading-data: 'Loading data'
+msg-loading-hist: 'Loading history'
+msg-loading-map: 'Preparing map'

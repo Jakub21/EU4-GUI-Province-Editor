@@ -17,22 +17,26 @@ class Editor(MainFrame):
     def __init__(self):
         Log.info('Loading config')
         self.load_config()
-        Log.info('Initializing Superclass')
         super().__init__(self.CORE, self.LOCL)
-        Log.info('Initializing Filefuncs')
+
         Log.info('Reading game data')
+        self.set_busy_on(key='msg-loading-data')
         self.load_game_data()
-        Log.info('Creating province objects')
         self.create_provs()
+
         Log.info('Loading history data')
+        self.set_busy_on(key='msg-loading-hist')
         self.undefined = []
         self.load_history()
         print('\n'.join([str(i) for i in set(self.undefined)]))
+
         Log.info('Initializing GUI')
+        self.set_busy_on(key='msg-loading-map')
         self.init_gui()
         self.Center()
         self.isBusy = False
         Log.info('Done')
+        self.set_busy_off()
         self.Show()
 
     def load_config(self):
@@ -54,14 +58,12 @@ class Editor(MainFrame):
         self.LOCL = yaml.load(self.LOCL)
 
     def load_game_data(self):
-        self.set_busy_on()
         mapdef = self._load_map_def()
         self.MAP_SIZE, self.SEA_PROVS, self.RNW_PROVS, self.LAKE_PROVS = mapdef
         self.COLOR_DEFS = self._load_clr_def()
         self.PROV_MAP = self._load_prov_map()
         self.PROV_NAMES = self._load_localisation()
         self.ASSIGNMENT = self._load_assignment()
-        self.set_busy_off()
 
     def load_history(self):
         history = {}

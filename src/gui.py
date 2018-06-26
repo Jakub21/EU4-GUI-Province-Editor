@@ -45,11 +45,11 @@ class MainFrame(wx.Frame):
             sizer.Add(button, pos=(row,0))
         return sizer
 
-    def set_busy_on(self, event=None):
+    def set_busy_on(self, event=None, key='msg-loading'):
         Log.info('Busy status started')
         self.isBusy = True
         self.Disable()
-        self.busyDlg = wx.BusyInfo(self.LOCL['msg-loading'])
+        self.busyDlg = wx.BusyInfo(self.LOCL[key])
 
     def set_busy_off(self, event=None):
         Log.info('Busy status ended')
