@@ -51,6 +51,7 @@ class Editor(MainFrame):
         self.CORE = open(CORE_CONFIG_PATH, 'r').read()
         self.CORE = self.CORE.replace('$LANG$', USER['lang'])
         self.CORE = yaml.load(self.CORE)
+        self.DATE = self.CORE['default-date']
 
         self.LOCL = open(LOCALISATION_PATH, 'r').read()
         self.LOCL = yaml.load(self.LOCL)

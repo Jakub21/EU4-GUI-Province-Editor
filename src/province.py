@@ -46,31 +46,86 @@ class Province:
         self.regn = regn.replace('_region','')
         self.segn = segn.replace('_superregion','')
 
+    def _get_date(self, text):
+        try:
+            y, m, d = [int(el) for el in text.split('.')]
+            return (y,m,d)
+        except: return False
+
+    def _get_hist_default(self):
+        history = {}
+        for fkey, pkey in self.CORE['bln-fkeys'].items():
+            history[pkey] = False
+        for fkey, pkey in self.CORE['spc-fkeys'].items():
+            history[pkey] = ''
+        for fkey, pkey in self.CORE['num-fkeys'].items():
+            history[pkey] = 0
+        for fkey, pkey in self.CORE['add-fkeys'].items():
+            history[pkey] = ''
+        return history
+
+    def _get_scope(self, data):
+        history = {}
+        for fkey, pkey in self.CORE['bln-fkeys'].items():
+            try:
+                if data[fkey][0] == 'yes':
+                    history[pkey] = True
+                else:
+                    history[pkey] = False
+            except KeyError: pass
+        for fkey, pkey in self.CORE['spc-fkeys'].items():
+            try:
+                history[pkey] = data[fkey][0]
+            except KeyError: pass
+        for fkey, pkey in self.CORE['num-fkeys'].items():
+            try:
+                history[pkey] = int(data[fkey][0])
+            except KeyError: pass
+            # TODO: except TypeError: ?
+        for fkey, pkey in self.CORE['add-fkeys'].items():
+            try:
+                history[pkey] += data[fkey]
+            except KeyError:
+                try:
+                    history[pkey] = data[fkey]
+                except KeyError: pass
+        for fkey, pkey in self.CORE['rem-fkeys'].items():
+            try:
+                history[pkey] = [i for i in history[pkey] \
+                    if i not in data[fkey]]
+            except KeyError:
+                pass
+        for category, bld_list in self.CORE['bld-fkeys'].items():
+            for building in bld_list:
+                try:
+                    if data[building] == 'yes':
+                        history[category] = category.index(building)+1
+                except KeyError: pass
+        return history
+
+    def _is_earlier(self, date_a, date_b):
+        '''Return True if date_a is earlier than date_b (or equal)'''
+        if date_a == date_b: return True
+        ya, ma, da = date_a
+        yb, mb, db = date_b
+        if ya < yb:
+            return True
+        elif ya == yb:
+            if ma < mb:
+                return True
+            elif ma == mb:
+                if da < db:
+                    return True
+        return False
+
     def set_history(self, data):
         '''Generate history data from parsed history file contents'''
-        def get_date(text):
-            try:
-                y, m, d = [int(el) for el in text.split('.')]
-                return (y,m,d)
-            except:
-                return False
-
-        undefined = []
-        for fkey, value in data.items():
-            found = False
-            for category in ['bln-fkeys', 'spc-fkeys', 'num-fkeys',
-                'add-fkeys', 'rem-fkeys']:
-                if fkey in self.CORE[category].keys():
-                    key = self.CORE[category][fkey]
-                    found = True
-            for category, bld_list in self.CORE['bld-fkeys'].items():
-                if fkey in bld_list:
-                    found = True
-            if not found:
-                date = get_date(fkey)
-                if not date:
-                    undefined.append(fkey)
-                    continue
-                self.set_history(data[fkey][0])
-
-        # TODO
+        limit = self.parent.DATE
+        self.history = self._get_hist_default()
+        self.history.update(self._get_scope(data))
+        for date, subdata in data.items():
+            date = self._get_date(date)
+            if not date: continue
+            if self._is_earlier(date, limit):
+                date_hist = self._get_scope(subdata[0])
+                self.history.update(date_hist)

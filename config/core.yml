@@ -29,6 +29,8 @@ scroll-start: [44, 8] # NW corner of visible (% of whole map)
 btt-width: 80
 btt-height: 27
 
+default-date: [1444, 11, 11]
+
 # History data
 bln-fkeys: # Boolean values
     is_city: city
