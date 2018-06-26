@@ -55,22 +55,22 @@ class Province:
             except:
                 return False
 
-        #if self.id != 118: return # TEMP
         undefined = []
         for fkey, value in data.items():
-            if fkey in self.CORE['val-keys'].keys():
-                key = self.CORE['val-keys'][fkey]
-            elif fkey in self.CORE['add-keys'].keys():
-                key = self.CORE['add-keys'][fkey]
-            elif fkey in self.CORE['rem-keys'].keys():
-                key = self.CORE['rem-keys'][fkey]
-            else:
+            found = False
+            for category in ['bln-fkeys', 'spc-fkeys', 'num-fkeys',
+                'add-fkeys', 'rem-fkeys']:
+                if fkey in self.CORE[category].keys():
+                    key = self.CORE[category][fkey]
+                    found = True
+            for category, bld_list in self.CORE['bld-fkeys'].items():
+                if fkey in bld_list:
+                    found = True
+            if not found:
                 date = get_date(fkey)
                 if not date:
                     undefined.append(fkey)
                     continue
                 self.set_history(data[fkey][0])
-
-        self.parent.undefined += undefined
 
         # TODO

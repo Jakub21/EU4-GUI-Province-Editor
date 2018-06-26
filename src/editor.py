@@ -26,9 +26,7 @@ class Editor(MainFrame):
 
         Log.info('Loading history data')
         self.set_busy_on(key='msg-loading-hist')
-        self.undefined = []
         self.load_history()
-        print('\n'.join([str(i) for i in set(self.undefined)]))
 
         Log.info('Initializing GUI')
         self.set_busy_on(key='msg-loading-map')

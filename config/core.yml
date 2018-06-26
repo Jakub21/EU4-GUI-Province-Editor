@@ -30,25 +30,58 @@ btt-width: 80
 btt-height: 27
 
 # History data
-val-keys: # Can have 1 value at a time
+bln-fkeys: # Boolean values
     is_city: city
+    hre: HRE
+    seat_in_parliament: parl_seat
+
+spc-fkeys: # Specific values
     capital: capital
     owner: owner
+    trade_goods: tr_goods
+    latent_trade_goods: latent_trg
     controller: cntrl
     culture: culture
     religion: religion
-    hre: HRE
+    estate: estate
+    reformation_center: reform_cntr
+    revolt: revolt
+
+num-fkeys: # Numeric values
+    add_local_autonomy: autonomy
+    extra_cost: cost
+    unrest: unrest
+    revolt_risk: rvlt_risk
     base_tax: tax
     base_production: prod
     base_manpower: manpower
-    trade_goods: tr_goods
-    fort_15th: fort
-    extra_cost: cost
+    manpower: manpower # there is only 1 entry, it's probably a mistake
+    native_hostileness: ntv_hstl
+    native_ferocity: ntv_ferc
+    native_size: ntv_size
 
-add-keys: # Can have multiple values (add command)
+add-fkeys: # Can have multiple values (add command)
     add_core: core
+    add_claim: claim
     discovered_by: discovered
-    add_province_triggered_modifier: trig_mod
+    add_permanent_province_modifier: perm_mdf
+    add_province_triggered_modifier: trig_mdf
 
-rem-keys: # (remove command)
+rem-fkeys: # (remove command)
     remove_core: core
+    remove_claim: claim
+    remove_province_modifier: perm_mdf
+
+bld-fkeys: # Buildings
+    trade: [marketplace, trade_depot, stock_exchange]
+    sailors: [dock, drydock]
+    navy: [shipyard, grand_shipyard]
+    manpower: [barracks, training_fields]
+    army: [regimental_camp, conscription_center]
+    defense: [fort_15th, fort_16th, fort_17th, fort_18th]
+    government: [courthouse, town_hall]
+    university: [university]
+    production: [workshop, counting_house]
+    taxation: [temple, cathedral]
+    manufacturies: [wharf, weapons, textile, plantations, tradecompany,
+        farm_estate, mills, furnace]
