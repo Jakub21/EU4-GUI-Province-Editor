@@ -79,7 +79,7 @@ class Editor(MainFrame):
             file = File(self, subdir+fn, 'game', True)
             contents = file.read()
             id = self._get_id(fn)
-            self.provs[id].set_history(contents)
+            self.provs[id].set_history(contents, fn)
 
     def create_provs(self):
         undefined = 'Undefined'

@@ -24,6 +24,9 @@ class Province:
             text += str(self.regn)+'/'+str(self.area)+'\n'
         except AttributeError: text += i+'Assignment not set\n'
         try:
+            text += i+'Source file name: "'+self.filename+'"\n'
+        except AttributeError: text += i+'File name not set\n'
+        try:
             self.history # Check if exists
             text += i+'History:\n'
             s = max([len(str(key)) for key in self.history.keys()])
@@ -125,8 +128,9 @@ class Province:
                     return True
         return False
 
-    def set_history(self, data):
+    def set_history(self, data, fn):
         '''Generate history data from parsed history file contents'''
+        self.filename = fn
         limit = self.parent.DATE
         self.history = self._get_hist_default()
         self.history.update(self._get_scope(data))
