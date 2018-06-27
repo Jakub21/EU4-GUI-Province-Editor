@@ -71,11 +71,12 @@ class Province:
         for fkey, pkey in self.CORE['num-fkeys'].items():
             history[pkey] = 0
         for fkey, pkey in self.CORE['add-fkeys'].items():
-            history[pkey] = ''
+            history[pkey] = []
+        for category in self.CORE['bld-fkeys'].keys():
+            history[category] = 0
         return history
 
-    def _get_scope(self, data):
-        history = {}
+    def _get_scope(self, data, history):
         for fkey, pkey in self.CORE['bln-fkeys'].items():
             try:
                 if data[fkey][0] == 'yes':
@@ -108,8 +109,10 @@ class Province:
         for category, bld_list in self.CORE['bld-fkeys'].items():
             for building in bld_list:
                 try:
-                    if data[building] == 'yes':
-                        history[category] = category.index(building)+1
+                    if data[building] == ['no']:
+                        history[category] = 0
+                    if data[building] == ['yes']:
+                        history[category] = bld_list.index(building)+1
                 except KeyError: pass
         return history
 
@@ -132,11 +135,9 @@ class Province:
         '''Generate history data from parsed history file contents'''
         self.filename = fn
         limit = self.parent.DATE
-        self.history = self._get_hist_default()
-        self.history.update(self._get_scope(data))
+        self.history = self._get_scope(data, self._get_hist_default())
         for date, subdata in data.items():
             date = self._get_date(date)
             if not date: continue
             if self._is_earlier(date, limit):
-                date_hist = self._get_scope(subdata[0])
-                self.history.update(date_hist)
+                self.history = self._get_scope(subdata[0], self.history)
