@@ -18,7 +18,7 @@ class File:
         Parameters:
             path: [str] Specify location of a file
             type: [str] Specify file type.
-                Valid types: 'yaml', 'csv', 'game', 'img'
+                Valid types: 'yaml', 'csv', 'game', 'asgn', 'img'
             is_game: [bool] Set to true if file (def: False)
         Attributes:
             csv_separator: [str] Cell separator used in CSV files (def: ';')
@@ -78,9 +78,7 @@ class File:
         key, value = '', ''
         in_quotes = False
         quoted_text = ''
-        o_brc, c_brc = '{', '}'
-        eql_sgn = '='
-        quo_sgn = '"'
+        o_brc, c_brc, eql_sgn, quo_sgn = tuple('{}="')
         quo_sep = ' '
         index = 0
         result = {}
@@ -89,7 +87,7 @@ class File:
             last = False
             from_subsc = False
             if len(text) == 1:
-                return text[0]
+                return text
             if word == o_brc: depth +=1
             elif word == c_brc: depth -= 1
             if (depth == 0) and (word != c_brc):
@@ -102,10 +100,10 @@ class File:
                 if in_quotes: quoted_text = ''
                 else: last = True
             if in_quotes: quoted_text += word + quo_sep
-            if last: value = quoted_text + word # CHANGED
+            if last: value = quoted_text + word
             if index == key_index: key = word
             elif index == eql_index:
-                if word != eql_sgn: return text # CHANGED
+                if word != eql_sgn: return text
             elif index == val_index:
                 if not last: value = word
                 if in_quotes: continue
@@ -119,6 +117,27 @@ class File:
             if not from_subsc: index = (index+1)%3
         return result
 
+    def _extract_asgn(self, data):
+        result = {}
+        for key, mlist in data.items():
+            mlist = mlist[0]
+            if 'areas' in mlist: # Regn
+                members = mlist['areas'][0]
+            else: # Area or Segn
+                o_brc, c_brc = '{', '}'
+                forbidden = ['color', '=', '}']
+                members = []
+                depth = 0
+                for memb in mlist:
+                    if memb == o_brc: depth +=1
+                    elif memb == c_brc: depth -= 1
+                    if (memb not in forbidden) and (depth == 0):
+                        try: memb = int(memb)
+                        except: pass
+                        members += [memb]
+            result[key] = members
+        return result
+
     def _parse(self, text, filename):
         if self.type == 'yaml':
             return self._parse_yaml(text)
@@ -126,6 +145,8 @@ class File:
             return self._parse_csv(text)
         elif self.type == 'game':
             return self._parse_game(text)
+        elif self.type == 'asgn':
+            return self._extract_asgn(self._parse_game(text))
         elif self.type == 'img':
             return Image.open(filename)
         else:

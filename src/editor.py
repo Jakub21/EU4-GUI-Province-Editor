@@ -96,7 +96,9 @@ class Editor(MainFrame):
                 if prov_type not in ['RNW', 'lake']:
                     Log.warn('Province '+str(id)+' has no name')
             try: area = self._find_sub(self.ASSIGNMENT[0], id)
-            except KeyError: prov_type = 'wasteland'
+            except KeyError:
+                area = undefined
+                prov_type = 'wasteland'
             try: regn = self._find_sub(self.ASSIGNMENT[1], area)
             except KeyError: regn = undefined
             try: segn = self._find_sub(self.ASSIGNMENT[2], regn)
@@ -174,19 +176,9 @@ class Editor(MainFrame):
         path_area = self.CORE['path']['area-assign']
         path_regn = self.CORE['path']['regn-assign']
         path_segn = self.CORE['path']['segn-assign']
-        areas = File(self, path_area, 'game', True).read()
-        regns = File(self, path_regn, 'game', True).read()
-        segns = File(self, path_segn, 'game', True).read()
-        areas = {k:[int(el) for el in v[0] if el not in 'color={}']\
-            for k,v in areas.items()}
-        segns = {k:[el for el in v[0]] for k,v in segns.items()}
-        _regns = {}
-        for k,v in regns.items():
-            try:
-                _regns[k] = [el for el in v[0]['areas'][0]]
-            except KeyError:
-                _regns[k] = []
-        regns = _regns
+        areas = File(self, path_area, 'asgn', True).read()
+        regns = File(self, path_regn, 'asgn', True).read()
+        segns = File(self, path_segn, 'asgn', True).read()
         return areas, regns, segns
 
     def _find_sub(self, source, subject):
