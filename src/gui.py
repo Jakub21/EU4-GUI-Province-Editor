@@ -63,7 +63,7 @@ class MainFrame(wx.Frame):
         if self.SCALE != 1:
             image = bm.ConvertToImage()
             width, height = int(width*self.SCALE), int(height*self.SCALE)
-            image.Rescale(width, height, wx.IMAGE_QUALITY_BICUBIC)
+            image = image.Scale(width, height)
             bm = image.ConvertToBitmap()
         return bm
 
