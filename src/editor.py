@@ -30,6 +30,8 @@ class Editor(MainFrame):
 
         Log.info('Initializing GUI')
         self.set_busy_on(key='msg-loading-map')
+        self.MAPMODE = 'provs'
+        self.MAP = self.PROV_MAP
         self.init_gui()
         self.Center()
         self.isBusy = False
@@ -165,6 +167,7 @@ class Editor(MainFrame):
         prov_map = File(self, path, 'img', True)
         image = prov_map.read()
         self.ID_POS = self._map_pixels_clr(image)
+        self.SRC_IMG = image.copy()
         image = self._prov_map_filter(image)
         return image
 

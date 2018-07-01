@@ -4,7 +4,12 @@ Python version: 3.6.5
 '''
 import wx
 import wx.lib.scrolledpanel as scrl
+from PIL import Image
+
+from datetime import datetime # TEMP
+
 import src.elems as el
+from src.prov_group import ProvGroup
 
 import logging
 Log = logging.getLogger('MainLogger')
@@ -24,7 +29,7 @@ class MainFrame(wx.Frame):
         self.sizer = wx.GridBagSizer()
         self.sizer.Add(self.side_bar(), pos=(0,1))
 
-        bm = self.img_to_bm(self.PROV_MAP)
+        bm = self.img_to_bm(self.MAP)
         self.img_panel = ImagePanel(self.panel, self.CORE, bm, img_panel_actions)
         self.sizer.Add(self.img_panel, pos=(0,0), flag=wx.EXPAND)
 
@@ -39,6 +44,7 @@ class MainFrame(wx.Frame):
             (1, self.on_zoom_out, 'scale-dec'),
             (2, self.on_zoom_reset, 'scale-rst'),
             (3, self.on_unmark_all, 'unmark'),
+            (4, self.on_toggle_mapmode, 'toggle')
         ]
         for row, action, key in buttons_data:
             button = el.Button(self.panel, key, action)
@@ -68,10 +74,10 @@ class MainFrame(wx.Frame):
         return bm
 
     def mark_prov_map(self, pxlist, color):
-        pixels = self.PROV_MAP.load()
+        pixels = self.MAP.load()
         for x, y in pxlist:
             pixels[x, y] = color
-        self.img_panel.load_bm(self.img_to_bm(self.PROV_MAP))
+        self.img_panel.load_bm(self.img_to_bm(self.MAP))
 
     def on_map_lclick(self, event):
         x, y = event.GetPosition()
@@ -91,7 +97,7 @@ class MainFrame(wx.Frame):
         if abs(1-self.SCALE) < self.CORE['scale-ignore']:
             self.SCALE = 1
         Log.info('Zoom in ('+str(round(self.SCALE, 3))+')')
-        bm = self.img_to_bm(self.PROV_MAP)
+        bm = self.img_to_bm(self.MAP)
         self.img_panel.load_bm(bm)
 
     def on_zoom_out(self, event):
@@ -102,14 +108,87 @@ class MainFrame(wx.Frame):
         if abs(1-self.SCALE) < self.CORE['scale-ignore']:
             self.SCALE = 1
         Log.info('Zoom out ('+str(round(self.SCALE, 3))+')')
-        bm = self.img_to_bm(self.PROV_MAP)
+        bm = self.img_to_bm(self.MAP)
         self.img_panel.load_bm(bm)
 
     def on_zoom_reset(self, event):
         Log.info('Zoom reset')
         self.SCALE = 1
-        bm = self.img_to_bm(self.PROV_MAP)
+        bm = self.img_to_bm(self.MAP)
         self.img_panel.load_bm(bm)
+
+    def on_toggle_mapmode(self, event): # TEMP
+        msg = 'Leave empty to show provs.\n'
+        msg+= 'Program will load from history or assignment.'
+        dialog = wx.TextEntryDialog(self.panel, msg, caption='Choose mapmode')
+        if dialog.ShowModal() == wx.ID_OK:
+            mapmode = dialog.GetValue()
+            dialog.Destroy()
+        else:
+            dialog.Destroy()
+            return
+        if mapmode == '':
+            Log.info('Mapmode default')
+            self.MAPMODE = 'provs'
+            self.MAP = self.PROV_MAP
+        else:
+            Log.info('Mapmode '+mapmode)
+            self.MAPMODE = mapmode
+            self._generate_map()
+        self.img_panel.load_bm(self.img_to_bm(self.MAP))
+
+    def _generate_map(self):
+        Log.info('Creating mapmode image')
+        time_a = datetime.now()
+        groups = {}
+        provinces = {}
+        mapmode = self.MAPMODE
+        hist_failure = 0
+        for id, prov in self.provs.items():
+            if   mapmode == 'area':
+                group = prov.area
+            elif mapmode == 'regn':
+                group = prov.regn
+            elif mapmode == 'segn':
+                group = prov.segn
+            else:
+                try:
+                    group = prov.history[mapmode]
+                except:
+                    hist_failure += 1
+                    continue
+            try:
+                groups[group].pixels += prov.pixels
+                groups[group].color_list += [prov.color]
+            except KeyError:
+                groups[group] = ProvGroup(self, group)
+                groups[group].pixels += prov.pixels
+                groups[group].color_list += [prov.color]
+            provinces[id] = group
+        for id, group in groups.items():
+            group.get_avg_color()
+            print(group)
+
+        Log.info('History not exist failures: '+str(hist_failure)+' ('+\
+            str(round(100*(hist_failure/len(self.provs)),3))+'%)')
+
+        prov_pixels = self.SRC_IMG.load()
+
+        image = Image.new('RGB', self.MAP_SIZE)
+        group_pixels = image.load()
+
+        reverse = {v:k for k,v in self.COLOR_DEFS.items()}
+        width, height = self.MAP_SIZE
+        for y in range(height):
+            for x in range(width):
+                prov_id = reverse[prov_pixels[x,y]]
+                try:
+                    group_pixels[x,y] = groups[provinces[prov_id]].color
+                except KeyError:
+                    group_pixels[x,y] = (0,0,0)
+        time_b = datetime.now()
+        Log.info('Mapmode gen duration: '+str(time_b-time_a))
+        self.MAP = image
 
 
 
@@ -136,6 +215,7 @@ class ImagePanel(scrl.ScrolledPanel):
         self.new_scroll(bitmap.GetSize())
 
     def load_bm(self, bitmap):
+        Log.info('Map update')
         self.st_bitmap.Destroy()
         self.move_scroll((0,0))
         self._load_bitmap(bitmap)
