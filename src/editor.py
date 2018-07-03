@@ -28,10 +28,12 @@ class Editor(MainFrame):
         self.set_busy_on(key='msg-loading-hist')
         self.load_history()
 
-        Log.info('Initializing GUI')
+        Log.info('Loading map')
         self.set_busy_on(key='msg-loading-map')
         self.MAPMODE = 'provs'
         self.MAP = self.PROV_MAP
+        self.chunks = self.provs
+        self.chunk_pos = {name:chunk.pixels for name, chunk in self.chunks.items()}
         self.init_gui()
         self.Center()
         self.isBusy = False
@@ -62,7 +64,7 @@ class Editor(MainFrame):
         mapdef = self._load_map_def()
         self.MAP_SIZE, self.SEA_PROVS, self.RNW_PROVS, self.LAKE_PROVS = mapdef
         self.COLOR_DEFS = self._load_clr_def()
-        self.PROV_MAP = self._load_prov_map()
+        self.ID_POS, self.PROV_MAP = self._load_prov_map()
         self.PROV_NAMES = self._load_localisation()
         self.ASSIGNMENT = self._load_assignment()
 
@@ -166,10 +168,10 @@ class Editor(MainFrame):
         path = self.CORE['path']['prov-map']
         prov_map = File(self, path, 'img', True)
         image = prov_map.read()
-        self.ID_POS = self._map_pixels_clr(image)
+        id_pos = self._map_pixels_clr(image)
         self.SRC_IMG = image.copy()
         image = self._prov_map_filter(image)
-        return image
+        return id_pos, image
 
     def _load_localisation(self):
         path = self.CORE['path']['prov-names']

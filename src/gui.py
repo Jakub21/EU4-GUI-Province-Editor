@@ -81,8 +81,9 @@ class MainFrame(wx.Frame):
 
     def on_map_lclick(self, event):
         x, y = event.GetPosition()
-        id = self._find_sub(self.ID_POS, (int(x/self.SCALE),int(y/self.SCALE)))
-        self.provs[id].mark()
+        scale = self.SCALE
+        id = self._find_sub(self.chunk_pos, (int(x/scale),int(y/scale)))
+        self.chunks[id].mark()
 
     def on_unmark_all(self, event):
         for id, prov in self.provs.items():
@@ -169,8 +170,8 @@ class MainFrame(wx.Frame):
             group.get_avg_color()
             print(group)
 
-        Log.info('History not exist failures: '+str(hist_failure)+' ('+\
-            str(round(100*(hist_failure/len(self.provs)),3))+'%)')
+        #Log.info('History not existent failures: '+str(hist_failure)+' ('+\
+        #    str(round(100*(hist_failure/len(self.provs)),3))+'%)')
 
         prov_pixels = self.SRC_IMG.load()
 
@@ -188,6 +189,8 @@ class MainFrame(wx.Frame):
                     group_pixels[x,y] = (0,0,0)
         time_b = datetime.now()
         Log.info('Mapmode gen duration: '+str(time_b-time_a))
+        self.chunks = groups
+        self.chunk_pos = {name:chunk.pixels for name, chunk in self.chunks.items()}
         self.MAP = image
 
 

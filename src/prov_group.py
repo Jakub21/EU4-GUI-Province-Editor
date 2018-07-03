@@ -38,5 +38,7 @@ class ProvGroup:
     def mark(self):
         if self.marked:
             self.marked = False
+            print('Unmarked:',self)
         else:
             self.marked = True
+            print('Marked:',self)
