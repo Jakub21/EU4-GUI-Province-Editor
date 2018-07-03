@@ -140,6 +140,7 @@ class MainFrame(wx.Frame):
 
     def _generate_map(self):
         Log.info('Creating mapmode image')
+        self.set_busy_on(key='msg-loading-map')
         time_a = datetime.now()
         groups = {}
         provinces = {}
@@ -186,6 +187,7 @@ class MainFrame(wx.Frame):
         self.chunks = groups
         self.chunk_pos = {name:chunk.pixels for name, chunk in self.chunks.items()}
         self.MAP = image
+        self.set_busy_off()
 
 
 
@@ -212,7 +214,6 @@ class ImagePanel(scrl.ScrolledPanel):
         self.new_scroll(bitmap.GetSize())
 
     def load_bm(self, bitmap):
-        Log.info('Map update')
         self.st_bitmap.Destroy()
         self.move_scroll((0,0))
         self._load_bitmap(bitmap)
