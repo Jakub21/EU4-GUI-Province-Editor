@@ -2,43 +2,57 @@
 License: MIT
 Python version: 3.6.5
 '''
+from src.chunk import Chunk
 
-import logging
-Log = logging.getLogger('MainLogger')
-
-class ProvGroup:
-    '''ProvGroup class'''
-    def __init__(self, parent, name):
-        self.parent = parent
-        self.name = str(name)
-        self.pixels = []
-        self.color_list = []
-        self.marked = False
+class ProvGroup(Chunk):
+    '''Province Group Class'''
+    def __init__(self, parent, name, type):
+        '''Constructor'''
+        super().__init__(parent, name, type)
+        self.members = []
 
     def __repr__(self):
+        '''Generates repr string of the object'''
         i = ' '*4
-        text = 'Group "'+self.name+'"\n'
-        text+= i+'Pixels count: '+str(len(self.pixels))+'\n'
-        text+= i+'Colors count: '+str(len(self.color_list))+'\n'
-        return text[:-1]
+        text = 'ProvGroup'
+        text += super().__repr__()[len('chunk'):]
+        text += i + 'Members count: '+str(len(self.members))+'\n'
+        return text
 
-    def get_avg_color(self):
-        r, g, b = 0,0,0
-        for color in self.color_list:
-            r += color[0]
-            g += color[1]
-            b += color[2]
-        r //= len(self.color_list)
-        g //= len(self.color_list)
-        b //= len(self.color_list)
-        self.color = r,g,b
-        self.color_g = self.parent._get_color_gray(self.color)
-        self.color_m = self.parent._get_color_marked(self.color)
+    def mark(self, modify_map=True, force=None):
+        '''Marks or Unmarks the group.
+        To skip map update set modify_map to False.
+        To force state of marked attr. use force parameter.
+        Silently updates marked attr. of all member provinces
+        '''
+        super().mark(modify_map, force)
+        for province in self.members:
+            province.mark(modify_map=False, force=self.marked)
+        # TODO: Check if member provs are copies
 
-    def mark(self):
-        if self.marked:
-            self.marked = False
-            print('Unmarked:',self)
-        else:
-            self.marked = True
-            print('Marked:',self)
+    def get_mem_pixels(self):
+        '''Get pixels from the members'''
+        for member in self.members:
+            self.pixels += member.pixels
+
+    def set_members(self, members):
+        '''Sets members of the group'''
+        self.members = members
+
+    def add_member(self, member):
+        '''Add single province to member list'''
+        self.members += [member]
+
+    def calc_avg_color(self):
+        '''Calculates average "identifier" color of members'''
+        r, g, b = 0, 0, 0
+        amount = len(self.members)
+        for member in self.members:
+            mr, mg, mb = member.color
+            r += mr
+            g += mg
+            b += mb
+        r //= amount
+        g //= amount
+        b //= amount
+        return r,g,b

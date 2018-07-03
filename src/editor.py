@@ -107,10 +107,8 @@ class Editor(MainFrame):
             except KeyError: regn = undefined
             try: segn = self._find_sub(self.ASSIGNMENT[2], regn)
             except KeyError: segn = undefined
-            prov = Province(self, id, name, prov_type)
-            cg = self._get_color_gray(color)
-            cm = self._get_color_marked(color)
-            prov.set_color(color, cg, cm)
+            prov = Province(self, name, prov_type, id)
+            prov.set_color(color)
             prov.assign(area, regn, segn)
             try:
                 prov.set_pixels(self.ID_POS[id])
@@ -192,20 +190,6 @@ class Editor(MainFrame):
             if subject in l:
                 return k
         raise KeyError('Could not find "'+str(subject)+'" in the dict')
-
-    def _get_color_gray(self, color):
-        r, g, b = color
-        r = (r+100)//4
-        g = (g+100)//4
-        b = (b+100)//4
-        return r, g, b
-
-    def _get_color_marked(self, color):
-        r, g, b = color
-        r = (r+510)//3
-        g = (g+510)//3
-        b = (b+510)//3
-        return r, g, b
 
     def _get_id(self, fn):
         id = ''

@@ -73,7 +73,7 @@ class MainFrame(wx.Frame):
             bm = image.ConvertToBitmap()
         return bm
 
-    def mark_prov_map(self, pxlist, color):
+    def mark_chunk(self, pxlist, color):
         pixels = self.MAP.load()
         for x, y in pxlist:
             pixels[x, y] = color
@@ -158,20 +158,14 @@ class MainFrame(wx.Frame):
                 except:
                     hist_failure += 1
                     continue
-            try:
-                groups[group].pixels += prov.pixels
-                groups[group].color_list += [prov.color]
+            try: groups[group].add_member(prov)
             except KeyError:
-                groups[group] = ProvGroup(self, group)
-                groups[group].pixels += prov.pixels
-                groups[group].color_list += [prov.color]
+                groups[group] = ProvGroup(self, group, prov.type)
+                groups[group].add_member(prov)
             provinces[id] = group
         for id, group in groups.items():
-            group.get_avg_color()
-            print(group)
-
-        #Log.info('History not existent failures: '+str(hist_failure)+' ('+\
-        #    str(round(100*(hist_failure/len(self.provs)),3))+'%)')
+            group.set_color(group.calc_avg_color())
+            group.get_mem_pixels()
 
         prov_pixels = self.SRC_IMG.load()
 
@@ -184,7 +178,7 @@ class MainFrame(wx.Frame):
             for x in range(width):
                 prov_id = reverse[prov_pixels[x,y]]
                 try:
-                    group_pixels[x,y] = groups[provinces[prov_id]].color
+                    group_pixels[x,y] = groups[provinces[prov_id]].g_clr
                 except KeyError:
                     group_pixels[x,y] = (0,0,0)
         time_b = datetime.now()

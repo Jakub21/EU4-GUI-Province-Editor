@@ -2,59 +2,54 @@
 License: MIT
 Python version: 3.6.5
 '''
+from src.chunk import Chunk
 
-class Province:
-    '''Province'''
-    def __init__(self, parent, id, name, type):
-        self.parent, self.id, self.name, self.type = parent, id, name, type
+class Province(Chunk):
+    '''Province Class'''
+    def __init__(self, parent, name, type, id):
+        '''Constructor'''
+        super().__init__(parent, name, type)
         self.CORE, self.LOCL = parent.CORE, parent.LOCL
-        self.marked = False
+        self.id = id
 
     def __repr__(self):
+        '''Generates repr string of the object'''
         i = ' '*4
-        text = 'Province '+str(self.id)+' "'+self.name+'"\n'
-        text += i+'Type: '+str(self.type)+'\n'
+        text = 'Province #'+str(self.id)
+        text += super().__repr__()[len('chunk'):]
         try:
-            text += i+'Color: '+str(self.color)
-            text += ' [gray: '+str(self.color_g)
-            text += ' marked: '+str(self.color_m)+']\n'
-        except AttributesError: text += i+'Colors not set\n'
+            text += i + 'Assignment: '+str(self.segn)+' / '
+            text += str(self.regn) + ' / ' + str(self.area) + '\n'
+        except AttributeError: text += i + 'Assignment not set\n'
         try:
-            text += i+'Assignment: '+str(self.segn)+'/'
-            text += str(self.regn)+'/'+str(self.area)+'\n'
-        except AttributeError: text += i+'Assignment not set\n'
+            text += i + 'History file name: '+str(self.filename)+'\n'
+        except AttributeError: text += i + 'History file name not set\n'
         try:
-            text += i+'Source file name: "'+self.filename+'"\n'
-        except AttributeError: text += i+'File name not set\n'
-        try:
-            self.history # Check if exists
-            text += i+'History:\n'
             s = max([len(str(key)) for key in self.history.keys()])
+            text += i + 'Province history data:\n'
             for key, value in self.history.items():
                 text += i*2+str(key)+' '*(s-len(key))+' : '+str(value)+'\n'
-        except AttributeError: text += i+'History not loaded\n'
-        return text[:-1]
-
-    def set_color(self, id_color, gray_color, marked_color):
-        self.color = id_color
-        self.color_g = gray_color
-        self.color_m = marked_color
-
-    def mark(self):
-        if self.marked:
-            self.marked = False
-            self.parent.mark_prov_map(self.pixels, self.color_g)
-        else:
-            self.marked = True
-            self.parent.mark_prov_map(self.pixels, self.color_m)
-
-    def set_pixels(self, pixels):
-        self.pixels = pixels
+        except AttributeError: text += i + 'History data not loaded\n'
+        return text
 
     def assign(self, area, regn, segn):
-        self.area = area.replace('_area','')
-        self.regn = regn.replace('_region','')
-        self.segn = segn.replace('_superregion','')
+        '''Sets region assignment of the province'''
+        self.area, self.regn, self.segn = area, regn, segn
+
+    def set_history(self, data, fn):
+        '''Generate history data from parsed history file contents
+        Additionally set province's history file name
+        '''
+        self.filename = fn
+        limit = self.parent.DATE
+        self.history = self._get_scope(data, self._get_hist_default())
+        for date, subdata in data.items():
+            date = self._get_date(date)
+            if not date: continue
+            if self._is_earlier(date, limit):
+                self.history = self._get_scope(subdata[0], self.history)
+
+    # set_history helper methods
 
     def _get_date(self, text):
         try:
@@ -92,7 +87,6 @@ class Province:
             try:
                 history[pkey] = int(data[fkey][0])
             except KeyError: pass
-            # TODO: except TypeError: ?
         for fkey, pkey in self.CORE['add-fkeys'].items():
             try:
                 history[pkey] += data[fkey]
@@ -130,14 +124,3 @@ class Province:
                 if da < db:
                     return True
         return False
-
-    def set_history(self, data, fn):
-        '''Generate history data from parsed history file contents'''
-        self.filename = fn
-        limit = self.parent.DATE
-        self.history = self._get_scope(data, self._get_hist_default())
-        for date, subdata in data.items():
-            date = self._get_date(date)
-            if not date: continue
-            if self._is_earlier(date, limit):
-                self.history = self._get_scope(subdata[0], self.history)
