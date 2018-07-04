@@ -29,6 +29,10 @@ scroll-start: [44, 8] # NW corner of visible (% of whole map)
 btt-width: 80
 btt-height: 27
 
+# Frame size (fraction of screen size)
+frame-x: 0.5
+frame-y: 0.5
+
 default-date: [1444, 11, 11]
 
 # History data

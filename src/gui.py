@@ -37,6 +37,11 @@ class MainFrame(wx.Frame):
         self.sizer.AddGrowableCol(0)
         self.sizer.AddGrowableRow(0)
         self.panel.SetSizerAndFit(self.sizer)
+        disp = wx.DisplaySize()
+        self.SetSize(
+            max([int(self.CORE['frame-x']*disp[0]), self.GetSize()[0]]),
+            max([int(self.CORE['frame-y']*disp[1]), self.GetSize()[1]]),
+        )
 
     def side_bar(self):
         sizer = wx.GridBagSizer()
