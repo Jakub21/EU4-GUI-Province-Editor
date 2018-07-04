@@ -5,14 +5,26 @@
 # General
 frame-title: 'EGE2'
 
+# Side-bar labels
+lbl-mapmodes: 'Map modes'
 # Side-bar buttons
 scale-inc: 'Zoom in'
 scale-dec: 'Zoom out'
 scale-rst: 'Reset zoom'
 unmark: 'Unmark all'
+# Mapmode buttons
+mm-provs: 'Provinces'
+mm-areas: 'Areas'
+mm-regns: 'Regions'
+mm-segns: 'Super-regions'
+mm-cust: 'Custom'
 
-# Basic Dialog Messages
+# Busy Dialog Messages
 msg-loading: 'Loading'
 msg-loading-data: 'Loading data'
 msg-loading-hist: 'Loading history'
 msg-loading-map: 'Preparing map'
+
+# Mapmode choice Dialog
+dlg-mapmode-cpt: 'Choose map-mode'
+dlg-mapmode-msg: 'Select new map mode'

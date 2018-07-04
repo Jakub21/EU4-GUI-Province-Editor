@@ -30,7 +30,8 @@ class MainFrame(wx.Frame):
         self.sizer.Add(self.side_bar(), pos=(0,1))
 
         bm = self.img_to_bm(self.MAP)
-        self.img_panel = ImagePanel(self.panel, self.CORE, bm, img_panel_actions)
+        self.img_panel = ImagePanel(self.panel, self.CORE, bm,
+            img_panel_actions)
         self.sizer.Add(self.img_panel, pos=(0,0), flag=wx.EXPAND)
 
         self.sizer.AddGrowableCol(0)
@@ -39,16 +40,28 @@ class MainFrame(wx.Frame):
 
     def side_bar(self):
         sizer = wx.GridBagSizer()
-        buttons_data = [
-            (0, self.on_zoom_in, 'scale-inc'),
-            (1, self.on_zoom_out, 'scale-dec'),
-            (2, self.on_zoom_reset, 'scale-rst'),
-            (3, self.on_unmark_all, 'unmark'),
-            (4, self.on_toggle_mapmode, 'toggle')
+        rows = [
+            (self.on_zoom_in, 'scale-inc'),
+            (self.on_zoom_out, 'scale-dec'),
+            (self.on_zoom_reset, 'scale-rst'),
+            (self.on_unmark_all, 'unmark'),
+            ('TEXT', 'lbl-mapmodes'),
+            (self.mapmode_provs, 'mm-provs'),
+            (self.mapmode_areas, 'mm-areas'),
+            (self.mapmode_regns, 'mm-regns'),
+            (self.mapmode_segns, 'mm-segns'),
+            (self.mapmode_custom, 'mm-cust'),
         ]
-        for row, action, key in buttons_data:
-            button = el.Button(self.panel, key, action)
-            sizer.Add(button, pos=(row,0))
+        row = 0
+        for action, key in rows:
+            if action == 'TEXT':
+                label = wx.StaticText(self.panel, label=self.LOCL[key],
+                    style=wx.ALIGN_CENTRE_HORIZONTAL)
+                sizer.Add(label, pos=(row,0), flag=wx.EXPAND)
+            else:
+                button = el.Button(self.panel, key, action)
+                sizer.Add(button, pos=(row,0))
+            row += 1
         return sizer
 
     def set_busy_on(self, event=None, key='msg-loading'):
@@ -62,6 +75,8 @@ class MainFrame(wx.Frame):
         self.isBusy = False
         self.Enable()
         self.busyDlg = None
+
+    # Map interactions
 
     def img_to_bm(self, image):
         width, height = image.size
@@ -89,6 +104,8 @@ class MainFrame(wx.Frame):
         for id, prov in self.provs.items():
             if prov.marked:
                 self.provs[id].mark()
+
+    # Zoom methods
 
     def on_zoom_in(self, event):
         limit = self.CORE['scale-max']
@@ -118,24 +135,38 @@ class MainFrame(wx.Frame):
         bm = self.img_to_bm(self.MAP)
         self.img_panel.load_bm(bm)
 
-    def on_toggle_mapmode(self, event): # TEMP
-        msg = 'Leave empty to show provs.\n'
-        msg+= 'Program will load from history or assignment.'
-        dialog = wx.TextEntryDialog(self.panel, msg, caption='Choose mapmode')
+    # Map mode methods
+
+    def mapmode_provs(self, event):
+        self.MAPMODE = 'provs'
+        self.MAP = self.PROV_MAP
+        self.img_panel.load_bm(self.img_to_bm(self.MAP))
+
+    def mapmode_areas(self, event):
+        self.MAPMODE = 'areas'
+        self._generate_map()
+        self.img_panel.load_bm(self.img_to_bm(self.MAP))
+
+    def mapmode_regns(self, event):
+        self.MAPMODE = 'regns'
+        self._generate_map()
+        self.img_panel.load_bm(self.img_to_bm(self.MAP))
+
+    def mapmode_segns(self, event):
+        self.MAPMODE = 'segns'
+        self._generate_map()
+        self.img_panel.load_bm(self.img_to_bm(self.MAP))
+
+    def mapmode_custom(self, event):
+        choices = list(self.CORE['spc-fkeys'].values())
+        choices += list(self.CORE['num-fkeys'].values())
+        choices += [el+' buildings' for el in self.CORE['bld-fkeys'].keys()]
+        dialog = wx.SingleChoiceDialog(self, self.LOCL['dlg-mapmode-msg'],
+            self.LOCL['dlg-mapmode-cpt'], choices)
         if dialog.ShowModal() == wx.ID_OK:
-            mapmode = dialog.GetValue()
-            dialog.Destroy()
-        else:
-            dialog.Destroy()
-            return
-        if mapmode == '':
-            Log.info('Mapmode default')
-            self.MAPMODE = 'provs'
-            self.MAP = self.PROV_MAP
-        else:
-            Log.info('Mapmode '+mapmode)
-            self.MAPMODE = mapmode
-            self._generate_map()
+            self.MAPMODE = dialog.GetStringSelection()
+        else: return
+        self._generate_map()
         self.img_panel.load_bm(self.img_to_bm(self.MAP))
 
     def _generate_map(self):
@@ -145,20 +176,16 @@ class MainFrame(wx.Frame):
         groups = {}
         provinces = {}
         mapmode = self.MAPMODE
-        hist_failure = 0
         for id, prov in self.provs.items():
-            if   mapmode == 'area':
+            if mapmode == 'areas':
                 group = prov.area
-            elif mapmode == 'regn':
+            elif mapmode == 'regns':
                 group = prov.regn
-            elif mapmode == 'segn':
+            elif mapmode == 'segns':
                 group = prov.segn
             else:
-                try:
-                    group = prov.history[mapmode]
-                except:
-                    hist_failure += 1
-                    continue
+                try: group = prov.history[mapmode]
+                except: continue
             try: groups[group].add_member(prov)
             except KeyError:
                 groups[group] = ProvGroup(self, group, prov.type)
@@ -167,25 +194,21 @@ class MainFrame(wx.Frame):
         for id, group in groups.items():
             group.set_color(group.calc_avg_color())
             group.get_mem_pixels()
-
         prov_pixels = self.SRC_IMG.load()
-
         image = Image.new('RGB', self.MAP_SIZE)
         group_pixels = image.load()
-
         reverse = {v:k for k,v in self.COLOR_DEFS.items()}
         width, height = self.MAP_SIZE
         for y in range(height):
             for x in range(width):
                 prov_id = reverse[prov_pixels[x,y]]
-                try:
-                    group_pixels[x,y] = groups[provinces[prov_id]].g_clr
-                except KeyError:
-                    group_pixels[x,y] = (0,0,0)
+                try: group_pixels[x,y] = groups[provinces[prov_id]].g_clr
+                except KeyError: group_pixels[x,y] = (0,0,0)
         time_b = datetime.now()
         Log.info('Mapmode gen duration: '+str(time_b-time_a))
         self.chunks = groups
-        self.chunk_pos = {name:chunk.pixels for name, chunk in self.chunks.items()}
+        self.chunk_pos = {name:chunk.pixels
+            for name, chunk in self.chunks.items()}
         self.MAP = image
         self.set_busy_off()
 
