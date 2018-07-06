@@ -106,9 +106,9 @@ class MainFrame(wx.Frame):
         self.chunks[id].mark()
 
     def on_unmark_all(self, event):
-        for id, prov in self.provs.items():
-            if prov.marked:
-                self.provs[id].mark()
+        for id, chunk in self.chunks.items():
+            if chunk.marked:
+                self.chunks[id].mark()
 
     # Zoom methods
 
