@@ -26,9 +26,17 @@ class ProvGroup(Chunk):
         Silently updates marked attr. of all member provinces
         '''
         super().mark(modify_map, force)
-        for province in self.members:
-            province.mark(modify_map=False, force=self.marked)
-        # TODO: Check if member provs are copies
+        for prov in self.members:
+            id = prov.id
+            self.parent.provs[id].mark(modify_map='provs', force=self.marked)
+
+    def mark_members(self, force=None):
+        state = self.marked
+        if force in (True, False):
+            state = force
+        for prov in self.members:
+            id = prov.id
+            self.parent.provs[id].mark(modify_map='provs', force=state)
 
     def get_mem_pixels(self):
         '''Get pixels from the members'''

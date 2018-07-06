@@ -94,10 +94,17 @@ class MainFrame(wx.Frame):
         return bm
 
     def mark_chunk(self, pxlist, color):
+        '''Mark currently loaded map (self.MAP)'''
         pixels = self.MAP.load()
         for x, y in pxlist:
             pixels[x, y] = color
         self.img_panel.load_bm(self.img_to_bm(self.MAP))
+
+    def mark_src_map(self, pxlist, color):
+        '''Mark source map (self.PROV_MAP)'''
+        pixels = self.PROV_MAP.load()
+        for x, y in pxlist:
+            pixels[x, y] = color
 
     def on_map_lclick(self, event):
         x, y = event.GetPosition()
@@ -142,9 +149,12 @@ class MainFrame(wx.Frame):
 
     # Map mode methods
 
-    def mapmode_provs(self, event):
+    def mapmode_provs(self, event=None):
         self.MAPMODE = 'provs'
         self.MAP = self.PROV_MAP
+        self.chunks = self.provs
+        self.chunk_pos = {name:chunk.pixels
+            for name, chunk in self.chunks.items()}
         self.img_panel.load_bm(self.img_to_bm(self.MAP))
 
     def mapmode_areas(self, event):
@@ -215,6 +225,12 @@ class MainFrame(wx.Frame):
         self.chunk_pos = {name:chunk.pixels
             for name, chunk in self.chunks.items()}
         self.MAP = image
+        for id, group in self.chunks.items():
+            marked_count = sum(1 for prov in group.members if prov.marked)
+            if marked_count >= len(group.members)*self.CORE['mark-group-perc']:
+                group.mark()
+            else:
+                group.mark_members(force=False)
         self.set_busy_off()
 
 
@@ -224,6 +240,7 @@ class ImagePanel(scrl.ScrolledPanel):
     '''Scrolled Panel for Image'''
     def __init__(self, parent, config, bitmap, actions):
         super().__init__(parent)
+        self.SetBackgroundColour((25,25,25))
         self.actions = actions
         self.CORE = config
         step = self.CORE['scroll-step']

@@ -30,11 +30,9 @@ class Editor(MainFrame):
 
         Log.info('Loading map')
         self.set_busy_on(key='msg-loading-map')
-        self.MAPMODE = 'provs'
         self.MAP = self.PROV_MAP
-        self.chunks = self.provs
-        self.chunk_pos = {name:chunk.pixels for name, chunk in self.chunks.items()}
         self.init_gui()
+        self.mapmode_provs()
         self.Center()
         self.isBusy = False
         Log.info('Done')

@@ -50,8 +50,10 @@ class Chunk:
             self.marked = force
         else:
             self.marked = not self.marked
-        if modify_map:
+        if modify_map == True:
             self.parent.mark_chunk(self.pixels, color[self.marked])
+        elif modify_map == 'provs':
+            self.parent.mark_src_map(self.pixels, color[self.marked])
 
     # set_color helper methods
 
