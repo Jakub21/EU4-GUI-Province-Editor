@@ -46,16 +46,18 @@ class MainFrame(wx.Frame):
     def side_bar(self):
         sizer = wx.GridBagSizer()
         rows = [
+            ('TEXT', 'lbl-view'),
             (self.on_zoom_in, 'scale-inc'),
             (self.on_zoom_out, 'scale-dec'),
             (self.on_zoom_reset, 'scale-rst'),
-            (self.on_unmark_all, 'unmark'),
             ('TEXT', 'lbl-mapmodes'),
             (self.mapmode_provs, 'mm-provs'),
             (self.mapmode_areas, 'mm-areas'),
             (self.mapmode_regns, 'mm-regns'),
             (self.mapmode_segns, 'mm-segns'),
             (self.mapmode_custom, 'mm-cust'),
+            ('TEXT', 'lbl-selection'),
+            (self.on_unmark_all, 'unmark'),
         ]
         row = 0
         for action, key in rows:
